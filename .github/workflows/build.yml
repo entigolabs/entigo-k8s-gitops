@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: '1.15'
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build the go application
+      run: go build -o bin/gitops -ldflags "-linkmode external -extldflags -static" cmd/gitops/main.go
+    - name: Analyze with SonarCloud
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: gitops-${{ github.run_number }}
+        path: bin/gitops
