@@ -2,7 +2,7 @@ package update
 
 import (
 	"flag"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/logger"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
 	"os"
 )
 
@@ -16,9 +16,9 @@ type Flags = struct {
 	appPath string
 }
 
-func getFlags() Flags {
+func evaluateFlags() {
 	repo, branch, keyPath, images, appPath := parseFlags()
-	return Flags{
+	flgs = Flags{
 		repo:    *repo,
 		branch:  *branch,
 		keyPath: *keyPath,
@@ -36,7 +36,7 @@ func parseFlags() (*string, *string, *string, *string, *string) {
 	appPath := flagSet.String("app-path", "", "Application path")
 	parseErr := flagSet.Parse(os.Args[2:])
 	if parseErr != nil {
-		logger.Logger.Println(&logger.PrefixedError{Reason: parseErr})
+		util.Logger.Println(&util.PrefixedError{Reason: parseErr})
 		os.Exit(1)
 	}
 	return repo, branch, keyPath, images, appPath

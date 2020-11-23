@@ -1,8 +1,9 @@
-package util
+package update
 
 import (
 	"errors"
 	"fmt"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
 	"io/ioutil"
 	"os/exec"
 	"strings"
@@ -10,7 +11,7 @@ import (
 
 func changeImageOsx(image string) {
 	yamlFiles, _ := readDirFiltered(".", ".yaml")
-	tag := getTag(image)
+	tag := util.GetTag(image)
 
 	for _, fileName := range yamlFiles {
 		substitution := fmt.Sprintf("s#image:(.*)%s:(.*)+#image: %s#g", tag, image)
@@ -18,16 +19,16 @@ func changeImageOsx(image string) {
 
 		if err != nil {
 			if output != nil {
-				logger.Println(&warning{errors.New(fmt.Sprintf("%s\n", output))})
+				util.Logger.Println(&util.Warning{Reason: errors.New(fmt.Sprintf("%s", output))})
 			}
-			logger.Println(&prefixedError{err})
+			util.Logger.Println(&util.PrefixedError{Reason: err})
 		}
 	}
 }
 
 func changeImageDefault(image string) {
 	yamlFiles, _ := readDirFiltered(".", ".yaml")
-	tag := getTag(image)
+	tag := util.GetTag(image)
 
 	for _, fileName := range yamlFiles {
 		substitution := fmt.Sprintf("s#image:(.*)/%s:(.*)+#image:\\1/%s#g", tag, image)
@@ -35,9 +36,9 @@ func changeImageDefault(image string) {
 
 		if err != nil {
 			if output != nil {
-				logger.Println(&warning{errors.New(fmt.Sprintf("%s\n", output))})
+				util.Logger.Println(&util.Warning{Reason: errors.New(fmt.Sprintf("%s\n", output))})
 			}
-			logger.Println(&prefixedError{err})
+			util.Logger.Println(&util.PrefixedError{Reason: err})
 		}
 	}
 }

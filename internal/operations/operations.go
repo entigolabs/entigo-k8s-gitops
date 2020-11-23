@@ -3,9 +3,9 @@ package operations
 import (
 	"errors"
 	"fmt"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/logger"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/operations/copy"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/operations/update"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
 	"os"
 )
 
@@ -23,7 +23,7 @@ func chooseOperation() func() {
 		return copy.Copy()
 	default:
 		message := fmt.Sprintf("Unsupported operation: %s", operationArg)
-		logger.Logger.Println(&logger.PrefixedError{Reason: errors.New(message)})
+		util.Logger.Println(&util.PrefixedError{Reason: errors.New(message)})
 		os.Exit(1)
 	}
 	return nil
