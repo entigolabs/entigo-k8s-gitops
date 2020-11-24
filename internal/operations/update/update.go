@@ -6,7 +6,7 @@ import (
 )
 
 const OperationType = "update"
-const GitOpsWd = "gitops"
+const GitOpsWd = "gitops-workdir"
 
 func Update() func() {
 	return func() {
@@ -19,13 +19,13 @@ func Update() func() {
 }
 
 func cloneRepo() {
-	cdToGitOps()
+	cdToGitOpsWd()
 	repo := gitClone()
 	repo = configRepo(repo)
 }
 
 func updateImages() {
-	cdToWorkPath()
+	cdToAppDir()
 	changeImages()
 }
 

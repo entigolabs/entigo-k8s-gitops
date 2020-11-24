@@ -6,10 +6,12 @@ import (
 	"os"
 )
 
-func cdToGitOps() {
+func cdToGitOpsWd() {
 	path := fmt.Sprintf("%s/%s", util.GetWd(), GitOpsWd)
 	if _, err := os.Stat(path); err != nil {
-		os.Mkdir(GitOpsWd, 0755)
+		if err := os.Mkdir(GitOpsWd, 0755); err != nil {
+			util.Logger.Println(&util.PrefixedError{Reason: err})
+		}
 	}
 	if err := util.ChangeDir(path); err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
@@ -17,8 +19,8 @@ func cdToGitOps() {
 	}
 }
 
-func cdToWorkPath() {
-	path := fmt.Sprintf("%s/%s", util.GetWd(), flgs.appPath)
+func cdToAppDir() {
+	path := fmt.Sprintf("%s/%s", getRepositoryRootPath(), flgs.appPath)
 	if err := util.ChangeDir(path); err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
 		os.Exit(1)

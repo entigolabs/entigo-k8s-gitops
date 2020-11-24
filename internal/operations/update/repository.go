@@ -8,12 +8,13 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"os"
+	"strings"
 	"time"
 )
 
 func gitClone() *git.Repository {
 	util.Logger.Println(fmt.Sprintf("git clone %s", flgs.repo))
-	repo, err := git.PlainClone("", false, getCloneOptions(flgs.repo, flgs.branch, flgs.keyFile))
+	repo, err := git.PlainClone(getRepositoryName(flgs.repo), false, getCloneOptions(flgs.repo, flgs.branch, flgs.keyFile))
 	if err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
 		os.Exit(1)
@@ -117,8 +118,7 @@ func getGitStatus(wt *git.Worktree) git.Status {
 }
 
 func openGitOpsRepo() *git.Repository {
-	repoPath := fmt.Sprintf("%s/%s", util.RootPath, GitOpsWd)
-	repo, err := git.PlainOpen(repoPath)
+	repo, err := git.PlainOpen(getRepositoryRootPath())
 	if err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
 		os.Exit(1)
@@ -143,4 +143,14 @@ func getPublicKeys(sshKey string) *ssh.PublicKeys {
 		os.Exit(1)
 	}
 	return publicKeys
+}
+
+func getRepositoryName(url string) string {
+	tokens := strings.Split(url, "/")
+	lastToken := tokens[len(tokens)-1]
+	return lastToken[:len(lastToken)-4]
+}
+
+func getRepositoryRootPath() string {
+	return fmt.Sprintf("%s/%s/%s", util.RootPath, GitOpsWd, getRepositoryName(flgs.repo))
 }
