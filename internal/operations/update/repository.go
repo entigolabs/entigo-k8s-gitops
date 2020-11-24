@@ -13,7 +13,7 @@ import (
 
 func gitClone() *git.Repository {
 	util.Logger.Println(fmt.Sprintf("git clone %s", flgs.repo))
-	repo, err := git.PlainClone("", false, getCloneOptions(flgs.repo, flgs.branch, flgs.keyPath))
+	repo, err := git.PlainClone("", false, getCloneOptions(flgs.repo, flgs.branch, flgs.keyFile))
 	if err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
 		os.Exit(1)
@@ -55,7 +55,7 @@ func gitCommit(repo *git.Repository) {
 }
 
 func gitPush(repo *git.Repository) {
-	err := repo.Push(getPushOptions(flgs.keyPath))
+	err := repo.Push(getPushOptions(flgs.keyFile))
 	if err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
 		os.Exit(1)
