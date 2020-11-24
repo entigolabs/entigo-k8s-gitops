@@ -1,4 +1,4 @@
 .idea/
 tmp/
-gitops/
+gitops-workdir/
 gitops.iml
