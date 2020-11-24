@@ -3,8 +3,6 @@ package update
 import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
-	"runtime"
-	"strings"
 )
 
 const OperationType = "update"
@@ -39,20 +37,4 @@ func applyChanges() {
 
 	gitCommit(openedRepo)
 	gitPush(openedRepo)
-}
-
-func changeImages() {
-	imgNameTokens := strings.Split(flgs.images, ",")
-	for _, img := range imgNameTokens {
-		changeSpecificImage(img)
-	}
-}
-
-func changeSpecificImage(image string) {
-	switch opSys := runtime.GOOS; opSys {
-	case "darwin":
-		changeImageOsx(image)
-	default:
-		changeImageDefault(image)
-	}
 }
