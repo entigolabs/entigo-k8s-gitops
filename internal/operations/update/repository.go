@@ -99,6 +99,27 @@ func configRepo(repo *git.Repository) *git.Repository {
 	return repo
 }
 
+func doesRepoExist() bool {
+	if _, err := git.PlainInit(getRepositoryName(), false); err != nil {
+		switch err {
+		case git.ErrRepositoryAlreadyExists:
+			return true
+		default:
+			util.Logger.Println(&util.PrefixedError{Reason: err})
+			os.Exit(1)
+		}
+	}
+	removeRepoFolder()
+	return false
+}
+
+func removeRepoFolder() {
+	if err := os.RemoveAll(getRepositoryRootPath()); err != nil {
+		util.Logger.Println(&util.PrefixedError{Reason: err})
+		os.Exit(1)
+	}
+}
+
 func exitIfUnmodified(repo *git.Repository) {
 	wt := getWorkTree(repo)
 	status := getGitStatus(wt)
