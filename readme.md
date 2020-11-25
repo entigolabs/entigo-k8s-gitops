@@ -9,8 +9,8 @@ Execute ```./gitops update``` command with necessary flags to update images.
 
 ## Examples
 
-##### Update Operation Example
-
+#### Update Operation Example
+##### Example With Application Path Flag
 ```
 ./gitops update \
     --repo=<repository-ssh-url> \
@@ -18,7 +18,26 @@ Execute ```./gitops update``` command with necessary flags to update images.
     --key-file=<key-file-location> \
     --images=<image:tag,image2:tag> \ 
     --app-path=<app-path>
+``` 
+
+##### Example With Tokenized Path Flags 
+
+Tokenized path flags: 
+1)  ```--prefix=<prefix>``` 
+2) ```--app-namespace=<ns>```
+3) ```--app-name=<app-name>```
+
+```)
+./gitops update \
+    --repo=<repository-ssh-url> \
+    --branch=<repository-branch> \
+    --key-file=<key-file-location> \
+    --images=<image:tag,image2:tag> \ 
+    --prefix=<prefix> \
+    --app-namespace=<ns> \
+    --app-name=<app-name>
 ```
+**Valuated ```--app-path``` with other than default value will override tokenized path flags** 
 
 ### Supported Flags for Update Operation
 
@@ -38,4 +57,10 @@ Execute ```./gitops update``` command with necessary flags to update images.
 * ```--images``` - images with tags
     * default value is ```""```
 * ```--app-path``` path to application folder
+    * default value is ```""```
+* ```--prefix``` - path prefix to apply
+    * default value is ```""```
+* ```--app-namespace``` - application namespace
+    * default value is ```""```
+* ```--app-name``` - application name
     * default value is ```""```

@@ -11,7 +11,7 @@ const GitOpsWd = "gitops-workdir"
 
 func Update() func() {
 	return func() {
-		evaluateFlags()
+		setupFlags()
 		cloneIfNecessary()
 		updateImages()
 		applyChanges()
