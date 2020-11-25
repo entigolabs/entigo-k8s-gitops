@@ -7,40 +7,40 @@ import (
 	"os"
 )
 
-func getCloneOptions(url string, branch string, sshKey string) *git.CloneOptions {
-	if isRemoteKeyDefined(sshKey) {
-		return getCloneOptionsWithKey(url, branch, sshKey)
+func getCloneOptions() *git.CloneOptions {
+	if isRemoteKeyDefined() {
+		return getCloneOptionsWithKey()
 	}
-	return getCloneOptionsDefault(url, branch)
+	return getCloneOptionsDefault()
 }
 
-func getCloneOptionsWithKey(url string, branch string, sshKey string) *git.CloneOptions {
+func getCloneOptionsWithKey() *git.CloneOptions {
 	return &git.CloneOptions{
-		Auth:          getPublicKeys(sshKey),
-		URL:           url,
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", branch)),
+		Auth:          getPublicKeys(),
+		URL:           flgs.repo,
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", flgs.branch)),
 		Progress:      os.Stdout,
 	}
 }
 
-func getCloneOptionsDefault(url string, branch string) *git.CloneOptions {
+func getCloneOptionsDefault() *git.CloneOptions {
 	return &git.CloneOptions{
-		URL:           url,
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", branch)),
+		URL:           flgs.repo,
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", flgs.branch)),
 		Progress:      os.Stdout,
 	}
 }
 
-func getPushOptions(sshKey string) *git.PushOptions {
-	if isRemoteKeyDefined(sshKey) {
-		return getPushOptionsWithKey(sshKey)
+func getPushOptions() *git.PushOptions {
+	if isRemoteKeyDefined() {
+		return getPushOptionsWithKey()
 	}
 	return getPushOptionsDefault()
 }
 
-func getPushOptionsWithKey(sshKey string) *git.PushOptions {
+func getPushOptionsWithKey() *git.PushOptions {
 	return &git.PushOptions{
-		Auth: getPublicKeys(sshKey),
+		Auth: getPublicKeys(),
 	}
 }
 

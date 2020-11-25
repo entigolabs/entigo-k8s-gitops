@@ -14,7 +14,7 @@ import (
 
 func gitClone() *git.Repository {
 	util.Logger.Println(fmt.Sprintf("git clone %s", flgs.repo))
-	repo, err := git.PlainClone(getRepositoryName(flgs.repo), false, getCloneOptions(flgs.repo, flgs.branch, flgs.keyFile))
+	repo, err := git.PlainClone(getRepositoryName(), false, getCloneOptions())
 	if err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
 		os.Exit(1)
@@ -56,7 +56,7 @@ func gitCommit(repo *git.Repository) {
 }
 
 func gitPush(repo *git.Repository) {
-	err := repo.Push(getPushOptions(flgs.keyFile))
+	err := repo.Push(getPushOptions())
 	if err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
 		os.Exit(1)
@@ -126,18 +126,18 @@ func openGitOpsRepo() *git.Repository {
 	return repo
 }
 
-func isRemoteKeyDefined(sshKey string) bool {
-	if _, err := os.Stat(sshKey); err != nil {
+func isRemoteKeyDefined() bool {
+	if _, err := os.Stat(flgs.keyFile); err != nil {
 		util.Logger.Println(fmt.Sprintf("coldn't use SSH key defined via flag. %s", err))
 		util.Logger.Println("using SSH key defined in pipeline")
 		return false
 	}
-	util.Logger.Println(fmt.Sprintf("using SSH key defined in %s", sshKey))
+	util.Logger.Println(fmt.Sprintf("using SSH key defined in %s", flgs.keyFile))
 	return true
 }
 
-func getPublicKeys(sshKey string) *ssh.PublicKeys {
-	publicKeys, err := ssh.NewPublicKeysFromFile("git", sshKey, "")
+func getPublicKeys() *ssh.PublicKeys {
+	publicKeys, err := ssh.NewPublicKeysFromFile("git", flgs.keyFile, "")
 	if err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
 		os.Exit(1)
@@ -145,12 +145,12 @@ func getPublicKeys(sshKey string) *ssh.PublicKeys {
 	return publicKeys
 }
 
-func getRepositoryName(url string) string {
-	tokens := strings.Split(url, "/")
+func getRepositoryName() string {
+	tokens := strings.Split(flgs.repo, "/")
 	lastToken := tokens[len(tokens)-1]
 	return lastToken[:len(lastToken)-4]
 }
 
 func getRepositoryRootPath() string {
-	return fmt.Sprintf("%s/%s/%s", util.RootPath, GitOpsWd, getRepositoryName(flgs.repo))
+	return fmt.Sprintf("%s/%s/%s", util.RootPath, GitOpsWd, getRepositoryName())
 }
