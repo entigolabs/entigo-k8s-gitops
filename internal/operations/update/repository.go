@@ -6,7 +6,8 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing/object"
-	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
+	goGitSsh "github.com/go-git/go-git/v5/plumbing/transport/ssh"
+	"golang.org/x/crypto/ssh"
 	"os"
 	"strings"
 	"time"
@@ -136,12 +137,25 @@ func isRemoteKeyDefined() bool {
 	return true
 }
 
-func getPublicKeys() *ssh.PublicKeys {
-	publicKeys, err := ssh.NewPublicKeysFromFile("git", flgs.keyFile, "")
+func getPublicKeys() *goGitSsh.PublicKeys {
+	if flgs.strictHostKeyChecking {
+		return getPublicKeysDefault()
+	}
+	return getPublicKeysNonStrict()
+}
+
+func getPublicKeysDefault() *goGitSsh.PublicKeys {
+	publicKeys, err := goGitSsh.NewPublicKeysFromFile("git", flgs.keyFile, "")
 	if err != nil {
 		util.Logger.Println(&util.PrefixedError{Reason: err})
 		os.Exit(1)
 	}
+	return publicKeys
+}
+
+func getPublicKeysNonStrict() *goGitSsh.PublicKeys {
+	publicKeys := getPublicKeysDefault()
+	publicKeys.HostKeyCallback = ssh.InsecureIgnoreHostKey()
 	return publicKeys
 }
 

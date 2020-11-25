@@ -1,4 +1,8 @@
-.idea/
+# Project Specific
 tmp/
+bin/
 gitops-workdir/
+
+# IntelliJ IDEA
+.idea/
 gitops.iml
