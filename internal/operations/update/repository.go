@@ -120,14 +120,13 @@ func removeRepoFolder() {
 	}
 }
 
-func exitIfUnmodified(repo *git.Repository) {
+func isRepoModified(repo *git.Repository) bool {
 	wt := getWorkTree(repo)
 	status := getGitStatus(wt)
-	if status.IsClean() {
-		util.Logger.Println("all files are unmodified, nothing to commit")
-		os.Exit(0)
+	if !status.IsClean() {
+		return true
 	}
-	util.Logger.Print(fmt.Sprintf("git status: %s", status))
+	return false
 }
 
 func getGitStatus(wt *git.Worktree) git.Status {

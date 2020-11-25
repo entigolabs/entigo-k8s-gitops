@@ -33,6 +33,8 @@ Execute ```./gitops update``` command with necessary flags to update images.
     * if ```true``` then ```known_hosts``` file will be searched from these [default locations](https://github.com/src-d/go-git/blob/master/plumbing/transport/ssh/auth_method.go#L273):
         * ```homeDirPath + "/.ssh/known_hosts"```
         * ```"/etc/ssh/ssh_known_hosts"```
+* ```--push``` - git push boolean
+    * default value is ```true```
 * ```--images``` - images with tags
     * default value is ```""```
 * ```--app-path``` path to application folder

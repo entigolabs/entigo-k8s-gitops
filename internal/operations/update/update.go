@@ -3,6 +3,7 @@ package update
 import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
+	"github.com/go-git/go-git/v5"
 )
 
 const OperationType = "update"
@@ -14,7 +15,8 @@ func Update() func() {
 		cloneIfNecessary()
 		updateImages()
 		applyChanges()
-		util.Logger.Println(fmt.Sprintf("repository url: %s", util.GetWebUrl(flgs.repo)))
+		pushIfWanted()
+		printExitMessage()
 	}
 }
 
@@ -40,7 +42,28 @@ func updateImages() {
 func applyChanges() {
 	openedRepo := openGitOpsRepo()
 	gitAdd(openedRepo)
-	exitIfUnmodified(openedRepo)
-	gitCommit(openedRepo)
-	gitPush(openedRepo)
+	commitIfModified(openedRepo)
+}
+
+func commitIfModified(openedRepo *git.Repository) {
+	if isRepoModified(openedRepo) {
+		gitCommit(openedRepo)
+	} else {
+		util.Logger.Println("nothing to commit, working tree clean")
+	}
+}
+
+func pushIfWanted() {
+	if flgs.push {
+		openedRepo := openGitOpsRepo()
+		gitPush(openedRepo)
+	} else {
+		util.Logger.Println("commit(s) were chosen not to be pushed")
+	}
+}
+
+func printExitMessage() {
+	if flgs.push {
+		util.Logger.Println(fmt.Sprintf("repository url: %s", util.GetWebUrl(flgs.repo)))
+	}
 }
