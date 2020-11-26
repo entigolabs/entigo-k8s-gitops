@@ -66,7 +66,7 @@ func parseFlags() (*string, *string, *string, *bool, *bool, *string, *bool, *str
 	strictHostKeyChecking := flagSet.Bool("strict-host-key-checking", false, "strict host key checking boolean")
 	push := flagSet.Bool("push", true, "git push boolean")
 	images := flagSet.String("images", "", "image(s) with tag(s)")
-	keepRegistry := flagSet.Bool("keep-registry", false, "keep registry part of the changeable image")
+	keepRegistry := flagSet.Bool("keep-registry", false, "keeps registry part of the changeable image")
 	appPath := flagSet.String("app-path", "", "path to application folder")
 	prefix := flagSet.String("prefix", "", "path prefix to apply")
 	appNamespace := flagSet.String("app-namespace", "", "application namespace")
