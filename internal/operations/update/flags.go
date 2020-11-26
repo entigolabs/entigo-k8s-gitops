@@ -16,6 +16,7 @@ type Flags = struct {
 	strictHostKeyChecking bool
 	push                  bool
 	images                string
+	keepRegistry          bool
 	appPath               string
 	prefix                string
 	appNamespace          string
@@ -41,7 +42,7 @@ func composeAppPath() {
 }
 
 func evaluateFlags() {
-	repo, branch, keyFile, strictHostKeyChecking, push, images, appPath, prefix, appNamespace, appName := parseFlags()
+	repo, branch, keyFile, strictHostKeyChecking, push, images, keepRegistry, appPath, prefix, appNamespace, appName := parseFlags()
 	flgs = Flags{
 		repo:                  *repo,
 		branch:                *branch,
@@ -49,6 +50,7 @@ func evaluateFlags() {
 		strictHostKeyChecking: *strictHostKeyChecking,
 		push:                  *push,
 		images:                *images,
+		keepRegistry:          *keepRegistry,
 		appPath:               *appPath,
 		prefix:                *prefix,
 		appNamespace:          *appNamespace,
@@ -56,7 +58,7 @@ func evaluateFlags() {
 	}
 }
 
-func parseFlags() (*string, *string, *string, *bool, *bool, *string, *string, *string, *string, *string) {
+func parseFlags() (*string, *string, *string, *bool, *bool, *string, *bool, *string, *string, *string, *string) {
 	flagSet := flag.NewFlagSet("Update Flag Set", flag.ExitOnError)
 	repo := flagSet.String("repo", "", "Git repository SSH URL")
 	branch := flagSet.String("branch", "", "repository branch")
@@ -64,6 +66,7 @@ func parseFlags() (*string, *string, *string, *bool, *bool, *string, *string, *s
 	strictHostKeyChecking := flagSet.Bool("strict-host-key-checking", false, "strict host key checking boolean")
 	push := flagSet.Bool("push", true, "git push boolean")
 	images := flagSet.String("images", "", "image(s) with tag(s)")
+	keepRegistry := flagSet.Bool("keep-registry", false, "keep registry part of the changeable image")
 	appPath := flagSet.String("app-path", "", "path to application folder")
 	prefix := flagSet.String("prefix", "", "path prefix to apply")
 	appNamespace := flagSet.String("app-namespace", "", "application namespace")
@@ -73,5 +76,5 @@ func parseFlags() (*string, *string, *string, *bool, *bool, *string, *string, *s
 		util.Logger.Println(&util.PrefixedError{Reason: parseErr})
 		os.Exit(1)
 	}
-	return repo, branch, keyFile, strictHostKeyChecking, push, images, appPath, prefix, appNamespace, appName
+	return repo, branch, keyFile, strictHostKeyChecking, push, images, keepRegistry, appPath, prefix, appNamespace, appName
 }

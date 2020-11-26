@@ -21,11 +21,6 @@ func ChangeDir(path string) error {
 	return nil
 }
 
-func GetTag(img string) string {
-	tag := strings.Split(img, ":")[0]
-	return tag
-}
-
 func GetAppName(appPath string) string {
 	pathTokens := strings.Split(appPath, "/")
 	return pathTokens[len(pathTokens)-1]
