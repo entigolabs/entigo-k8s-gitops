@@ -47,3 +47,20 @@ func getPushOptionsWithKey() *git.PushOptions {
 func getPushOptionsDefault() *git.PushOptions {
 	return &git.PushOptions{}
 }
+
+func getPullOptions() *git.PullOptions {
+	if isRemoteKeyDefined() {
+		return getPullOptionsWithKey()
+	}
+	return getPullOptionsDefault()
+}
+
+func getPullOptionsWithKey() *git.PullOptions {
+	return &git.PullOptions{
+		Auth: getPublicKeys(),
+	}
+}
+
+func getPullOptionsDefault() *git.PullOptions {
+	return &git.PullOptions{}
+}

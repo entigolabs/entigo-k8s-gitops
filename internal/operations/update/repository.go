@@ -1,6 +1,7 @@
 package update
 
 import (
+	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
 	"github.com/go-git/go-git/v5"
@@ -22,6 +23,44 @@ func gitClone() *git.Repository {
 	}
 	util.Logger.Println("git clone was successful")
 	return repo
+}
+
+func gitPull(repo *git.Repository) *git.Repository {
+	wt := getWorkTree(repo)
+	err := wt.Pull(getPullOptions())
+	if err != nil {
+		handlePullErr(err)
+	} else {
+		util.Logger.Println("git pull was successful")
+	}
+	return repo
+}
+
+func handlePullErr(err error) {
+	pullOp := "pull"
+	switch err {
+	case git.NoErrAlreadyUpToDate:
+		alreadyUpToDateLogging(pullOp, err)
+	case git.ErrNonFastForwardUpdate:
+		logAndRestart(pullOp, err)
+	default:
+		defaultGitOpErrLogging(pullOp, err)
+		os.Exit(1)
+	}
+}
+
+func defaultGitOpErrLogging(gitOpName string, err error) {
+	errorMessage := fmt.Sprintf("git %s failed, %s", gitOpName, err)
+	util.Logger.Println(&util.PrefixedError{Reason: errors.New(errorMessage)})
+}
+
+func logAndRestart(gitOpName string, err error) {
+	util.Logger.Println(fmt.Sprintf("couldn't git %s, %s", gitOpName, err))
+	resetAndUpdate()
+}
+
+func alreadyUpToDateLogging(gitOpName string, err error) {
+	util.Logger.Println(fmt.Sprintf("skipping git %s, %s", gitOpName, err))
 }
 
 func gitAdd(repo *git.Repository) {
@@ -59,10 +98,22 @@ func gitCommit(repo *git.Repository) {
 func gitPush(repo *git.Repository) {
 	err := repo.Push(getPushOptions())
 	if err != nil {
-		util.Logger.Println(&util.PrefixedError{Reason: err})
+		handlePushErr(err)
+	} else {
+		util.Logger.Println("git push was successful")
+	}
+}
+
+func handlePushErr(err error) {
+	pushOp := "push"
+	if err == git.NoErrAlreadyUpToDate {
+		alreadyUpToDateLogging(pushOp, err)
+	} else if strings.Contains(err.Error(), git.ErrNonFastForwardUpdate.Error()) {
+		logAndRestart(pushOp, err)
+	} else {
+		defaultGitOpErrLogging(pushOp, err)
 		os.Exit(1)
 	}
-	util.Logger.Println("git push was successful")
 }
 
 func getWorkTree(repo *git.Repository) *git.Worktree {
