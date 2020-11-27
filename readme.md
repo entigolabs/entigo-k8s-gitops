@@ -56,7 +56,7 @@ Tokenized path flags:
     * default value is ```true```
 * ```--images``` - images with tags
     * default value is ```""```
-* ```--registry-keep``` - keeps registry part of the changeable image
+* ```--keep-registry``` - keeps registry part of the changeable image
     * default value is ```false```
 * ```--app-path``` path to application folder
     * default value is ```""```
