@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+var errUpdateReference = errors.New("failed to update ref")
+
 func gitClone() *git.Repository {
 	util.Logger.Println(fmt.Sprintf("git clone %s", flgs.repo))
 	repo, err := git.PlainClone(getRepositoryName(), false, getCloneOptions())
@@ -38,12 +40,11 @@ func gitPull(repo *git.Repository) *git.Repository {
 
 func handlePullErr(err error) {
 	pullOp := "pull"
-	switch err {
-	case git.NoErrAlreadyUpToDate:
+	if err == git.NoErrAlreadyUpToDate {
 		alreadyUpToDateLogging(pullOp, err)
-	case git.ErrNonFastForwardUpdate:
+	} else if isConflictErr(err) {
 		logAndRestart(pullOp, err)
-	default:
+	} else {
 		defaultGitOpErrLogging(pullOp, err)
 		os.Exit(1)
 	}
@@ -108,12 +109,19 @@ func handlePushErr(err error) {
 	pushOp := "push"
 	if err == git.NoErrAlreadyUpToDate {
 		alreadyUpToDateLogging(pushOp, err)
-	} else if strings.Contains(err.Error(), git.ErrNonFastForwardUpdate.Error()) {
+	} else if isConflictErr(err) {
 		logAndRestart(pushOp, err)
 	} else {
 		defaultGitOpErrLogging(pushOp, err)
 		os.Exit(1)
 	}
+}
+
+func isConflictErr(err error) bool {
+	isErrNonFastForwardUpdate := strings.Contains(err.Error(), git.ErrNonFastForwardUpdate.Error()) ||
+		err == git.ErrNonFastForwardUpdate
+	isErrUpdateReference := strings.Contains(err.Error(), errUpdateReference.Error())
+	return isErrNonFastForwardUpdate || isErrUpdateReference
 }
 
 func getWorkTree(repo *git.Repository) *git.Worktree {
