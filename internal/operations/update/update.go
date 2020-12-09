@@ -16,7 +16,7 @@ func Update() func() {
 		cloneOrPull()
 		updateImages()
 		applyChanges()
-		pushIfWanted()
+		pushOnDemand()
 		printExitMessage()
 	}
 }
@@ -26,7 +26,7 @@ func resetAndUpdate() {
 	cloneOrPull()
 	updateImages()
 	applyChanges()
-	pushIfWanted()
+	pushOnDemand()
 }
 
 func cloneOrPull() {
@@ -63,7 +63,7 @@ func commitIfModified(openedRepo *git.Repository) {
 	}
 }
 
-func pushIfWanted() {
+func pushOnDemand() {
 	if flgs.push {
 		openedRepo := openGitOpsRepo()
 		gitPush(openedRepo)
