@@ -4,6 +4,7 @@ import "fmt"
 
 type Flags struct {
 	Repo    string
+	Branch  string
 	AppPath string
 }
 
