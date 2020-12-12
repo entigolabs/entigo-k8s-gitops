@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/urfave/cli/v2"
+	"strconv"
 )
 
 var loggingFlag = cli.StringFlag{
@@ -9,22 +10,94 @@ var loggingFlag = cli.StringFlag{
 	Aliases:     []string{"l"},
 	DefaultText: "prod",
 	Value:       "prod",
-	Usage:       "Set `logging level`",
+	Usage:       "set `logging level`",
 	Destination: &Flags.LoggingLevel,
 }
 
-var repoFlag = cli.StringFlag{
+var gitRepoFlag = cli.StringFlag{
 	Name:        "repo",
 	Aliases:     []string{"r"},
-	DefaultText: "repoDefaultVal",
+	DefaultText: "",
 	Usage:       "Git repository `SSH URL`",
-	Destination: &Flags.Repo,
+	Destination: &Flags.Git.Repo,
 }
 
-var branchFlag = cli.StringFlag{
+var gitBranchFlag = cli.StringFlag{
 	Name:        "branch",
 	Aliases:     []string{"b"},
-	DefaultText: "branchDefaultVal",
-	Usage:       "Branch `name`",
-	Destination: &Flags.Branch,
+	DefaultText: "",
+	Usage:       "branch `name`",
+	Destination: &Flags.Git.Branch,
+}
+
+var gitKeyFileFlag = cli.StringFlag{
+	Name:        "key-file",
+	Aliases:     []string{"k"},
+	DefaultText: "",
+	Usage:       "SSH private key `location`",
+	Destination: &Flags.Git.KeyFile,
+}
+
+var gitStrictHostKeyCheckingFlag = cli.BoolFlag{
+	Name:        "strict-host-key-checking",
+	Aliases:     []string{"s"},
+	DefaultText: strconv.FormatBool(false),
+	Usage:       "strict host key checking",
+	Destination: &Flags.Git.StrictHostKeyChecking,
+}
+
+var gitPushFlag = cli.BoolFlag{
+	Name:        "push",
+	Aliases:     []string{"p"},
+	DefaultText: strconv.FormatBool(true),
+	Usage:       "push changes",
+	Destination: &Flags.Git.Push,
+}
+
+var appPrefixFlag = cli.StringFlag{
+	Name:        "prefix",
+	Aliases:     []string{"x"},
+	DefaultText: "",
+	Usage:       "`path` prefix to apply",
+	Destination: &Flags.Git.Branch,
+}
+
+var appNamespaceFlag = cli.StringFlag{
+	Name:        "namespace",
+	Aliases:     []string{"c"},
+	DefaultText: "",
+	Usage:       "application namespace `name`",
+	Destination: &Flags.Git.Branch,
+}
+
+var appNameFlag = cli.StringFlag{
+	Name:        "name",
+	Aliases:     []string{"n"},
+	DefaultText: "",
+	Usage:       "application name",
+	Destination: &Flags.Git.Branch,
+}
+
+var appPathFlag = cli.StringFlag{
+	Name:        "path",
+	Aliases:     []string{"t"},
+	DefaultText: "",
+	Usage:       "path to application folder",
+	Destination: &Flags.Git.Branch,
+}
+
+var imagesFlag = cli.StringFlag{
+	Name:        "images",
+	Aliases:     []string{"i"},
+	DefaultText: "",
+	Usage:       "images with tags",
+	Destination: &Flags.Git.Branch,
+}
+
+var keepRegistryFlag = cli.BoolFlag{
+	Name:        "keep-registry",
+	Aliases:     []string{"g"},
+	DefaultText: strconv.FormatBool(false),
+	Usage:       "Keeps registry part of the changeable image",
+	Destination: &Flags.KeepRegistry,
 }
