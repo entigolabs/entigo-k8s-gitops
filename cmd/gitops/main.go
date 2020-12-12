@@ -1,20 +1,20 @@
 package main
 
 import (
-	flagsPkg "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
+	"fmt"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/cli"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 )
 
 func init() {
-	util.Logger = util.ChooseLogger("prod")
+	common.Logger = common.ChooseLogger("prod")
 }
-
-var flags = new(flagsPkg.Flags)
 
 func main() {
 	//operations.Operate()
-	runCli()
 
+	cli.Run()
+	fmt.Println(cli.Flags)
 	//f := new(cli.Flags)
 	//f.Repo = "repoVal"
 	//f.ComposeAppPath()

@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
 	"github.com/urfave/cli/v2"
-	"log"
 	"os"
 	"sort"
 )
@@ -21,8 +21,11 @@ func Run() {
 	sort.Sort(cli.CommandsByName(app.Commands))
 
 	err := app.Run(os.Args)
+
+	common.Logger = common.ChooseLogger(Flags.LoggingLevel)
+
 	if err != nil {
-		log.Fatal(err) // TODO unified logging
+		common.Logger.Fatal(&util.PrefixedError{Reason: err})
 	}
 }
 
@@ -36,6 +39,7 @@ func defaultAction() func(c *cli.Context) error {
 
 func cliFlags() []cli.Flag {
 	return []cli.Flag{
+		&loggingFlag,
 		&repoFlag,
 		&branchFlag,
 	}

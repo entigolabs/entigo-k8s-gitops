@@ -4,6 +4,15 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var loggingFlag = cli.StringFlag{
+	Name:        "logging",
+	Aliases:     []string{"l"},
+	DefaultText: "prod",
+	Value:       "prod",
+	Usage:       "Set `logging level`",
+	Destination: &Flags.LoggingLevel,
+}
+
 var repoFlag = cli.StringFlag{
 	Name:        "repo",
 	Aliases:     []string{"r"},
