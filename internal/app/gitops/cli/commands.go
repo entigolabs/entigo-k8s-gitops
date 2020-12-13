@@ -15,7 +15,7 @@ var runCommand = cli.Command{
 		fmt.Println("run!")
 		return nil
 	},
-	Flags: cliFlags(),
+	Flags: cliFlags(runCmd),
 }
 
 var updateCommand = cli.Command{
@@ -27,7 +27,7 @@ var updateCommand = cli.Command{
 		update.Run(Flags)
 		return nil
 	},
-	Flags: cliFlags(),
+	Flags: cliFlags(updateCmd),
 }
 
 var copyCommand = cli.Command{
@@ -39,5 +39,5 @@ var copyCommand = cli.Command{
 		copy.Run(Flags)
 		return nil
 	},
-	Flags: cliFlags(),
+	Flags: cliFlags(copyCmd),
 }

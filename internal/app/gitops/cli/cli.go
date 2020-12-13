@@ -9,6 +9,14 @@ import (
 
 var Flags = new(common.Flags)
 
+type Command int
+
+const (
+	runCmd Command = iota
+	updateCmd
+	copyCmd
+)
+
 func Run() {
 	app := &cli.App{
 		Commands: cliCommands(),
@@ -20,7 +28,7 @@ func Run() {
 	}
 }
 
-func cliFlags() []cli.Flag {
+func cliFlags(cmd Command) []cli.Flag {
 	return []cli.Flag{
 		&loggingFlag,
 		&gitRepoFlag,

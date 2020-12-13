@@ -20,6 +20,7 @@ var gitRepoFlag = cli.StringFlag{
 	DefaultText: "",
 	Usage:       "Git repository `SSH URL`",
 	Destination: &Flags.Git.Repo,
+	Required:    true,
 }
 
 var gitBranchFlag = cli.StringFlag{
@@ -28,6 +29,7 @@ var gitBranchFlag = cli.StringFlag{
 	DefaultText: "",
 	Usage:       "branch `name`",
 	Destination: &Flags.Git.Branch,
+	Required:    true,
 }
 
 var gitKeyFileFlag = cli.StringFlag{
@@ -36,6 +38,7 @@ var gitKeyFileFlag = cli.StringFlag{
 	DefaultText: "",
 	Usage:       "SSH private key `location`",
 	Destination: &Flags.Git.KeyFile,
+	Required:    true,
 }
 
 var gitStrictHostKeyCheckingFlag = cli.BoolFlag{
@@ -60,6 +63,7 @@ var appPrefixFlag = cli.StringFlag{
 	DefaultText: "",
 	Usage:       "`path` prefix to apply",
 	Destination: &Flags.Git.Branch,
+	Required:    true, // TODO: if appPathFlag is set then false
 }
 
 var appNamespaceFlag = cli.StringFlag{
@@ -68,6 +72,7 @@ var appNamespaceFlag = cli.StringFlag{
 	DefaultText: "",
 	Usage:       "application namespace `name`",
 	Destination: &Flags.Git.Branch,
+	Required:    true, // TODO: if appPathFlag is set then false
 }
 
 var appNameFlag = cli.StringFlag{
@@ -76,6 +81,7 @@ var appNameFlag = cli.StringFlag{
 	DefaultText: "",
 	Usage:       "application name",
 	Destination: &Flags.Git.Branch,
+	Required:    true, // TODO: if appPathFlag is set then false
 }
 
 var appPathFlag = cli.StringFlag{
@@ -92,6 +98,7 @@ var imagesFlag = cli.StringFlag{
 	DefaultText: "",
 	Usage:       "images with tags",
 	Destination: &Flags.Git.Branch,
+	Required:    true,
 }
 
 var keepRegistryFlag = cli.BoolFlag{
