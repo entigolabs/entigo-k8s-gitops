@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
 	"github.com/urfave/cli/v2"
@@ -12,9 +11,7 @@ var Flags = new(common.Flags)
 
 func Run() {
 	app := &cli.App{
-		Flags:    cliFlags(),
 		Commands: cliCommands(),
-		Action:   defaultAction(),
 	}
 	err := app.Run(os.Args)
 	common.Logger = common.ChooseLogger(Flags.LoggingLevel)
@@ -42,15 +39,8 @@ func cliFlags() []cli.Flag {
 
 func cliCommands() []*cli.Command {
 	return []*cli.Command{
+		&runCommand,
 		&updateCommand,
 		&copyCommand,
-	}
-}
-
-func defaultAction() func(c *cli.Context) error {
-	return func(c *cli.Context) error {
-		fmt.Println("defaultAction ->", Flags)
-		//cli.ShowAppHelp(c) // manually call help
-		return nil
 	}
 }

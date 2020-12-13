@@ -7,6 +7,17 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var runCommand = cli.Command{
+	Name:    "run",
+	Aliases: []string{"rn"},
+	Usage:   "Copy and update",
+	Action: func(c *cli.Context) error {
+		fmt.Println("run!")
+		return nil
+	},
+	Flags: cliFlags(),
+}
+
 var updateCommand = cli.Command{
 	Name:    "update",
 	Aliases: []string{"up"},

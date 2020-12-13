@@ -33,8 +33,11 @@ func ChooseLogger(env string) *log.Logger {
 		return log.New(os.Stderr, "gitops: ", log.LstdFlags|log.Lshortfile)
 	case "prod":
 		return log.New(os.Stderr, "", 0)
+	case "":
+		return log.New(os.Stderr, "", 0)
 	default:
-		Logger.Fatal(&PrefixedError{errors.New("unsupported logger level")})
+		err := fmt.Sprintf("unsupported logger level: %s", env)
+		Logger.Fatal(&PrefixedError{errors.New(err)})
 		return nil
 	}
 }
