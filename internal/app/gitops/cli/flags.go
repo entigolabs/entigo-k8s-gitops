@@ -5,6 +5,23 @@ import (
 	"strconv"
 )
 
+func cliFlags() []cli.Flag {
+	return []cli.Flag{
+		&loggingFlag,
+		&gitRepoFlag,
+		&gitBranchFlag,
+		&gitKeyFileFlag,
+		&gitStrictHostKeyCheckingFlag,
+		&gitPushFlag,
+		&appPrefixFlag,
+		&appNamespaceFlag,
+		&appNameFlag,
+		&appPathFlag,
+		&imagesFlag,
+		&keepRegistryFlag,
+	}
+}
+
 var loggingFlag = cli.StringFlag{
 	Name:        "logging",
 	Aliases:     []string{"l"},
