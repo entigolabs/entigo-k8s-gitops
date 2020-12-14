@@ -6,7 +6,6 @@ type Flags struct {
 	LoggingLevel string
 	Git          GitFlags
 	App          AppFlags
-	AppPath      string
 	Images       string
 	KeepRegistry bool
 }
@@ -20,11 +19,12 @@ type GitFlags struct {
 }
 
 type AppFlags struct {
+	Path      string
 	Prefix    string
 	Namespace string
 	Name      string
 }
 
 func (f *Flags) ComposeAppPath() {
-	f.AppPath = fmt.Sprintf("composed AppPath with %s", f.Git.Repo)
+	f.App.Path = fmt.Sprintf("composed AppPath with %s", f.Git.Repo)
 }
