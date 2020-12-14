@@ -49,15 +49,6 @@ var gitStrictHostKeyCheckingFlag = cli.BoolFlag{
 	Destination: &Flags.Git.StrictHostKeyChecking,
 }
 
-var appNameFlag = cli.StringFlag{
-	Name:        "name",
-	Aliases:     []string{"n"},
-	DefaultText: "",
-	Usage:       "application name",
-	Destination: &Flags.App.Name,
-	Required:    true, // TODO: if appPathFlag is set then false
-}
-
 var gitPushFlag = cli.BoolFlag{
 	Name:        "push",
 	Aliases:     []string{"p"},
@@ -66,13 +57,20 @@ var gitPushFlag = cli.BoolFlag{
 	Destination: &Flags.Git.Push,
 }
 
+var appPathFlag = cli.StringFlag{
+	Name:        "path",
+	Aliases:     []string{"t"},
+	DefaultText: "",
+	Usage:       "path to application folder",
+	Destination: &Flags.App.Path,
+}
+
 var appPrefixFlag = cli.StringFlag{
 	Name:        "prefix",
 	Aliases:     []string{"x"},
 	DefaultText: "",
 	Usage:       "`path` prefix to apply",
 	Destination: &Flags.App.Prefix,
-	Required:    true, // TODO: if appPathFlag is set then false
 }
 
 var appNamespaceFlag = cli.StringFlag{
@@ -81,15 +79,14 @@ var appNamespaceFlag = cli.StringFlag{
 	DefaultText: "",
 	Usage:       "application namespace `name`",
 	Destination: &Flags.App.Namespace,
-	Required:    true, // TODO: if appPathFlag is set then false
 }
 
-var appPathFlag = cli.StringFlag{
-	Name:        "path",
-	Aliases:     []string{"t"},
+var appNameFlag = cli.StringFlag{
+	Name:        "name",
+	Aliases:     []string{"n"},
 	DefaultText: "",
-	Usage:       "path to application folder",
-	Destination: &Flags.App.Path,
+	Usage:       "application name",
+	Destination: &Flags.App.Name,
 }
 
 var imagesFlag = cli.StringFlag{

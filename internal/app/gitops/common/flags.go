@@ -25,6 +25,14 @@ type AppFlags struct {
 	Name      string
 }
 
-func (f *Flags) ComposeAppPath() {
-	f.App.Path = fmt.Sprintf("composed AppPath with %s", f.Git.Repo)
+func (f *Flags) Setup() error {
+	if err := f.validatePaths(); err != nil {
+		return err
+	}
+	f.composeAppPath()
+	return nil
+}
+
+func (f *Flags) composeAppPath() {
+	f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
 }

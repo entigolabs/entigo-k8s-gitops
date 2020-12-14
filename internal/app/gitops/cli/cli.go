@@ -2,7 +2,6 @@ package cli
 
 import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
 	"github.com/urfave/cli/v2"
 	"os"
 )
@@ -24,7 +23,7 @@ func Run() {
 	err := app.Run(os.Args)
 	common.Logger = common.ChooseLogger(Flags.LoggingLevel)
 	if err != nil {
-		common.Logger.Fatal(&util.PrefixedError{Reason: err})
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 }
 

@@ -36,8 +36,8 @@ func ChooseLogger(env string) *log.Logger {
 	case "":
 		return log.New(os.Stderr, "", 0)
 	default:
-		err := fmt.Sprintf("unsupported logger level: %s", env)
-		Logger.Fatal(&PrefixedError{errors.New(err)})
+		msg := fmt.Sprintf("unsupported logger level: %s", env)
+		Logger.Fatal(&PrefixedError{errors.New(msg)})
 		return nil
 	}
 }
