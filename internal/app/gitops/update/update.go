@@ -4,19 +4,25 @@ import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
-	"os"
 )
 
 func Run(flags *common.Flags) {
 	fmt.Println("update:", flags)
-	printWd()
-	common.CdToGitOpsWd()
-	git.Clone(flags)
-	printWd()
+	cloneOrPull(flags.Git)
 
 }
 
-func printWd() {
-	path, _ := os.Getwd()
-	fmt.Println(path)
+func cloneOrPull(gitFlags common.GitFlags) {
+	common.CdToGitOpsWd()
+	if !git.DoesRepoExist(gitFlags.Repo) {
+		cloneAndConfig(gitFlags)
+	} else {
+		//openedRepo := openGitOpsRepo()
+		//gitPull(openedRepo)
+	}
+}
+
+func cloneAndConfig(gitFlags common.GitFlags) {
+	git.Clone(gitFlags)
+	//repo = configRepo(repo)
 }
