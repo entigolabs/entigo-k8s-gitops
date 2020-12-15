@@ -28,15 +28,14 @@ func (pe *PrefixedError) Error() string {
 	return fmt.Sprintf("\x1b[31;1m%s\x1b[0m", err)
 }
 
-func ChooseLogger(env string) *log.Logger {
+func ChooseLogger(env string) {
 	switch env {
 	case "dev":
-		return log.New(os.Stderr, "gitops: ", log.LstdFlags|log.Lshortfile)
+		Logger = log.New(os.Stderr, "gitops: ", log.LstdFlags|log.Lshortfile)
 	case "prod":
-		return prodLogger
+		Logger = prodLogger
 	default:
 		msg := fmt.Sprintf("unsupported logger level: %s", env)
 		Logger.Fatal(&PrefixedError{errors.New(msg)})
-		return nil
 	}
 }

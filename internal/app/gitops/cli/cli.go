@@ -20,7 +20,8 @@ const (
 func Run() {
 	app := &cli.App{Commands: cliCommands()}
 	addAppInfo(app)
-	common.Logger = common.ChooseLogger(getLoggingLvl())
+	loggingLvl := getLoggingLvl()
+	common.ChooseLogger(loggingLvl)
 	err := app.Run(os.Args)
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
