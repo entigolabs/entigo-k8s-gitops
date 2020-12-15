@@ -7,7 +7,8 @@ import (
 	"os"
 )
 
-var Logger = log.New(os.Stderr, "", 0)
+var prodLogger = log.New(os.Stderr, "", 0)
+var Logger = prodLogger
 
 type Warning struct {
 	Reason error
@@ -32,9 +33,7 @@ func ChooseLogger(env string) *log.Logger {
 	case "dev":
 		return log.New(os.Stderr, "gitops: ", log.LstdFlags|log.Lshortfile)
 	case "prod":
-		return log.New(os.Stderr, "", 0)
-	case "":
-		return log.New(os.Stderr, "", 0)
+		return prodLogger
 	default:
 		msg := fmt.Sprintf("unsupported logger level: %s", env)
 		Logger.Fatal(&PrefixedError{errors.New(msg)})
