@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-var Flags = new(common.Flags)
+var flags *common.Flags = new(common.Flags)
 
 type Command int
 
@@ -20,7 +20,7 @@ func Run() {
 	app := &cli.App{Commands: cliCommands()}
 	addAppInfo(app)
 	err := app.Run(os.Args)
-	common.Logger = common.ChooseLogger(Flags.LoggingLevel)
+	common.Logger = common.ChooseLogger(flags.LoggingLevel)
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}

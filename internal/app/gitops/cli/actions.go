@@ -10,7 +10,7 @@ import (
 
 func action(cmd Command) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
-		if err := Flags.Setup(); err != nil {
+		if err := flags.Setup(); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
 		run(cmd)
@@ -21,12 +21,12 @@ func action(cmd Command) func(c *cli.Context) error {
 func run(cmd Command) {
 	switch cmd {
 	case runCmd:
-		update.Run(Flags)
-		copy.Run(Flags)
+		update.Run(flags)
+		copy.Run(flags)
 	case updateCmd:
-		update.Run(Flags)
+		update.Run(flags)
 	case copyCmd:
-		copy.Run(Flags)
+		copy.Run(flags)
 	default:
 		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New("unsupported command")})
 	}

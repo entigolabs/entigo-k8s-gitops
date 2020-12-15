@@ -28,7 +28,7 @@ var loggingFlag = cli.StringFlag{
 	DefaultText: "prod",
 	Value:       "prod",
 	Usage:       "set `logging level`",
-	Destination: &Flags.LoggingLevel,
+	Destination: &flags.LoggingLevel,
 }
 
 var gitRepoFlag = cli.StringFlag{
@@ -36,7 +36,7 @@ var gitRepoFlag = cli.StringFlag{
 	Aliases:     []string{"r"},
 	DefaultText: "",
 	Usage:       "Git repository `SSH URL`",
-	Destination: &Flags.Git.Repo,
+	Destination: &flags.Git.Repo,
 	Required:    true,
 }
 
@@ -45,7 +45,7 @@ var gitBranchFlag = cli.StringFlag{
 	Aliases:     []string{"b"},
 	DefaultText: "",
 	Usage:       "branch `name`",
-	Destination: &Flags.Git.Branch,
+	Destination: &flags.Git.Branch,
 	Required:    true,
 }
 
@@ -54,7 +54,7 @@ var gitKeyFileFlag = cli.StringFlag{
 	Aliases:     []string{"k"},
 	DefaultText: "",
 	Usage:       "SSH private key `location`",
-	Destination: &Flags.Git.KeyFile,
+	Destination: &flags.Git.KeyFile,
 	Required:    true,
 }
 
@@ -63,7 +63,7 @@ var gitStrictHostKeyCheckingFlag = cli.BoolFlag{
 	Aliases:     []string{"s"},
 	DefaultText: strconv.FormatBool(false),
 	Usage:       "strict host key checking",
-	Destination: &Flags.Git.StrictHostKeyChecking,
+	Destination: &flags.Git.StrictHostKeyChecking,
 }
 
 var gitPushFlag = cli.BoolFlag{
@@ -71,7 +71,7 @@ var gitPushFlag = cli.BoolFlag{
 	Aliases:     []string{"p"},
 	DefaultText: strconv.FormatBool(true),
 	Usage:       "push changes",
-	Destination: &Flags.Git.Push,
+	Destination: &flags.Git.Push,
 }
 
 var appPathFlag = cli.StringFlag{
@@ -79,7 +79,7 @@ var appPathFlag = cli.StringFlag{
 	Aliases:     []string{"t"},
 	DefaultText: "",
 	Usage:       "path to application folder",
-	Destination: &Flags.App.Path,
+	Destination: &flags.App.Path,
 }
 
 var appPrefixFlag = cli.StringFlag{
@@ -87,7 +87,7 @@ var appPrefixFlag = cli.StringFlag{
 	Aliases:     []string{"x"},
 	DefaultText: "",
 	Usage:       "`path` prefix to apply",
-	Destination: &Flags.App.Prefix,
+	Destination: &flags.App.Prefix,
 }
 
 var appNamespaceFlag = cli.StringFlag{
@@ -95,7 +95,7 @@ var appNamespaceFlag = cli.StringFlag{
 	Aliases:     []string{"c"},
 	DefaultText: "",
 	Usage:       "application namespace `name`",
-	Destination: &Flags.App.Namespace,
+	Destination: &flags.App.Namespace,
 }
 
 var appNameFlag = cli.StringFlag{
@@ -103,7 +103,7 @@ var appNameFlag = cli.StringFlag{
 	Aliases:     []string{"n"},
 	DefaultText: "",
 	Usage:       "application name",
-	Destination: &Flags.App.Name,
+	Destination: &flags.App.Name,
 }
 
 var imagesFlag = cli.StringFlag{
@@ -111,7 +111,7 @@ var imagesFlag = cli.StringFlag{
 	Aliases:     []string{"i"},
 	DefaultText: "",
 	Usage:       "images with tags",
-	Destination: &Flags.Images,
+	Destination: &flags.Images,
 	Required:    true,
 }
 
@@ -120,5 +120,5 @@ var keepRegistryFlag = cli.BoolFlag{
 	Aliases:     []string{"g"},
 	DefaultText: strconv.FormatBool(false),
 	Usage:       "Keeps registry part of the changeable image",
-	Destination: &Flags.KeepRegistry,
+	Destination: &flags.KeepRegistry,
 }

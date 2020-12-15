@@ -12,9 +12,4 @@ func init() {
 func main() {
 	//operations.Operate()
 	cli.Run()
-	//f := new(cli.Flags)
-	//f.Repo = "repoVal"
-	//f.ComposeAppPath()
-	//copy.Run(f)
-	//update.Run(f)
 }
