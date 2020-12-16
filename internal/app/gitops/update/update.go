@@ -7,27 +7,31 @@ import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/update/operation"
 )
 
+var repository = new(git.Repository)
+
 func Run(flags *common.Flags) {
 	fmt.Println("update:", flags)
-	cloneOrPull(flags.Git)
+	repository.GitFlags = flags.Git
+	cloneOrPull()
 	updateImages(flags)
+	//applyChanges() TODO impl this or test if this is good idea to move git into struct
 }
 
-func cloneOrPull(gitFlags common.GitFlags) {
+func cloneOrPull() {
 	common.CdToGitOpsWd()
-	if !git.DoesRepoExist(gitFlags.Repo) {
-		cloneAndConfig(gitFlags)
+	if !repository.DoesRepoExist() {
+		cloneAndConfig()
 	} else {
-		git.OpenGitOpsRepo(gitFlags.Repo)
-		if _, err := git.Pull(gitFlags, git.Repository); err != nil {
+		repository.OpenGitOpsRepo()
+		if err := repository.Pull(); err != nil {
 			resetAndUpdate()
 		}
 	}
 }
 
-func cloneAndConfig(gitFlags common.GitFlags) {
-	git.Clone(gitFlags)
-	git.ConfigRepo(git.Repository)
+func cloneAndConfig() {
+	repository.Clone()
+	repository.ConfigRepo()
 }
 
 func resetAndUpdate() {

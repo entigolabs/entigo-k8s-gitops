@@ -6,55 +6,57 @@ import (
 	"github.com/go-git/go-git/v5"
 )
 
-var Repository *git.Repository = new(git.Repository)
+type Repository struct {
+	*git.Repository
+	common.GitFlags
+}
 
-func Clone(gitFlags common.GitFlags) {
-	common.Logger.Println(fmt.Sprintf("git clone %s", gitFlags.Repo))
-	repo, err := git.PlainClone(common.GetRepositoryName(gitFlags.Repo), false, getCloneOptions(gitFlags))
+func (r *Repository) Clone() {
+	common.Logger.Println(fmt.Sprintf("git clone %s", r.Repo))
+	repo, err := git.PlainClone(common.GetRepositoryName(r.Repo), false, r.getCloneOptions())
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 	common.Logger.Println("git clone was successful")
-	Repository = repo
+	r.Repository = repo
 }
 
-func Pull(gitFlags common.GitFlags, repo *git.Repository) (*git.Repository, error) {
-	wt := getWorkTree(repo)
-	err := wt.Pull(getPullOptions(gitFlags))
+func (r *Repository) Pull() error {
+	wt := r.getWorkTree()
+	err := wt.Pull(r.getPullOptions())
 	if err != nil {
-		return nil, handlePullErr(err)
+		return handlePullErr(err)
 	} else {
 		common.Logger.Println("git pull was successful")
 	}
-	return repo, nil
+	return nil
 }
 
-func OpenGitOpsRepo(repoSshUrl string) {
-	repo, err := git.PlainOpen(common.GetRepositoryRootPath(repoSshUrl))
+func (r *Repository) OpenGitOpsRepo() {
+	repo, err := git.PlainOpen(common.GetRepositoryRootPath(r.Repo))
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
-	Repository = repo
+	r.Repository = repo
 }
 
-func getWorkTree(repo *git.Repository) *git.Worktree {
-	wt, err := repo.Worktree()
+func (r *Repository) getWorkTree() *git.Worktree {
+	wt, err := r.Repository.Worktree()
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 	return wt
 }
 
-func ConfigRepo(repo *git.Repository) *git.Repository {
-	cfg, err := repo.Config()
+func (r *Repository) ConfigRepo() {
+	cfg, err := r.Repository.Config()
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 	cfg.User.Name = "jenkins"
 	cfg.User.Email = "jenkins@localhost"
-	err = repo.SetConfig(cfg)
+	err = r.Repository.SetConfig(cfg)
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
-	return repo
 }

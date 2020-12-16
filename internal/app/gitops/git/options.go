@@ -2,38 +2,37 @@ package git
 
 import (
 	"fmt"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"os"
 )
 
-func getCloneOptions(gitFlags common.GitFlags) *git.CloneOptions {
-	if isRemoteKeyDefined(gitFlags.KeyFile) {
-		return getCloneOptionsWithKey(gitFlags)
+func (r Repository) getCloneOptions() *git.CloneOptions {
+	if isRemoteKeyDefined(r.KeyFile) {
+		return r.getCloneOptionsWithKey()
 	}
-	return getCloneOptionsDefault(gitFlags)
+	return r.getCloneOptionsDefault()
 }
 
-func getCloneOptionsWithKey(gitFlags common.GitFlags) *git.CloneOptions {
+func (r Repository) getCloneOptionsWithKey() *git.CloneOptions {
 	return &git.CloneOptions{
-		Auth:          getPublicKeys(gitFlags),
-		URL:           gitFlags.Repo,
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", gitFlags.Branch)),
+		Auth:          r.getPublicKeys(),
+		URL:           r.Repo,
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", r.GitFlags.Branch)),
 		Progress:      os.Stdout,
 	}
 }
 
-func getPullOptions(gitFlags common.GitFlags) *git.PullOptions {
-	if isRemoteKeyDefined(gitFlags.KeyFile) {
-		return getPullOptionsWithKey(gitFlags)
+func (r Repository) getPullOptions() *git.PullOptions {
+	if isRemoteKeyDefined(r.KeyFile) {
+		return r.getPullOptionsWithKey()
 	}
 	return getPullOptionsDefault()
 }
 
-func getPullOptionsWithKey(gitFlags common.GitFlags) *git.PullOptions {
+func (r Repository) getPullOptionsWithKey() *git.PullOptions {
 	return &git.PullOptions{
-		Auth: getPublicKeys(gitFlags),
+		Auth: r.getPublicKeys(),
 	}
 }
 
@@ -58,10 +57,10 @@ func getPullOptionsDefault() *git.PullOptions {
 //	return &git.PushOptions{}
 //}
 
-func getCloneOptionsDefault(gitFlags common.GitFlags) *git.CloneOptions {
+func (r Repository) getCloneOptionsDefault() *git.CloneOptions {
 	return &git.CloneOptions{
-		URL:           gitFlags.Repo,
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", gitFlags.Branch)),
+		URL:           r.Repo,
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", r.GitFlags.Branch)),
 		Progress:      os.Stdout,
 	}
 }

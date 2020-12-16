@@ -9,8 +9,8 @@ import (
 	"os"
 )
 
-func DoesRepoExist(repoSshUrl string) bool {
-	if _, err := git.PlainInit(common.GetRepositoryName(repoSshUrl), false); err != nil {
+func (r *Repository) DoesRepoExist() bool {
+	if _, err := git.PlainInit(common.GetRepositoryName(r.Repo), false); err != nil {
 		switch err {
 		case git.ErrRepositoryAlreadyExists:
 			return true
@@ -18,7 +18,7 @@ func DoesRepoExist(repoSshUrl string) bool {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
 	}
-	removeRepoFolder(repoSshUrl)
+	removeRepoFolder(r.Repo)
 	return false
 }
 
@@ -38,11 +38,11 @@ func isRemoteKeyDefined(keyFile string) bool {
 	return true
 }
 
-func getPublicKeys(gitFlags common.GitFlags) *goGitSsh.PublicKeys {
-	if gitFlags.StrictHostKeyChecking {
-		return getPublicKeysDefault(gitFlags.KeyFile)
+func (r *Repository) getPublicKeys() *goGitSsh.PublicKeys {
+	if r.StrictHostKeyChecking {
+		return getPublicKeysDefault(r.KeyFile)
 	}
-	return getPublicKeysNonStrict(gitFlags.KeyFile)
+	return getPublicKeysNonStrict(r.KeyFile)
 }
 
 func getPublicKeysDefault(keyFile string) *goGitSsh.PublicKeys {
