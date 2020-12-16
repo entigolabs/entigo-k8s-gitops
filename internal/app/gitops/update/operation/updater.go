@@ -1,4 +1,4 @@
-package update
+package operation
 
 import (
 	"fmt"
@@ -8,28 +8,28 @@ import (
 	"strings"
 )
 
-type updaterFlags struct {
-	images       string
-	keepRegistry bool
+type Updater struct {
+	Images       string
+	KeepRegistry bool
 }
 
-func changeImages(flags updaterFlags) {
-	imgNameTokens := strings.Split(flags.images, ",")
+func (u Updater) UpdateImages() {
+	imgNameTokens := strings.Split(u.Images, ",")
 	for _, img := range imgNameTokens {
-		changeSpecificImage(img, flags.keepRegistry)
+		u.updateSpecificImage(img)
 	}
 }
 
-func changeSpecificImage(image string, keepRegistry bool) {
+func (u Updater) updateSpecificImage(image string) {
 	yamlFiles, _ := readDirFiltered(".", ".yaml")
 	for _, fileName := range yamlFiles {
-		imageChanger(image, fileName, keepRegistry)
+		u.imageUpdater(image, fileName)
 	}
 }
 
-func imageChanger(image string, fileName string, keepRegistry bool) {
+func (u Updater) imageUpdater(image string, fileName string) {
 	input := getFileInput(fileName)
-	output := getChangedOutput(input, image, keepRegistry)
+	output := u.getChangedOutput(input, image)
 	overwriteFile(fileName, output)
 }
 
@@ -41,19 +41,19 @@ func getFileInput(fileName string) []byte {
 	return input
 }
 
-func getChangedOutput(input []byte, image string, keepRegistry bool) string {
+func (u Updater) getChangedOutput(input []byte, image string) string {
 	lines := strings.Split(string(input), "\n")
-	changeImageLines(lines, image, keepRegistry)
+	u.updateImageLines(lines, image)
 	return strings.Join(lines, "\n")
 }
 
-func changeImageLines(lines []string, image string, keepRegistry bool) {
+func (u Updater) updateImageLines(lines []string, image string) {
 	for lineIndex, line := range lines {
 		if isImageLine(line, getImageName(image)) {
-			if keepRegistry {
-				changeKeepingRegistry(lines, image, line, lineIndex)
+			if u.KeepRegistry {
+				updateKeepingRegistry(lines, image, line, lineIndex)
 			} else {
-				changeCompletely(lines, image, line, lineIndex)
+				updateCompletely(lines, image, line, lineIndex)
 			}
 		}
 	}
@@ -65,12 +65,12 @@ func overwriteFile(fileName string, output string) {
 	}
 }
 
-func changeCompletely(lines []string, image string, line string, lineIndex int) {
+func updateCompletely(lines []string, image string, line string, lineIndex int) {
 	imageFieldTitle := strings.Split(line, ":")[0]
 	lines[lineIndex] = fmt.Sprintf("%s: %s", imageFieldTitle, image)
 }
 
-func changeKeepingRegistry(lines []string, image string, line string, lineIndex int) {
+func updateKeepingRegistry(lines []string, image string, line string, lineIndex int) {
 	imageLineSplits := strings.Split(line, ":")
 	imageFieldTitle := imageLineSplits[0]
 	registryName := imageLineSplits[1]

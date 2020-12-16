@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/update/operation"
 )
 
 func Run(flags *common.Flags) {
@@ -40,6 +41,6 @@ func resetAndUpdate() {
 
 func updateImages(flags *common.Flags) {
 	common.CdToAppDir(flags.Git.Repo, flags.App.Path)
-	updaterFlags := updaterFlags{flags.Images, flags.KeepRegistry}
-	changeImages(updaterFlags)
+	updater := operation.Updater{Images: flags.Images, KeepRegistry: flags.KeepRegistry}
+	updater.UpdateImages()
 }
