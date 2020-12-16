@@ -2,7 +2,6 @@ package common
 
 import (
 	"fmt"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
 	"os"
 )
 
@@ -24,7 +23,7 @@ func CdToGitOpsWd() {
 
 func CdToAppDir(repo string, appPath string) {
 	path := fmt.Sprintf("%s/%s", GetRepositoryRootPath(repo), appPath)
-	if err := util.ChangeDir(path); err != nil {
+	if err := changeDir(path); err != nil {
 		Logger.Fatal(&PrefixedError{Reason: err})
 	}
 }
