@@ -9,7 +9,7 @@ import (
 func Run(flags *common.Flags) {
 	fmt.Println("update:", flags)
 	cloneOrPull(flags.Git)
-
+	updateImages(flags)
 }
 
 func cloneOrPull(gitFlags common.GitFlags) {
@@ -30,10 +30,16 @@ func cloneAndConfig(gitFlags common.GitFlags) {
 }
 
 func resetAndUpdate() {
-	common.Logger.Println("resetAndUpdate!!!")
+	common.Logger.Fatal("resetAndUpdate ->>> TODO")
 	//reset()
 	//cloneOrPull()
 	//updateImages()
 	//applyChanges()
 	//pushOnDemand()
+}
+
+func updateImages(flags *common.Flags) {
+	common.CdToAppDir(flags.Git.Repo, flags.App.Path)
+	updaterFlags := updaterFlags{flags.Images, flags.KeepRegistry}
+	changeImages(updaterFlags)
 }

@@ -10,7 +10,7 @@ var Repository *git.Repository = new(git.Repository)
 
 func Clone(gitFlags common.GitFlags) {
 	common.Logger.Println(fmt.Sprintf("git clone %s", gitFlags.Repo))
-	repo, err := git.PlainClone(getRepositoryName(gitFlags.Repo), false, getCloneOptions(gitFlags))
+	repo, err := git.PlainClone(common.GetRepositoryName(gitFlags.Repo), false, getCloneOptions(gitFlags))
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
@@ -30,7 +30,7 @@ func Pull(gitFlags common.GitFlags, repo *git.Repository) (*git.Repository, erro
 }
 
 func OpenGitOpsRepo(repoSshUrl string) {
-	repo, err := git.PlainOpen(getRepositoryRootPath(repoSshUrl))
+	repo, err := git.PlainOpen(common.GetRepositoryRootPath(repoSshUrl))
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
