@@ -24,12 +24,21 @@ func getCloneOptionsWithKey(gitFlags common.GitFlags) *git.CloneOptions {
 	}
 }
 
-func getCloneOptionsDefault(gitFlags common.GitFlags) *git.CloneOptions {
-	return &git.CloneOptions{
-		URL:           gitFlags.Repo,
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", gitFlags.Branch)),
-		Progress:      os.Stdout,
+func getPullOptions(gitFlags common.GitFlags) *git.PullOptions {
+	if isRemoteKeyDefined(gitFlags.KeyFile) {
+		return getPullOptionsWithKey(gitFlags)
 	}
+	return getPullOptionsDefault()
+}
+
+func getPullOptionsWithKey(gitFlags common.GitFlags) *git.PullOptions {
+	return &git.PullOptions{
+		Auth: getPublicKeys(gitFlags),
+	}
+}
+
+func getPullOptionsDefault() *git.PullOptions {
+	return &git.PullOptions{}
 }
 
 //func getPushOptions() *git.PushOptions {
@@ -48,20 +57,11 @@ func getCloneOptionsDefault(gitFlags common.GitFlags) *git.CloneOptions {
 //func getPushOptionsDefault() *git.PushOptions {
 //	return &git.PushOptions{}
 //}
-//
-//func getPullOptions() *git.PullOptions {
-//	if isRemoteKeyDefined() {
-//		return getPullOptionsWithKey()
-//	}
-//	return getPullOptionsDefault()
-//}
-//
-//func getPullOptionsWithKey() *git.PullOptions {
-//	return &git.PullOptions{
-//		Auth: getPublicKeys(),
-//	}
-//}
-//
-//func getPullOptionsDefault() *git.PullOptions {
-//	return &git.PullOptions{}
-//}
+
+func getCloneOptionsDefault(gitFlags common.GitFlags) *git.CloneOptions {
+	return &git.CloneOptions{
+		URL:           gitFlags.Repo,
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", gitFlags.Branch)),
+		Progress:      os.Stdout,
+	}
+}

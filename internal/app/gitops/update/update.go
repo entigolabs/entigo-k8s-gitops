@@ -17,12 +17,23 @@ func cloneOrPull(gitFlags common.GitFlags) {
 	if !git.DoesRepoExist(gitFlags.Repo) {
 		cloneAndConfig(gitFlags)
 	} else {
-		//openedRepo := openGitOpsRepo()
-		//gitPull(openedRepo)
+		git.OpenGitOpsRepo(gitFlags.Repo)
+		if _, err := git.Pull(gitFlags, git.Repository); err != nil {
+			resetAndUpdate()
+		}
 	}
 }
 
 func cloneAndConfig(gitFlags common.GitFlags) {
 	git.Clone(gitFlags)
-	//repo = configRepo(repo)
+	git.ConfigRepo(git.Repository)
+}
+
+func resetAndUpdate() {
+	common.Logger.Println("resetAndUpdate!!!")
+	//reset()
+	//cloneOrPull()
+	//updateImages()
+	//applyChanges()
+	//pushOnDemand()
 }
