@@ -40,22 +40,22 @@ func getPullOptionsDefault() *git.PullOptions {
 	return &git.PullOptions{}
 }
 
-//func getPushOptions() *git.PushOptions {
-//	if isRemoteKeyDefined() {
-//		return getPushOptionsWithKey()
-//	}
-//	return getPushOptionsDefault()
-//}
-//
-//func getPushOptionsWithKey() *git.PushOptions {
-//	return &git.PushOptions{
-//		Auth: getPublicKeys(),
-//	}
-//}
-//
-//func getPushOptionsDefault() *git.PushOptions {
-//	return &git.PushOptions{}
-//}
+func (r Repository) getPushOptions() *git.PushOptions {
+	if isRemoteKeyDefined(r.KeyFile) {
+		return r.getPushOptionsWithKey()
+	}
+	return getPushOptionsDefault()
+}
+
+func (r Repository) getPushOptionsWithKey() *git.PushOptions {
+	return &git.PushOptions{
+		Auth: r.getPublicKeys(),
+	}
+}
+
+func getPushOptionsDefault() *git.PushOptions {
+	return &git.PushOptions{}
+}
 
 func (r Repository) getCloneOptionsDefault() *git.CloneOptions {
 	return &git.CloneOptions{

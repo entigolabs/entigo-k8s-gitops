@@ -10,11 +10,12 @@ import (
 var repository = new(git.Repository)
 
 func Run(flags *common.Flags) {
-	fmt.Println("update:", flags)
 	repository.GitFlags = flags.Git
 	cloneOrPull()
 	updateImages(flags)
 	applyChanges()
+	pushOnDemand()
+	logEndMessage()
 }
 
 func cloneOrPull() {
@@ -48,8 +49,23 @@ func resetAndUpdate() {
 	//pushOnDemand()
 }
 
+func pushOnDemand() {
+	if repository.GitFlags.Push {
+		repository.Push()
+	} else {
+		common.Logger.Println("commit(s) were chosen not to be pushed")
+	}
+}
+
 func updateImages(flags *common.Flags) {
 	common.CdToAppDir(flags.Git.Repo, flags.App.Path)
 	updater := operation.Updater{Images: flags.Images, KeepRegistry: flags.KeepRegistry}
 	updater.UpdateImages()
+}
+
+func logEndMessage() {
+	if repository.GitFlags.Push {
+		url := common.GetRemoteRepoWebUrl(repository.Repo)
+		common.Logger.Println(fmt.Sprintf("repository url: %s", url))
+	}
 }

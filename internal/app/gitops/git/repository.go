@@ -37,6 +37,16 @@ func (r *Repository) Pull() error {
 	return nil
 }
 
+func (r *Repository) Push() {
+	pushOptions := r.getPushOptions()
+	err := r.Repository.Push(pushOptions)
+	if err != nil {
+		handlePushErr(err)
+	} else {
+		common.Logger.Println("git push was successful")
+	}
+}
+
 func (r *Repository) OpenGitOpsRepo() {
 	repo, err := git.PlainOpen(common.GetRepositoryRootPath(r.Repo))
 	if err != nil {

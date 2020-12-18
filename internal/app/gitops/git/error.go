@@ -25,6 +25,18 @@ func handlePullErr(err error) error {
 	return nil
 }
 
+func handlePushErr(err error) {
+	pushOp := "push"
+	if err == git.NoErrAlreadyUpToDate {
+		alreadyUpToDateLogging(pushOp, err)
+	} else if isConflictErr(err) {
+		common.Logger.Fatal("logAndRestart(pushOp, err) -> todo") // TODO
+	} else {
+		defaultGitOpErrLogging(pushOp, err)
+		os.Exit(1)
+	}
+}
+
 func alreadyUpToDateLogging(gitOpName string, err error) {
 	common.Logger.Println(fmt.Sprintf("skipping git %s, %s", gitOpName, err))
 }

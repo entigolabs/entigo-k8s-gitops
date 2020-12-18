@@ -14,3 +14,11 @@ func GetRepositoryName(repoSshUrl string) string {
 	lastToken := tokens[len(tokens)-1]
 	return lastToken[:len(lastToken)-4]
 }
+
+func GetRemoteRepoWebUrl(repoSshUrl string) string {
+	webUrl := repoSshUrl
+	webUrl = strings.TrimPrefix(webUrl, "git@")
+	webUrl = strings.TrimSuffix(webUrl, ".git")
+	webUrl = strings.ReplaceAll(webUrl, ":", "/")
+	return fmt.Sprintf("https://www.%s", webUrl)
+}
