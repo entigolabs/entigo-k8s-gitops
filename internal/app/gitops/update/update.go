@@ -14,7 +14,7 @@ func Run(flags *common.Flags) {
 	repository.GitFlags = flags.Git
 	cloneOrPull()
 	updateImages(flags)
-	//applyChanges() TODO impl this or test if this is good idea to move git into struct
+	applyChanges()
 }
 
 func cloneOrPull() {
@@ -32,6 +32,11 @@ func cloneOrPull() {
 func cloneAndConfig() {
 	repository.Clone()
 	repository.ConfigRepo()
+}
+
+func applyChanges() {
+	repository.Add()
+	repository.CommitIfModified()
 }
 
 func resetAndUpdate() {

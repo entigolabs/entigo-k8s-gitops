@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing/object"
+	"time"
 )
 
 type Repository struct {
 	*git.Repository
 	common.GitFlags
+	Images  string
+	AppPath string
 }
 
 func (r *Repository) Clone() {
@@ -38,6 +43,68 @@ func (r *Repository) OpenGitOpsRepo() {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 	r.Repository = repo
+}
+
+func (r *Repository) Add() {
+	wt := r.getWorkTree()
+	_, err := wt.Add(".")
+	if err != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+}
+
+func (r *Repository) gitCommit() {
+	cfg := r.getGitConfig()
+	wt := r.getWorkTree()
+	commitMessage := fmt.Sprintf("Updated image(s) %s in %s", r.Images, getAppName(r.AppPath))
+	commit, commitErr := wt.Commit(commitMessage, &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  cfg.User.Name,
+			Email: cfg.User.Email,
+			When:  time.Now(),
+		},
+	})
+	if commitErr != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: commitErr})
+	}
+	_, commitObjErr := r.Repository.CommitObject(commit)
+	if commitObjErr != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: commitObjErr})
+	}
+	common.Logger.Println("git commit was successful")
+}
+
+func (r *Repository) getGitConfig() *config.Config {
+	cfg, err := r.Repository.Config()
+	if err != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+	return cfg
+}
+
+func (r *Repository) CommitIfModified() {
+	if r.isRepoModified() {
+		r.gitCommit()
+	} else {
+		common.Logger.Println("nothing to commit, working tree clean")
+	}
+}
+
+func (r *Repository) isRepoModified() bool {
+	wt := r.getWorkTree()
+	status := getGitStatus(wt)
+	if !status.IsClean() {
+		return true
+	}
+	return false
+}
+
+func getGitStatus(wt *git.Worktree) git.Status {
+	status, err := wt.Status()
+	if err != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+	return status
 }
 
 func (r *Repository) getWorkTree() *git.Worktree {

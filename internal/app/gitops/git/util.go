@@ -7,6 +7,7 @@ import (
 	goGitSsh "github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"golang.org/x/crypto/ssh"
 	"os"
+	"strings"
 )
 
 func (r *Repository) DoesRepoExist() bool {
@@ -57,4 +58,9 @@ func getPublicKeysNonStrict(keyFile string) *goGitSsh.PublicKeys {
 	publicKeys := getPublicKeysDefault(keyFile)
 	publicKeys.HostKeyCallback = ssh.InsecureIgnoreHostKey()
 	return publicKeys
+}
+
+func getAppName(appPath string) string {
+	pathTokens := strings.Split(appPath, "/")
+	return pathTokens[len(pathTokens)-1]
 }
