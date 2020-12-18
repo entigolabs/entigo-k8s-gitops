@@ -10,12 +10,18 @@ import (
 var repository = new(git.Repository)
 
 func Run(flags *common.Flags) {
-	repository.GitFlags = flags.Git
+	addFlagsToWorkingRepo(flags)
 	cloneOrPull()
-	updateImages(flags)
+	updateImages(flags.KeepRegistry)
 	applyChanges()
 	pushOnDemand()
 	logEndMessage()
+}
+
+func addFlagsToWorkingRepo(flags *common.Flags) {
+	repository.GitFlags = flags.Git
+	repository.Images = flags.Images
+	repository.AppPath = flags.App.Path
 }
 
 func cloneOrPull() {
@@ -57,9 +63,9 @@ func pushOnDemand() {
 	}
 }
 
-func updateImages(flags *common.Flags) {
-	common.CdToAppDir(flags.Git.Repo, flags.App.Path)
-	updater := operation.Updater{Images: flags.Images, KeepRegistry: flags.KeepRegistry}
+func updateImages(keepRegistry bool) {
+	common.CdToAppDir(repository.Repo, repository.AppPath)
+	updater := operation.Updater{Images: repository.Images, KeepRegistry: keepRegistry}
 	updater.UpdateImages()
 }
 
