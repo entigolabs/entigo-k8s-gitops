@@ -42,6 +42,7 @@ func cloneAndConfig() {
 }
 
 func applyChanges() {
+	repository.OpenGitOpsRepo()
 	repository.Add()
 	repository.CommitIfModified()
 }
