@@ -7,74 +7,74 @@ import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/update/operation"
 )
 
-var repository = new(git.Repository)
-
 func Run(flags *common.Flags) {
-	addFlagsToWorkingRepo(flags)
-	cloneOrPull()
-	updateImages()
-	applyChanges()
-	pushOnDemand()
-	logEndMessage()
+	repo := initWorkingRepo(flags)
+	cloneOrPull(repo)
+	updateImages(repo)
+	applyChanges(repo)
+	pushOnDemand(repo)
+	logEndMessage(repo)
 }
 
-func addFlagsToWorkingRepo(flags *common.Flags) {
+func initWorkingRepo(flags *common.Flags) *git.Repository {
+	repository := new(git.Repository)
 	repository.GitFlags = flags.Git
 	repository.Images = flags.Images
 	repository.AppPath = flags.App.Path
 	repository.KeepRegistry = flags.KeepRegistry
+	return repository
 }
 
-func cloneOrPull() {
+func cloneOrPull(workingRepo *git.Repository) {
 	common.CdToGitOpsWd()
-	if !repository.DoesRepoExist() {
-		cloneAndConfig()
+	if !workingRepo.DoesRepoExist() {
+		cloneAndConfig(workingRepo)
 	} else {
-		repository.OpenGitOpsRepo()
-		if err := repository.Pull(); err != nil {
-			resetAndUpdate()
+		workingRepo.OpenGitOpsRepo()
+		if err := workingRepo.Pull(); err != nil {
+			resetAndUpdate(workingRepo)
 		}
 	}
 }
 
-func cloneAndConfig() {
-	repository.Clone()
-	repository.ConfigRepo()
+func cloneAndConfig(workingRepo *git.Repository) {
+	workingRepo.Clone()
+	workingRepo.ConfigRepo()
 }
 
-func applyChanges() {
-	repository.OpenGitOpsRepo()
-	repository.Add()
-	repository.CommitIfModified()
+func applyChanges(workingRepo *git.Repository) {
+	workingRepo.OpenGitOpsRepo()
+	workingRepo.Add()
+	workingRepo.CommitIfModified()
 }
 
-func resetAndUpdate() {
+func resetAndUpdate(workingRepo *git.Repository) {
 	common.RmGitOpsWorkDir()
-	cloneOrPull()
-	updateImages()
-	applyChanges()
-	pushOnDemand()
+	cloneOrPull(workingRepo)
+	updateImages(workingRepo)
+	applyChanges(workingRepo)
+	pushOnDemand(workingRepo)
 }
 
-func pushOnDemand() {
-	if repository.GitFlags.Push {
-		if err := repository.Push(); err != nil {
-			resetAndUpdate()
+func pushOnDemand(workingRepo *git.Repository) {
+	if workingRepo.GitFlags.Push {
+		if err := workingRepo.Push(); err != nil {
+			resetAndUpdate(workingRepo)
 		}
 	} else {
 		common.Logger.Println("commit(s) were chosen not to be pushed")
 	}
 }
 
-func updateImages() {
-	common.CdToAppDir(repository.Repo, repository.AppPath)
-	updater := operation.Updater{Images: repository.Images, KeepRegistry: repository.KeepRegistry}
+func updateImages(workingRepo *git.Repository) {
+	common.CdToAppDir(workingRepo.Repo, workingRepo.AppPath)
+	updater := operation.Updater{Images: workingRepo.Images, KeepRegistry: workingRepo.KeepRegistry}
 	updater.UpdateImages()
 }
 
-func logEndMessage() {
-	if repository.GitFlags.Push {
-		url := common.GetRemoteRepoWebUrl(repository.Repo)
+func logEndMessage(workingRepo *git.Repository) {
+	if workingRepo.GitFlags.Push {
+		url := common.GetRemoteRepoWebUrl(workingRepo.Repo)
 		common.Logger.Println(fmt.Sprintf("repository url: %s", url))
 	}
 }
