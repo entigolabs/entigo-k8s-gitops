@@ -1,15 +1,22 @@
-# Gitops Util
+# GitOps Util
 
-This is [gitops](https://www.gitops.tech/) helper utility.
+This is [gitops](https://www.gitops.tech/) helper CLI
+
+## Compiling Source
+
+- ```go build -o bin/gitops cmd/gitops/main.go```
 
 ## How to Use
 
-Execute ```go build -o bin/gitops cmd/gitops/main.go``` to generate binary.
-Execute ```./gitops update``` command with necessary flags to update images.
+This GitOps utility supports 3 commands:
+
+- ```run``` - run update and copy logic
+- ```update``` - updates specified images
+- ```copy``` - copies from master branch to specified branch
 
 ## Examples
 
-#### Update Operation Example
+#### Update Command Example
 ##### Example With Application Path Flag
 ```
 ./gitops update \
@@ -23,9 +30,9 @@ Execute ```./gitops update``` command with necessary flags to update images.
 ##### Example With Tokenized Path Flags 
 
 Tokenized path flags: 
-1)  ```--prefix=<prefix>``` 
-2) ```--app-namespace=<ns>```
-3) ```--app-name=<app-name>```
+1) ```--prefix=<app-prefix>``` 
+2) ```--namespace=<app-namespace>```
+3) ```--name=<app-name>```
 
 ```)
 ./gitops update \
@@ -33,36 +40,8 @@ Tokenized path flags:
     --branch=<repository-branch> \
     --key-file=<key-file-location> \
     --images=<image:tag,image2:tag> \ 
-    --prefix=<prefix> \
-    --app-namespace=<ns> \
-    --app-name=<app-name>
+    --prefix=<app-prefix> \
+    --namespace=<app-namespace> \
+    --name=<app-name>
 ```
 **Valuated ```--app-path``` with other than default value will override tokenized path flags** 
-
-### Supported Flags for Update Operation
-
-* ```--repo``` - Git repository SSH URL
-    * default value is ```""```
-* ```--branch``` repository branch
-    * default value is ```""```
-* ```--key-file``` - SSH private key location
-    * default value is ```""```
-* ```--strict-host-key-checking``` - strict host key checking boolean
-    * default value is ```false```
-    * if ```true``` then ```known_hosts``` file will be searched from these [default locations](https://github.com/src-d/go-git/blob/master/plumbing/transport/ssh/auth_method.go#L273):
-        * ```homeDirPath + "/.ssh/known_hosts"```
-        * ```"/etc/ssh/ssh_known_hosts"```
-* ```--push``` - git push boolean
-    * default value is ```true```
-* ```--images``` - images with tags
-    * default value is ```""```
-* ```--keep-registry``` - keeps registry part of the changeable image
-    * default value is ```false```
-* ```--app-path``` path to application folder
-    * default value is ```""```
-* ```--prefix``` - path prefix to apply
-    * default value is ```""```
-* ```--app-namespace``` - application namespace
-    * default value is ```""```
-* ```--app-name``` - application name
-    * default value is ```""```
