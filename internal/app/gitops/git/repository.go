@@ -12,8 +12,9 @@ import (
 type Repository struct {
 	*git.Repository
 	common.GitFlags
-	Images  string
-	AppPath string
+	Images       string
+	AppPath      string
+	KeepRegistry bool
 }
 
 func (r *Repository) Clone() {
@@ -37,14 +38,15 @@ func (r *Repository) Pull() error {
 	return nil
 }
 
-func (r *Repository) Push() {
+func (r *Repository) Push() error {
 	pushOptions := r.getPushOptions()
 	err := r.Repository.Push(pushOptions)
 	if err != nil {
-		handlePushErr(err)
+		return handlePushErr(err)
 	} else {
 		common.Logger.Println("git push was successful")
 	}
+	return nil
 }
 
 func (r *Repository) OpenGitOpsRepo() {

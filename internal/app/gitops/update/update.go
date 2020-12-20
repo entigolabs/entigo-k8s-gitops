@@ -12,7 +12,7 @@ var repository = new(git.Repository)
 func Run(flags *common.Flags) {
 	addFlagsToWorkingRepo(flags)
 	cloneOrPull()
-	updateImages(flags.KeepRegistry)
+	updateImages()
 	applyChanges()
 	pushOnDemand()
 	logEndMessage()
@@ -22,6 +22,7 @@ func addFlagsToWorkingRepo(flags *common.Flags) {
 	repository.GitFlags = flags.Git
 	repository.Images = flags.Images
 	repository.AppPath = flags.App.Path
+	repository.KeepRegistry = flags.KeepRegistry
 }
 
 func cloneOrPull() {
@@ -48,25 +49,26 @@ func applyChanges() {
 }
 
 func resetAndUpdate() {
-	common.Logger.Fatal("resetAndUpdate ->>> TODO")
-	//reset()
-	//cloneOrPull()
-	//updateImages()
-	//applyChanges()
-	//pushOnDemand()
+	common.RmGitOpsWorkDir()
+	cloneOrPull()
+	updateImages()
+	applyChanges()
+	pushOnDemand()
 }
 
 func pushOnDemand() {
 	if repository.GitFlags.Push {
-		repository.Push()
+		if err := repository.Push(); err != nil {
+			resetAndUpdate()
+		}
 	} else {
 		common.Logger.Println("commit(s) were chosen not to be pushed")
 	}
 }
 
-func updateImages(keepRegistry bool) {
+func updateImages() {
 	common.CdToAppDir(repository.Repo, repository.AppPath)
-	updater := operation.Updater{Images: repository.Images, KeepRegistry: keepRegistry}
+	updater := operation.Updater{Images: repository.Images, KeepRegistry: repository.KeepRegistry}
 	updater.UpdateImages()
 }
 

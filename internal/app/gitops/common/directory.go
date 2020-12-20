@@ -40,3 +40,13 @@ func GetWd() string {
 	wd, _ := os.Getwd()
 	return wd
 }
+
+func RmGitOpsWorkDir() {
+	if err := changeDir(RootPath); err != nil {
+		Logger.Fatal(&PrefixedError{Reason: err})
+	}
+	if err := os.RemoveAll(fmt.Sprintf("%s/%s", RootPath, GitOpsWd)); err != nil {
+		Logger.Fatal(&PrefixedError{Reason: err})
+	}
+	Logger.Println("gitops-workdir successfully cleaned")
+}

@@ -14,30 +14,32 @@ var errUpdateReference = errors.New("failed to update ref")
 func handlePullErr(err error) error {
 	pullOp := "pull"
 	if err == git.NoErrAlreadyUpToDate {
-		alreadyUpToDateLogging(pullOp, err)
+		logAlreadyUpToDate(pullOp, err)
 	} else if isConflictErr(err) {
 		common.Logger.Println(fmt.Sprintf("couldn't git %s, %s", pullOp, err))
 		return err
 	} else {
-		defaultGitOpErrLogging(pullOp, err)
+		logDefaultGitOpErr(pullOp, err)
 		os.Exit(1)
 	}
 	return nil
 }
 
-func handlePushErr(err error) {
+func handlePushErr(err error) error {
 	pushOp := "push"
 	if err == git.NoErrAlreadyUpToDate {
-		alreadyUpToDateLogging(pushOp, err)
+		logAlreadyUpToDate(pushOp, err)
 	} else if isConflictErr(err) {
-		common.Logger.Fatal("logAndRestart(pushOp, err) -> todo") // TODO
+		common.Logger.Println(fmt.Sprintf("couldn't git %s, %s", pushOp, err))
+		return err
 	} else {
-		defaultGitOpErrLogging(pushOp, err)
+		logDefaultGitOpErr(pushOp, err)
 		os.Exit(1)
 	}
+	return nil
 }
 
-func alreadyUpToDateLogging(gitOpName string, err error) {
+func logAlreadyUpToDate(gitOpName string, err error) {
 	common.Logger.Println(fmt.Sprintf("skipping git %s, %s", gitOpName, err))
 }
 
@@ -48,7 +50,7 @@ func isConflictErr(err error) bool {
 	return isErrNonFastForwardUpdate || isErrUpdateReference
 }
 
-func defaultGitOpErrLogging(gitOpName string, err error) {
+func logDefaultGitOpErr(gitOpName string, err error) {
 	errorMessage := fmt.Sprintf("git %s failed, %s", gitOpName, err)
 	common.Logger.Println(&common.PrefixedError{Reason: errors.New(errorMessage)})
 }
