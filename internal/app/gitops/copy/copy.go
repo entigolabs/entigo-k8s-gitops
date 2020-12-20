@@ -7,5 +7,8 @@ import (
 )
 
 func Run(flags *common.Flags) {
-	common.Logger.Println(&common.Warning{Reason: errors.New(fmt.Sprintf("copy:", flags))})
+	if flags.LoggingLevel == "dev" {
+		common.Logger.Println(&common.Warning{Reason: errors.New(fmt.Sprintf("copy:", flags))})
+	}
+	common.Logger.Fatal("copy not implemented")
 }
