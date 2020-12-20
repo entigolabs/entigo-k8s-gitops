@@ -5,6 +5,5 @@ import (
 )
 
 func main() {
-	//operations.Operate()
 	cli.Run()
 }

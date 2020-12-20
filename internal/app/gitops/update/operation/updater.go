@@ -3,7 +3,6 @@ package operation
 import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/util"
 	"io/ioutil"
 	"strings"
 )
@@ -61,7 +60,7 @@ func (u Updater) updateImageLines(lines []string, image string) {
 
 func overwriteFile(fileName string, output string) {
 	if err := ioutil.WriteFile(fileName, []byte(output), 0644); err != nil {
-		common.Logger.Fatal(&util.PrefixedError{Reason: err})
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 }
 
