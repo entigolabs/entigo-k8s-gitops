@@ -21,6 +21,13 @@ func CdToGitOpsWd() {
 	}
 }
 
+func CdToRepoRoot(repo string) {
+	repoRootPath := GetRepositoryRootPath(repo)
+	if err := changeDir(repoRootPath); err != nil {
+		Logger.Fatal(&PrefixedError{Reason: err})
+	}
+}
+
 func CdToAppDir(repo string, appPath string) {
 	path := fmt.Sprintf("%s/%s", GetRepositoryRootPath(repo), appPath)
 	if err := changeDir(path); err != nil {
