@@ -25,14 +25,26 @@ type AppFlags struct {
 	Name      string
 }
 
-func (f *Flags) Setup() error {
-	if err := f.validatePaths(); err != nil {
+func (f *Flags) Setup(cmd Command) error {
+	if err := f.validate(cmd); err != nil {
 		return err
 	}
-	f.composeAppPath()
+	f.setup(cmd)
 	return nil
+}
+
+func (f *Flags) ComposeCopyPath(folderName string) string {
+	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, folderName, f.App.Namespace, f.App.Name)
 }
 
 func (f *Flags) composeAppPath() {
 	f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
+}
+
+func (f *Flags) setup(cmd Command) {
+	if cmd == UpdateCmd {
+		if f.isTokenizedPath() {
+			f.composeAppPath()
+		}
+	}
 }

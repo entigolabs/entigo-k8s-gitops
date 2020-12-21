@@ -5,6 +5,13 @@ import (
 	"fmt"
 )
 
+func (f *Flags) validate(cmd Command) error {
+	if cmd == UpdateCmd {
+		return f.validatePaths()
+	}
+	return nil
+}
+
 func (f *Flags) validatePaths() error {
 	if !f.isTokenizedPath() {
 		if err := f.validatePath(); err != nil {

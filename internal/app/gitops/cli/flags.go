@@ -1,11 +1,12 @@
 package cli
 
 import (
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/urfave/cli/v2"
 	"strconv"
 )
 
-func cliFlags() []cli.Flag {
+func cliFlags(cmd common.Command) []cli.Flag {
 	return []cli.Flag{
 		&loggingFlag,
 		&gitRepoFlag,
@@ -16,10 +17,17 @@ func cliFlags() []cli.Flag {
 		&appPrefixFlag,
 		&appNamespaceFlag,
 		&appNameFlag,
-		&appPathFlag,
+		getAppPathFlag(cmd),
 		&imagesFlag,
 		&keepRegistryFlag,
 	}
+}
+
+func getAppPathFlag(cmd common.Command) *cli.StringFlag {
+	if cmd == common.UpdateCmd {
+		return &appPathFlag
+	}
+	return new(cli.StringFlag)
 }
 
 var loggingFlag = cli.StringFlag{

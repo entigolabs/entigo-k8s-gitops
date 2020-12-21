@@ -9,14 +9,6 @@ import (
 
 var flags *common.Flags = new(common.Flags)
 
-type Command int
-
-const (
-	runCmd Command = iota
-	updateCmd
-	copyCmd
-)
-
 func Run() {
 	app := &cli.App{Commands: cliCommands()}
 	addAppInfo(app)

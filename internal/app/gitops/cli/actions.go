@@ -8,9 +8,9 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func action(cmd Command) func(c *cli.Context) error {
+func action(cmd common.Command) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
-		if err := flags.Setup(); err != nil {
+		if err := flags.Setup(cmd); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
 		run(cmd)
@@ -18,14 +18,14 @@ func action(cmd Command) func(c *cli.Context) error {
 	}
 }
 
-func run(cmd Command) {
+func run(cmd common.Command) {
 	switch cmd {
-	case runCmd:
+	case common.RunCmd:
 		update.Run(flags)
 		copy.Run(flags)
-	case updateCmd:
+	case common.UpdateCmd:
 		update.Run(flags)
-	case copyCmd:
+	case common.CopyCmd:
 		copy.Run(flags)
 	default:
 		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New("unsupported command")})

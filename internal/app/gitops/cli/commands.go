@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/urfave/cli/v2"
 )
 
@@ -16,22 +17,22 @@ var runCommand = cli.Command{
 	Name:    "run",
 	Aliases: []string{"rn"},
 	Usage:   "copy and update",
-	Action:  action(runCmd),
-	Flags:   cliFlags(),
+	Action:  action(common.RunCmd),
+	Flags:   cliFlags(common.RunCmd),
 }
 
 var updateCommand = cli.Command{
 	Name:    "update",
 	Aliases: []string{"up"},
 	Usage:   "update corresponding images",
-	Action:  action(updateCmd),
-	Flags:   cliFlags(),
+	Action:  action(common.UpdateCmd),
+	Flags:   cliFlags(common.UpdateCmd),
 }
 
 var copyCommand = cli.Command{
 	Name:    "copy",
 	Aliases: []string{"cp"},
 	Usage:   "copy from master branch",
-	Action:  action(copyCmd),
-	Flags:   cliFlags(),
+	Action:  action(common.CopyCmd),
+	Flags:   cliFlags(common.CopyCmd),
 }
