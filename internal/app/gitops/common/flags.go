@@ -33,8 +33,8 @@ func (f *Flags) Setup(cmd Command) error {
 	return nil
 }
 
-func (f *Flags) ComposeCopyPath(folderName string) string {
-	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, folderName, f.App.Namespace, f.App.Name)
+func (f *Flags) ComposeYamlPath() string {
+	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, "yaml", f.App.Namespace, f.App.Name)
 }
 
 func (f *Flags) composeAppPath() {
@@ -46,5 +46,7 @@ func (f *Flags) setup(cmd Command) {
 		if f.isTokenizedPath() {
 			f.composeAppPath()
 		}
+	} else {
+		f.App.Path = f.ComposeYamlPath()
 	}
 }
