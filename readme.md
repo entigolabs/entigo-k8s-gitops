@@ -24,8 +24,8 @@ This GitOps utility supports 3 commands:
     --branch=<repository-branch> \
     --key-file=<key-file-location> \
     --images=<image:tag,image2:tag> \ 
-    --app-path=<app-path>
-``` 
+    --path=<app-path>
+```
 
 ##### Example With Tokenized Path Flags 
 
@@ -34,7 +34,7 @@ Tokenized path flags:
 2) ```--namespace=<app-namespace>```
 3) ```--name=<app-name>```
 
-```)
+```
 ./gitops update \
     --repo=<repository-ssh-url> \
     --branch=<repository-branch> \
@@ -44,4 +44,4 @@ Tokenized path flags:
     --namespace=<app-namespace> \
     --name=<app-name>
 ```
-**Valuated ```--app-path``` with other than default value will override tokenized path flags** 
+**Valuated ```--path``` with other than default value will override tokenized path flags** 
