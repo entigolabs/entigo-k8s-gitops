@@ -68,6 +68,7 @@ func (r *Repository) Add() {
 func (r *Repository) gitCommit() {
 	cfg := r.getGitConfig()
 	wt := r.getWorkTree()
+	// TODO getAppName() is workname -> if(featureBranch == 'master') and if not ???
 	commitMessage := fmt.Sprintf("Updated image(s) %s in %s", r.Images, getAppName(r.AppPath))
 	commit, commitErr := wt.Commit(commitMessage, &git.CommitOptions{
 		Author: &object.Signature{
