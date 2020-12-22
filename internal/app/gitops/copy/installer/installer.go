@@ -25,6 +25,9 @@ func (i *Installer) Install() {
 
 	lines := strings.Split(string(input), "\n")
 	for _, line := range lines {
+		if line == "" {
+			return
+		}
 		line = i.specifyLineVars(line)
 		runCommand(line)
 	}
