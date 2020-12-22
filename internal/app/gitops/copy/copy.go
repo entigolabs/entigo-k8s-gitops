@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
+	copyInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/copy/installer"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
 	"github.com/otiai10/copy"
 )
@@ -16,16 +17,19 @@ func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
 	cloneOrPull(repo)
 	copyMasterToNewBranch(flags)
+	installer := copyInstaller.Installer{GitBranch: flags.Git.Branch, AppName: flags.App.Name}
+	installer.Install()
 	// TODO impl install.txt related logic
 }
 
 func copyMasterToNewBranch(flags *common.Flags) {
-	common.CdToRepoRoot(flags.Git.Repo)
+	cdToRepoRoot(flags.Git.Repo)
 	sourceDir := fmt.Sprintf("%s/master", flags.ComposeYamlPath())
 	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.Git.Branch)
 	if err := copy.Copy(sourceDir, destinationDir); err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
+	cdToCopiedBranch(destinationDir)
 }
 
 func initWorkingRepo(flags *common.Flags) *git.Repository {

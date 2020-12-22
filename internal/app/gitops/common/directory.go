@@ -16,26 +16,12 @@ func CdToGitOpsWd() {
 			Logger.Println(&PrefixedError{Reason: err})
 		}
 	}
-	if err := changeDir(path); err != nil {
+	if err := ChangeDir(path); err != nil {
 		Logger.Fatal(&PrefixedError{Reason: err})
 	}
 }
 
-func CdToRepoRoot(repo string) {
-	repoRootPath := GetRepositoryRootPath(repo)
-	if err := changeDir(repoRootPath); err != nil {
-		Logger.Fatal(&PrefixedError{Reason: err})
-	}
-}
-
-func CdToAppDir(repo string, appPath string) {
-	path := fmt.Sprintf("%s/%s", GetRepositoryRootPath(repo), appPath)
-	if err := changeDir(path); err != nil {
-		Logger.Fatal(&PrefixedError{Reason: err})
-	}
-}
-
-func changeDir(path string) error {
+func ChangeDir(path string) error {
 	if err := os.Chdir(path); err != nil {
 		return err
 	}
@@ -48,8 +34,8 @@ func GetWd() string {
 	return wd
 }
 
-func RmGitOpsWorkDir() {
-	if err := changeDir(RootPath); err != nil {
+func RmGitOpsWd() {
+	if err := ChangeDir(RootPath); err != nil {
 		Logger.Fatal(&PrefixedError{Reason: err})
 	}
 	if err := os.RemoveAll(fmt.Sprintf("%s/%s", RootPath, GitOpsWd)); err != nil {
