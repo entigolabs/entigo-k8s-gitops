@@ -25,18 +25,23 @@ func (i *Installer) Install() {
 
 	lines := strings.Split(string(input), "\n")
 	for _, line := range lines {
-		line = specifyLineVars(line)
+		line = i.specifyLineVars(line)
 		runCommand(line)
 	}
 
 }
 
-func specifyLineVars(line string) string {
-	// TODO change uus
-	line = strings.ReplaceAll(line, saltedVariable("featureBranch"), "uus") // flags.Git.Branch
-	line = strings.ReplaceAll(line, saltedVariable("workname"), "uus")      // workname = argoapp + "-" + featureBranch
-	line = strings.ReplaceAll(line, saltedVariable("url"), "uus")           // getFeatureUrl(argoapp, featureBranch)
+func (i *Installer) specifyLineVars(line string) string {
+	// TODO check replacers are correct
+	line = strings.ReplaceAll(line, saltedVariable("featureBranch"), i.GitBranch)
+	line = strings.ReplaceAll(line, saltedVariable("workname"), fmt.Sprintf("%s-%s", i.AppName, i.GitBranch))
+	line = strings.ReplaceAll(line, saltedVariable("url"), i.getFeatureUrl())
 	return line
+}
+
+func (i *Installer) getFeatureUrl() string {
+	// TODO impl getFeatureUrl
+	return "getFeatureUrl(argoapp, featureBranch)"
 }
 
 func saltedVariable(variable string) string {
