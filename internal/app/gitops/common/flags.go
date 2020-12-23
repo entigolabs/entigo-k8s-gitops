@@ -1,6 +1,8 @@
 package common
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Flags struct {
 	LoggingLevel string
@@ -43,11 +45,7 @@ func (f *Flags) composeAppPath() {
 }
 
 func (f *Flags) setup() {
-	f.sanitizeBranch()
-}
-
-func (f *Flags) sanitizeBranch() {
-	// TODO getFeatureBranch(branch)
+	f.Git.Branch = sanitizeBranch(f.Git.Branch)
 }
 
 func (f *Flags) cmdSpecificSetup(cmd Command) {
