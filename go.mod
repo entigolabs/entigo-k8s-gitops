@@ -7,4 +7,6 @@ require (
 	github.com/otiai10/copy v1.3.0
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073
+	gopkg.in/yaml.v2 v2.2.4 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 )

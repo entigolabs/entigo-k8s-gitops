@@ -1,10 +1,14 @@
 package installer
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
+	"github.com/otiai10/copy"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -22,7 +26,6 @@ type Installer struct {
 
 func (i *Installer) Install() {
 	input := getFileInput(installFile)
-
 	lines := strings.Split(string(input), "\n")
 	for _, line := range lines {
 		if line == "" {
@@ -31,7 +34,6 @@ func (i *Installer) Install() {
 		line = i.specifyLineVars(line)
 		runCommand(line)
 	}
-
 }
 
 func (i *Installer) specifyLineVars(line string) string {
@@ -43,8 +45,10 @@ func (i *Installer) specifyLineVars(line string) string {
 }
 
 func (i *Installer) getFeatureUrl() string {
-	// TODO impl getFeatureUrl
-	return "getFeatureUrl(argoapp, featureBranch)"
+	if i.GitBranch == "master" {
+		return i.AppName
+	}
+	return fmt.Sprintf("%s-%s.fleetcomplete.dev", i.AppName, i.GitBranch)
 }
 
 func saltedVariable(variable string) string {
@@ -53,28 +57,96 @@ func saltedVariable(variable string) string {
 
 func runCommand(line string) {
 	lineSplits := strings.Split(line, " ")
-	installCmd := lineSplits[0]
-	data := lineSplits[1:]
+	cmdType := lineSplits[0]
+	cmdData := lineSplits[1:]
 
-	switch installCmd {
+	switch cmdType {
 	case editCmd:
-		edit(data)
+		edit(cmdData)
 	case dropCmd:
-		drop(data)
+		drop(cmdData)
 	default:
-		err := fmt.Sprintf("unsupported command '%s'", installCmd)
+		err := fmt.Sprintf("unsupported command '%s'", cmdType)
 		common.Logger.Fatal(common.PrefixedError{Reason: errors.New(err)})
 	}
 }
 
 func edit(data []string) {
-	// sh('edityaml.py ' + cmd[1])
-	fmt.Println(data)
+	yamlFiles := getFileNames(data[0])
+	//keys := getKeys(data[1])
+	//newValue := data[2]
+	for _, yamlFile := range yamlFiles {
+		tmpFileName := copyTempFile(yamlFile)
+		editedBuffer := getEditedBuffer(tmpFileName)
+
+		fmt.Println("xxxxxxxx>")
+		fmt.Println(editedBuffer)
+		fmt.Println("<xxxxxxxx")
+
+		if err := ioutil.WriteFile("test-file", editedBuffer.Bytes(), 0644); err != nil {
+			common.Logger.Fatal(&common.PrefixedError{Reason: err})
+		}
+
+		// todo check if renaming overwrites existing file
+		//if err := os.Rename(tmpFileName, yamlFile); err != nil {
+		//	common.Logger.Fatal(&common.PrefixedError{Reason: err})
+		//}
+	}
+}
+
+func getEditedBuffer(tmpFileName string) *bytes.Buffer {
+	inputYaml := getFileInput(tmpFileName)
+	reader := bytes.NewReader(inputYaml)
+	yamlMap := make(map[interface{}]interface{})
+	decoder := yaml.NewDecoder(reader)
+	buffer := *new(bytes.Buffer)
+	encoder := yaml.NewEncoder(&buffer)
+
+	for decoder.Decode(&yamlMap) == nil {
+		// todo do edit logic here
+		if err := encoder.Encode(yamlMap); err != nil {
+			common.Logger.Fatal(&common.PrefixedError{Reason: err})
+		}
+	}
+	if err := encoder.Close(); err != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+	return &buffer
+}
+
+func copyTempFile(yamlFile string) string {
+	tmpFileName := fmt.Sprintf("%s.yaml.tmp", stripYamlSuffix(yamlFile))
+	if err := copy.Copy(yamlFile, tmpFileName); err != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+	return tmpFileName
+}
+
+func stripYamlSuffix(yamlFileName string) string {
+	if strings.HasSuffix(yamlFileName, ".yml") {
+		return strings.TrimSuffix(yamlFileName, ".yml")
+	} else if strings.HasSuffix(yamlFileName, ".yaml") {
+		return strings.TrimSuffix(yamlFileName, ".yaml")
+	}
+	common.Logger.Fatal(&common.PrefixedError{Reason: errors.New("unrecognised yaml file")})
+	return ""
 }
 
 func drop(data []string) {
-	// sh('rm -f ' + cmd[1])
-	fmt.Println(data)
+	filesToRemove := getFileNames(data[0])
+	for _, file := range filesToRemove {
+		if err := os.RemoveAll(file); err != nil {
+			common.Logger.Fatal(&common.PrefixedError{Reason: err})
+		}
+	}
+}
+
+func getKeys(keysInString string) []string {
+	return strings.Split(keysInString, ",")
+}
+
+func getFileNames(fileNamesInString string) []string {
+	return strings.Split(fileNamesInString, ",")
 }
 
 func getFileInput(fileName string) []byte {
