@@ -27,17 +27,9 @@ func (u Updater) updateSpecificImage(image string) {
 }
 
 func (u Updater) imageUpdater(image string, fileName string) {
-	input := getFileInput(fileName)
+	input := common.GetFileInput(fileName)
 	output := u.getChangedOutput(input, image)
-	overwriteFile(fileName, output)
-}
-
-func getFileInput(fileName string) []byte {
-	input, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		common.Logger.Fatal(&common.PrefixedError{Reason: err})
-	}
-	return input
+	common.OverwriteFile(fileName, output)
 }
 
 func (u Updater) getChangedOutput(input []byte, image string) string {
@@ -55,12 +47,6 @@ func (u Updater) updateImageLines(lines []string, image string) {
 				updateCompletely(lines, image, line, lineIndex)
 			}
 		}
-	}
-}
-
-func overwriteFile(fileName string, output string) {
-	if err := ioutil.WriteFile(fileName, []byte(output), 0644); err != nil {
-		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 }
 

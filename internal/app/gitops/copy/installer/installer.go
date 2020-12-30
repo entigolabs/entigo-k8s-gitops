@@ -25,14 +25,14 @@ type Installer struct {
 }
 
 func (i *Installer) Install() {
-	input := getFileInput(installFile)
-	lines := strings.Split(string(input), "\n")
-	for _, line := range lines {
-		if line == "" {
+	installInput := common.GetFileInput(installFile)
+	cmdLines := strings.Split(string(installInput), "\n")
+	for _, cmdLine := range cmdLines {
+		if cmdLine == "" {
 			return
 		}
-		line = i.specifyLineVars(line)
-		runCommand(line)
+		cmdLine = i.specifyLineVars(cmdLine)
+		runCommand(cmdLine)
 	}
 }
 
@@ -72,30 +72,25 @@ func runCommand(line string) {
 }
 
 func edit(data []string) {
-	yamlFiles := getFileNames(data[0])
+	yamlFileNames := getFileNames(data[0])
 	//keys := getKeys(data[1])
 	//newValue := data[2]
-	for _, yamlFile := range yamlFiles {
-		tmpFileName := copyTempFile(yamlFile)
-		editedBuffer := getEditedBuffer(tmpFileName)
+	for _, yamlFileName := range yamlFileNames {
+		//tmpFileName := copyTempFile(yamlFile)
+		editedBuffer := getEditedBuffer(yamlFileName)
 
 		fmt.Println("xxxxxxxx>")
 		fmt.Println(editedBuffer)
 		fmt.Println("<xxxxxxxx")
 
-		if err := ioutil.WriteFile("test-file", editedBuffer.Bytes(), 0644); err != nil {
+		if err := ioutil.WriteFile(yamlFileName, editedBuffer.Bytes(), 0644); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
-
-		// todo check if renaming overwrites existing file
-		//if err := os.Rename(tmpFileName, yamlFile); err != nil {
-		//	common.Logger.Fatal(&common.PrefixedError{Reason: err})
-		//}
 	}
 }
 
 func getEditedBuffer(tmpFileName string) *bytes.Buffer {
-	inputYaml := getFileInput(tmpFileName)
+	inputYaml := common.GetFileInput(tmpFileName)
 	reader := bytes.NewReader(inputYaml)
 	yamlMap := yaml.MapSlice{}
 	decoder := yaml.NewDecoder(reader)
@@ -147,12 +142,4 @@ func getKeys(keysInString string) []string {
 
 func getFileNames(fileNamesInString string) []string {
 	return strings.Split(fileNamesInString, ",")
-}
-
-func getFileInput(fileName string) []byte {
-	input, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		common.Logger.Fatal(&common.PrefixedError{Reason: err})
-	}
-	return input
 }
