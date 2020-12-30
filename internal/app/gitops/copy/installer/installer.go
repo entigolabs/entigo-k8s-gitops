@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/otiai10/copy"
-	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -97,7 +97,7 @@ func edit(data []string) {
 func getEditedBuffer(tmpFileName string) *bytes.Buffer {
 	inputYaml := getFileInput(tmpFileName)
 	reader := bytes.NewReader(inputYaml)
-	yamlMap := make(map[interface{}]interface{})
+	yamlMap := yaml.MapSlice{}
 	decoder := yaml.NewDecoder(reader)
 	buffer := *new(bytes.Buffer)
 	encoder := yaml.NewEncoder(&buffer)
