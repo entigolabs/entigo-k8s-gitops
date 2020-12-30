@@ -29,7 +29,7 @@ func (u Updater) updateSpecificImage(image string) {
 func (u Updater) imageUpdater(image string, fileName string) {
 	input := common.GetFileInput(fileName)
 	output := u.getChangedOutput(input, image)
-	common.OverwriteFile(fileName, output)
+	common.OverwriteFile(fileName, []byte(output))
 }
 
 func (u Updater) getChangedOutput(input []byte, image string) string {

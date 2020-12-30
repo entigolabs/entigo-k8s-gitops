@@ -10,8 +10,8 @@ func GetFileInput(fileName string) []byte {
 	return input
 }
 
-func OverwriteFile(fileName string, output string) {
-	if err := ioutil.WriteFile(fileName, []byte(output), 0644); err != nil {
+func OverwriteFile(fileName string, data []byte) {
+	if err := ioutil.WriteFile(fileName, data, 0644); err != nil {
 		Logger.Fatal(&PrefixedError{Reason: err})
 	}
 }
