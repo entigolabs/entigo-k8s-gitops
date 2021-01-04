@@ -2,6 +2,7 @@ package installer
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"gopkg.in/yaml.v3"
 )
@@ -17,14 +18,14 @@ func edit(cmdData []string) {
 func getEditedBuffer(yamlFileName string, cmdData []string) *bytes.Buffer {
 	inputYaml := common.GetFileInput(yamlFileName)
 	reader := bytes.NewReader(inputYaml)
-	yamlMap := yaml.Node{}
+	yamlNode := yaml.Node{}
 	decoder := yaml.NewDecoder(reader)
 	buffer := *new(bytes.Buffer)
 	encoder := yaml.NewEncoder(&buffer)
 	encoder.SetIndent(2)
-	for decoder.Decode(&yamlMap) == nil {
-		editYaml(yamlMap, cmdData)
-		if err := encoder.Encode(&yamlMap); err != nil {
+	for decoder.Decode(&yamlNode) == nil {
+		editYaml(yamlNode, cmdData)
+		if err := encoder.Encode(&yamlNode); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
 	}
@@ -34,8 +35,8 @@ func getEditedBuffer(yamlFileName string, cmdData []string) *bytes.Buffer {
 	return &buffer
 }
 
-func editYaml(yamlMap yaml.Node, cmdData []string) {
+func editYaml(yamlNode yaml.Node, cmdData []string) {
 	//keys := getKeys(cmdData[1])
 	//newValue := cmdData[2]
-	//fmt.Println(yamlMap) // todo implement edit logic
+	fmt.Println(yamlNode) // todo implement edit logic
 }
