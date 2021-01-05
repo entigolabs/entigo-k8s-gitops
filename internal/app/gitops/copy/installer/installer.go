@@ -76,10 +76,6 @@ func drop(cmdData []string) {
 	}
 }
 
-func getKeys(keysInString string) []string {
-	return strings.Split(keysInString, ",")
-}
-
 func getFileNames(fileNamesInString string) []string {
 	return strings.Split(fileNamesInString, ",")
 }
