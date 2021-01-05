@@ -68,14 +68,10 @@ func runCommand(line string) {
 }
 
 func drop(cmdData []string) {
-	filesToRemove := getFileNames(cmdData[0])
+	filesToRemove := strings.Split(cmdData[0], ",")
 	for _, file := range filesToRemove {
 		if err := os.RemoveAll(file); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
 	}
-}
-
-func getFileNames(fileNamesInString string) []string {
-	return strings.Split(fileNamesInString, ",")
 }

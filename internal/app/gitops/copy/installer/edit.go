@@ -10,9 +10,17 @@ import (
 	"strings"
 )
 
+type logInfo struct {
+	workingFile string
+	workingKey  string
+}
+
+var editInfo = new(logInfo)
+
 func edit(cmdData []string) {
-	yamlFileNames := getFileNames(cmdData[0])
+	yamlFileNames := strings.Split(cmdData[0], ",")
 	for _, yamlFileName := range yamlFileNames {
+		editInfo.workingFile = yamlFileName
 		editedBuffer := getEditedBuffer(yamlFileName, cmdData)
 		common.OverwriteFile(yamlFileName, editedBuffer.Bytes())
 	}
@@ -42,10 +50,10 @@ func editYaml(yamlNode *yaml.Node, cmdData []string) {
 	replaceLocations := strings.Split(cmdData[1], ",")
 	newValue := cmdData[2]
 	for _, replaceLocation := range replaceLocations {
+		editInfo.workingKey = replaceLocation
 		keys := strings.Split(replaceLocation, ".")
 		replace(yamlNode, keys, newValue)
 	}
-	fmt.Println("---")
 }
 
 func replace(node *yaml.Node, keys []string, newValue string) {
@@ -55,8 +63,8 @@ func replace(node *yaml.Node, keys []string, newValue string) {
 	}
 	if seqPos, err := strconv.Atoi(identifier); err == nil {
 		if len(node.Content)-1 < seqPos {
-			msg := errors.New(fmt.Sprintf("could not replace key value on ...%s", strings.Join(keys, ".")))
-			common.Logger.Println(common.Warning{Reason: msg})
+			msg := errors.New(fmt.Sprintf("skiping update '%s' in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile))
+			common.Logger.Println(&common.Warning{Reason: msg})
 			return
 		}
 		seqPosNode := node.Content[seqPos]
