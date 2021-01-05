@@ -1,7 +1,6 @@
 package copy
 
 import (
-	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	copyInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/copy/installer"
@@ -10,16 +9,11 @@ import (
 )
 
 func Run(flags *common.Flags) {
-	if flags.LoggingLevel == "dev" { // TODO tm logging
-		common.Logger.Println(&common.Warning{Reason: errors.New(fmt.Sprintf("copy:", flags))})
-	}
-
 	repo := initWorkingRepo(flags)
 	cloneOrPull(repo)
 	copyMasterToNewBranch(flags)
 	installer := copyInstaller.Installer{GitBranch: flags.Git.Branch, AppName: flags.App.Name}
 	installer.Install()
-	// TODO impl install.txt related logic
 }
 
 func copyMasterToNewBranch(flags *common.Flags) {

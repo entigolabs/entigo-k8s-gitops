@@ -33,7 +33,6 @@ func (i *Installer) Install() {
 }
 
 func (i *Installer) specifyLineVars(line string) string {
-	// TODO check replacers are correct
 	line = strings.ReplaceAll(line, saltedVariable("featureBranch"), i.GitBranch)
 	line = strings.ReplaceAll(line, saltedVariable("workname"), fmt.Sprintf("%s-%s", i.AppName, i.GitBranch))
 	line = strings.ReplaceAll(line, saltedVariable("url"), i.getFeatureUrl())
