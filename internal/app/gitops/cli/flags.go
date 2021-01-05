@@ -78,6 +78,7 @@ var gitPushFlag = cli.BoolFlag{
 	Name:        "push",
 	Aliases:     []string{"p"},
 	DefaultText: strconv.FormatBool(true),
+	Value:       true,
 	Usage:       "push changes",
 	Destination: &flags.Git.Push,
 }

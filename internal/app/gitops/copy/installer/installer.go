@@ -16,8 +16,8 @@ const (
 )
 
 type Installer struct {
-	GitBranch string // featureBranch
-	AppName   string // argoapp
+	GitBranch string // featureBranch  // todo rm comment
+	AppName   string // argoapp // todo rm comment
 }
 
 func (i *Installer) Install() {
