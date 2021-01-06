@@ -35,6 +35,7 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 	repository.Images = flags.Images
 	repository.AppPath = flags.App.Path
 	repository.KeepRegistry = flags.KeepRegistry
+	repository.Command = common.CopyCmd
 	return repository
 }
 

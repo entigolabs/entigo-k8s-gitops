@@ -40,7 +40,7 @@ func handlePushErr(err error) error {
 }
 
 func logAlreadyUpToDate(gitOpName string, err error) {
-	common.Logger.Println(fmt.Sprintf("skipping git %s, %s", gitOpName, err))
+	common.Logger.Println(fmt.Sprintf("skiping git %s, %s", gitOpName, err))
 }
 
 func isConflictErr(err error) bool {

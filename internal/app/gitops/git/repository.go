@@ -1,6 +1,7 @@
 package git
 
 import (
+	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/go-git/go-git/v5"
@@ -15,6 +16,7 @@ type Repository struct {
 	Images       string
 	AppPath      string
 	KeepRegistry bool
+	Command      common.Command
 }
 
 func (r *Repository) Clone() {
@@ -69,7 +71,10 @@ func (r *Repository) gitCommit() {
 	cfg := r.getGitConfig()
 	wt := r.getWorkTree()
 	// TODO getAppName() is workname -> if(featureBranch == 'master') and if not ???
-	commitMessage := fmt.Sprintf("Updated image(s) %s in %s", r.Images, getAppName(r.AppPath))
+	commitMessage, msgErr := r.getCommitMessage()
+	if msgErr != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: msgErr})
+	}
 	commit, commitErr := wt.Commit(commitMessage, &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  cfg.User.Name,
@@ -85,6 +90,16 @@ func (r *Repository) gitCommit() {
 		common.Logger.Fatal(&common.PrefixedError{Reason: commitObjErr})
 	}
 	common.Logger.Println("git commit was successful")
+}
+
+func (r *Repository) getCommitMessage() (string, error) {
+	switch r.Command {
+	case common.UpdateCmd:
+		return fmt.Sprintf("updated image(s) %s in %s", r.Images, getAppName(r.AppPath)), nil
+	case common.CopyCmd:
+		return fmt.Sprintf("copied configurations to %s", r.GitFlags.Branch), nil
+	}
+	return "", errors.New(fmt.Sprintf("unsupported command '%v' for commit messafe", r.Command))
 }
 
 func (r *Repository) getGitConfig() *config.Config {
