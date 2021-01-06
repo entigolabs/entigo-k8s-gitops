@@ -63,7 +63,7 @@ func replace(node *yaml.Node, keys []string, newValue string) {
 	}
 	if seqPos, err := strconv.Atoi(identifier); err == nil {
 		if len(node.Content)-1 < seqPos {
-			msg := errors.New(fmt.Sprintf("skiping update '%s' in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile))
+			msg := errors.New(fmt.Sprintf("skiping '%s' copy in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile))
 			common.Logger.Println(&common.Warning{Reason: msg})
 			return
 		}
