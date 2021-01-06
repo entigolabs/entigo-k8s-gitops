@@ -14,6 +14,9 @@ func Run(flags *common.Flags) {
 	copyMasterToNewBranch(flags)
 	installer := copyInstaller.Installer{GitBranch: flags.Git.Branch, AppName: flags.App.Name}
 	installer.Install()
+	applyChanges(repo)
+	pushOnDemand(repo)
+	logEndMessage(repo)
 }
 
 func copyMasterToNewBranch(flags *common.Flags) {
@@ -51,4 +54,27 @@ func cloneOrPull(workingRepo *git.Repository) {
 func cloneAndConfig(workingRepo *git.Repository) {
 	workingRepo.Clone()
 	workingRepo.ConfigRepo()
+}
+
+func applyChanges(workingRepo *git.Repository) {
+	workingRepo.OpenGitOpsRepo()
+	workingRepo.Add()
+	workingRepo.CommitIfModified()
+}
+
+func pushOnDemand(workingRepo *git.Repository) {
+	if workingRepo.GitFlags.Push {
+		if err := workingRepo.Push(); err != nil {
+			//resetAndUpdate(workingRepo)
+		}
+	} else {
+		common.Logger.Println("commit(s) were chosen not to be pushed")
+	}
+}
+
+func logEndMessage(workingRepo *git.Repository) {
+	if workingRepo.GitFlags.Push {
+		url := common.GetRemoteRepoWebUrl(workingRepo.Repo)
+		common.Logger.Println(fmt.Sprintf("repository url: %s", url))
+	}
 }
