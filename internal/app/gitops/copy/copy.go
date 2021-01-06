@@ -10,12 +10,12 @@ import (
 
 func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
-	cloneOrPull(repo)
+	cloneOrPull(flags, repo)
 	copyMasterToNewBranch(flags)
 	installer := copyInstaller.Installer{GitBranch: flags.Git.Branch, AppName: flags.App.Name}
 	installer.Install()
 	applyChanges(repo)
-	pushOnDemand(repo)
+	pushOnDemand(flags, repo)
 	logEndMessage(repo)
 }
 
@@ -39,15 +39,15 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 	return repository
 }
 
-func cloneOrPull(workingRepo *git.Repository) {
+func cloneOrPull(flags *common.Flags, workingRepo *git.Repository) {
 	common.CdToGitOpsWd()
 	if !workingRepo.DoesRepoExist() {
 		cloneAndConfig(workingRepo)
 	} else {
 		workingRepo.OpenGitOpsRepo()
 		if err := workingRepo.Pull(); err != nil {
-			common.Logger.Fatal("workingRepo.Pull error") // TODO implement correct logic
-			//resetAndUpdate(workingRepo)
+			common.Logger.Println("workingRepo pull error") // TODO test and after that rm println
+			resetAndUpdate(flags, workingRepo)
 		}
 	}
 }
@@ -63,10 +63,11 @@ func applyChanges(workingRepo *git.Repository) {
 	workingRepo.CommitIfModified()
 }
 
-func pushOnDemand(workingRepo *git.Repository) {
+func pushOnDemand(flags *common.Flags, workingRepo *git.Repository) {
 	if workingRepo.GitFlags.Push {
 		if err := workingRepo.Push(); err != nil {
-			//resetAndUpdate(workingRepo)
+			common.Logger.Println("workingRepo push error") // TODO test and after that rm println
+			resetAndUpdate(flags, workingRepo)
 		}
 	} else {
 		common.Logger.Println("commit(s) were chosen not to be pushed")
@@ -78,4 +79,13 @@ func logEndMessage(workingRepo *git.Repository) {
 		url := common.GetRemoteRepoWebUrl(workingRepo.Repo)
 		common.Logger.Println(fmt.Sprintf("repository url: %s", url))
 	}
+}
+
+func resetAndUpdate(flags *common.Flags, workingRepo *git.Repository) {
+	common.RmGitOpsWd()
+	copyMasterToNewBranch(flags)
+	installer := copyInstaller.Installer{GitBranch: flags.Git.Branch, AppName: flags.App.Name}
+	installer.Install()
+	applyChanges(workingRepo)
+	pushOnDemand(flags, workingRepo)
 }
