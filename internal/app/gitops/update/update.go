@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/update/updater"
+	gitOpsUpdated "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/update/updater"
 )
 
 func Run(flags *common.Flags) {
@@ -69,7 +69,7 @@ func pushOnDemand(workingRepo *git.Repository) {
 
 func updateImages(workingRepo *git.Repository) {
 	cdToAppDir(workingRepo.Repo, workingRepo.AppPath)
-	updater := updater.Updater{Images: workingRepo.Images, KeepRegistry: workingRepo.KeepRegistry}
+	updater := gitOpsUpdated.Updater{Images: workingRepo.Images, KeepRegistry: workingRepo.KeepRegistry}
 	updater.UpdateImages()
 }
 
