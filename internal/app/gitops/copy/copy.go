@@ -23,7 +23,7 @@ func Run(flags *common.Flags) {
 func copyMasterToNewBranch(flags *common.Flags) {
 	cdToRepoRoot(flags.Git.Repo)
 	sourceDir := fmt.Sprintf("%s/master", flags.ComposeYamlPath())
-	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.Git.Branch)
+	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.Branch)
 	if err := copy.Copy(sourceDir, destinationDir); err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}

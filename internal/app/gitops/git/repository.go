@@ -70,7 +70,6 @@ func (r *Repository) Add() {
 func (r *Repository) gitCommit() {
 	cfg := r.getGitConfig()
 	wt := r.getWorkTree()
-	// TODO getAppName() is workname -> if(featureBranch == 'master') and if not ???
 	commitMessage, msgErr := r.getCommitMessage()
 	if msgErr != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: msgErr})
