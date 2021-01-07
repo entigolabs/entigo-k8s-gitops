@@ -14,12 +14,12 @@ const (
 )
 
 type Installer struct {
-	GitBranch string // featureBranch  // todo rm comment
+	AppBranch string // featureBranch  // todo rm comment
 	AppName   string // argoapp // todo rm comment
 }
 
 func (i *Installer) Install(installInput string) {
-	cmdLines := strings.Split(string(installInput), "\n")
+	cmdLines := strings.Split(installInput, "\n")
 	for _, cmdLine := range cmdLines {
 		if cmdLine == "" {
 			return
@@ -30,17 +30,17 @@ func (i *Installer) Install(installInput string) {
 }
 
 func (i *Installer) specifyLineVars(line string) string {
-	line = strings.ReplaceAll(line, saltedVariable("featureBranch"), i.GitBranch)
-	line = strings.ReplaceAll(line, saltedVariable("workname"), fmt.Sprintf("%s-%s", i.AppName, i.GitBranch))
+	line = strings.ReplaceAll(line, saltedVariable("featureBranch"), i.AppBranch)
+	line = strings.ReplaceAll(line, saltedVariable("workname"), fmt.Sprintf("%s-%s", i.AppName, i.AppBranch))
 	line = strings.ReplaceAll(line, saltedVariable("url"), i.getFeatureUrl())
 	return line
 }
 
 func (i *Installer) getFeatureUrl() string {
-	if i.GitBranch == "master" {
+	if i.AppBranch == "master" {
 		return i.AppName
 	}
-	return fmt.Sprintf("%s-%s.fleetcomplete.dev", i.AppName, i.GitBranch)
+	return fmt.Sprintf("%s-%s.fleetcomplete.dev", i.AppName, i.AppBranch)
 }
 
 func saltedVariable(variable string) string {
