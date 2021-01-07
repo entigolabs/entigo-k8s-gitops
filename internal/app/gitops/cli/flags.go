@@ -7,7 +7,7 @@ import (
 )
 
 func cliFlags(cmd common.Command) []cli.Flag {
-	return []cli.Flag{
+	baseFlags := []cli.Flag{
 		&loggingFlag,
 		&gitRepoFlag,
 		&gitBranchFlag,
@@ -17,17 +17,22 @@ func cliFlags(cmd common.Command) []cli.Flag {
 		&appPrefixFlag,
 		&appNamespaceFlag,
 		&appNameFlag,
-		getAppPathFlag(cmd),
-		&imagesFlag,
-		&keepRegistryFlag,
 	}
+	baseFlags = appendCmdSpecificFlags(baseFlags, cmd)
+	return baseFlags
 }
 
-func getAppPathFlag(cmd common.Command) *cli.StringFlag {
-	if cmd == common.UpdateCmd {
-		return &appPathFlag
+func appendCmdSpecificFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
+	switch cmd {
+	case common.RunCmd:
+	case common.UpdateCmd:
+		baseFlags = append(baseFlags, &imagesFlag)
+		baseFlags = append(baseFlags, &keepRegistryFlag)
+		baseFlags = append(baseFlags, &appPathFlag)
+	case common.CopyCmd:
+
 	}
-	return new(cli.StringFlag)
+	return baseFlags
 }
 
 var loggingFlag = cli.StringFlag{
