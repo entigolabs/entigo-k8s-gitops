@@ -25,6 +25,7 @@ type AppFlags struct {
 	Prefix    string
 	Namespace string
 	Name      string
+	Branch    string
 }
 
 func (f *Flags) Setup(cmd Command) error {

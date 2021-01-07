@@ -30,7 +30,7 @@ func appendCmdSpecificFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag
 		baseFlags = append(baseFlags, &keepRegistryFlag)
 		baseFlags = append(baseFlags, &appPathFlag)
 	case common.CopyCmd:
-
+		baseFlags = append(baseFlags, &appBranchFlag)
 	}
 	return baseFlags
 }
@@ -118,6 +118,15 @@ var appNameFlag = cli.StringFlag{
 	DefaultText: "",
 	Usage:       "application name",
 	Destination: &flags.App.Name,
+}
+
+var appBranchFlag = cli.StringFlag{
+	Name:        "app-branch",
+	Aliases:     []string{"a"},
+	DefaultText: "",
+	Usage:       "application branch `name`",
+	Destination: &flags.App.Branch,
+	Required:    true,
 }
 
 var imagesFlag = cli.StringFlag{
