@@ -41,6 +41,10 @@ func (f *Flags) ComposeYamlPath() string {
 	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, "yaml", f.App.Namespace, f.App.Name)
 }
 
+func (f *Flags) ComposeArgoPath() string {
+	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, "argoapp", f.App.Namespace, f.App.Name)
+}
+
 func (f *Flags) composeAppPath() {
 	f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
 }

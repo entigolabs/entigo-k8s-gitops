@@ -6,6 +6,7 @@ import (
 	configInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/copy/installer"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
 	"github.com/otiai10/copy"
+	"strings"
 )
 
 const installFile = "install.txt"
@@ -15,9 +16,29 @@ func Run(flags *common.Flags) {
 	cloneOrPull(flags, repo)
 	copyMasterToNewBranch(flags)
 	installViaFile(flags)
+	installArgoApp(flags)
 	applyChanges(repo)
 	pushOnDemand(flags, repo)
 	logEndMessage(repo)
+}
+
+func installArgoApp(flags *common.Flags) { // todo refactor
+	cdToRepoRoot(flags.Git.Repo)
+	cdToArgoApp(flags.ComposeArgoPath())
+	if err := copy.Copy("master.yaml", fmt.Sprintf("%s.yaml", flags.App.Branch)); err != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+	installer := configInstaller.Installer{AppBranch: flags.App.Branch, AppName: flags.App.Name}
+	installInput := getArgoAppInstallInput(flags)
+	installer.Install(installInput)
+}
+
+func getArgoAppInstallInput(flags *common.Flags) string {
+	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.Branch)
+	editName := fmt.Sprintf("edit %s.yaml metadata.name %s", flags.App.Branch, flags.App.Branch)
+	editPath := fmt.Sprintf("edit %s.yaml spec.source.path %s", flags.App.Branch, destinationDir)
+	editNamespace := fmt.Sprintf("edit %s.yaml spec.destination.namespace %s", flags.App.Branch, flags.App.Namespace)
+	return strings.Join([]string{editName, editPath, editNamespace}, "\n")
 }
 
 func copyMasterToNewBranch(flags *common.Flags) {

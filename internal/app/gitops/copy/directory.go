@@ -14,3 +14,9 @@ func cdToCopiedBranch(path string) {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 }
+
+func cdToArgoApp(path string) {
+	if err := common.ChangeDir(path); err != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+}
