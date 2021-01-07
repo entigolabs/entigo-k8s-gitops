@@ -3,17 +3,18 @@ package copy
 import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	copyInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/copy/installer"
+	configInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/copy/installer"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
 	"github.com/otiai10/copy"
 )
+
+const installFile = "install.txt"
 
 func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
 	cloneOrPull(flags, repo)
 	copyMasterToNewBranch(flags)
-	installer := copyInstaller.Installer{GitBranch: flags.Git.Branch, AppName: flags.App.Name}
-	installer.Install()
+	installViaFile(flags)
 	applyChanges(repo)
 	pushOnDemand(flags, repo)
 	logEndMessage(repo)
@@ -27,6 +28,12 @@ func copyMasterToNewBranch(flags *common.Flags) {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 	cdToCopiedBranch(destinationDir)
+}
+
+func installViaFile(flags *common.Flags) {
+	installer := configInstaller.Installer{GitBranch: flags.Git.Branch, AppName: flags.App.Name}
+	installInput := string(common.GetFileInput(installFile))
+	installer.Install(installInput)
 }
 
 func initWorkingRepo(flags *common.Flags) *git.Repository {
@@ -84,8 +91,7 @@ func logEndMessage(workingRepo *git.Repository) {
 func resetAndUpdate(flags *common.Flags, workingRepo *git.Repository) {
 	common.RmGitOpsWd()
 	copyMasterToNewBranch(flags)
-	installer := copyInstaller.Installer{GitBranch: flags.Git.Branch, AppName: flags.App.Name}
-	installer.Install()
+	installViaFile(flags)
 	applyChanges(workingRepo)
 	pushOnDemand(flags, workingRepo)
 }

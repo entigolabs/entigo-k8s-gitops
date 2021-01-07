@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-const installFile = "install.txt"
-
 const (
 	editCmd string = "edit"
 	dropCmd string = "drop"
@@ -20,8 +18,7 @@ type Installer struct {
 	AppName   string // argoapp // todo rm comment
 }
 
-func (i *Installer) Install() {
-	installInput := common.GetFileInput(installFile)
+func (i *Installer) Install(installInput string) {
 	cmdLines := strings.Split(string(installInput), "\n")
 	for _, cmdLine := range cmdLines {
 		if cmdLine == "" {
