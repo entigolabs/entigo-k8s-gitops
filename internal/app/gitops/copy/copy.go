@@ -31,7 +31,7 @@ func copyMasterToNewBranch(flags *common.Flags) {
 }
 
 func installViaFile(flags *common.Flags) {
-	installer := configInstaller.Installer{GitBranch: flags.Git.Branch, AppName: flags.App.Name}
+	installer := configInstaller.Installer{AppBranch: flags.App.Branch, AppName: flags.App.Name}
 	installInput := string(common.GetFileInput(installFile))
 	installer.Install(installInput)
 }
