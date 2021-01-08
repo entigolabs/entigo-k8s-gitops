@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// todo refactor flags
 type Flags struct {
 	LoggingLevel string
 	Git          GitFlags
@@ -21,11 +22,13 @@ type GitFlags struct {
 }
 
 type AppFlags struct {
-	Path      string
-	Prefix    string
-	Namespace string
-	Name      string
-	Branch    string
+	Path       string
+	Prefix     string
+	Namespace  string
+	Name       string
+	Branch     string
+	PrefixArgo string
+	PrefixYaml string
 }
 
 func (f *Flags) Setup(cmd Command) error {
@@ -38,11 +41,17 @@ func (f *Flags) Setup(cmd Command) error {
 }
 
 func (f *Flags) ComposeYamlPath() string {
-	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, "yaml", f.App.Namespace, f.App.Name)
+	if f.App.PrefixYaml == "" {
+		return fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
+	}
+	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, f.App.PrefixYaml, f.App.Namespace, f.App.Name)
 }
 
 func (f *Flags) ComposeArgoPath() string {
-	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, "argoapp", f.App.Namespace, f.App.Name)
+	if f.App.PrefixArgo == "" {
+		return fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
+	}
+	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, f.App.PrefixArgo, f.App.Namespace, f.App.Name)
 }
 
 func (f *Flags) composeAppPath() {

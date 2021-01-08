@@ -31,6 +31,8 @@ func appendCmdSpecificFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag
 		baseFlags = append(baseFlags, &appPathFlag)
 	case common.CopyCmd:
 		baseFlags = append(baseFlags, &appBranchFlag)
+		baseFlags = append(baseFlags, &appPrefixArgoFlag)
+		baseFlags = append(baseFlags, &appPrefixYamlFlag)
 	}
 	return baseFlags
 }
@@ -127,6 +129,22 @@ var appBranchFlag = cli.StringFlag{
 	Usage:       "application branch `name`",
 	Destination: &flags.App.Branch,
 	Required:    true,
+}
+
+var appPrefixArgoFlag = cli.StringFlag{
+	Name:        "prefix-argo",
+	Aliases:     []string{"g"},
+	DefaultText: "",
+	Usage:       "Argo app `path`",
+	Destination: &flags.App.PrefixArgo,
+}
+
+var appPrefixYamlFlag = cli.StringFlag{
+	Name:        "prefix-yaml",
+	Aliases:     []string{"y"},
+	DefaultText: "",
+	Usage:       "yaml configurations `path`",
+	Destination: &flags.App.PrefixYaml,
 }
 
 var imagesFlag = cli.StringFlag{
