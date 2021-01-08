@@ -18,6 +18,7 @@ type logInfo struct {
 var editInfo = new(logInfo)
 
 func edit(cmdData []string) {
+	logEditStart(cmdData)
 	yamlFileNames := strings.Split(cmdData[0], ",")
 	for _, yamlFileName := range yamlFileNames {
 		editInfo.workingFile = yamlFileName
@@ -85,4 +86,12 @@ func replace(node *yaml.Node, keys []string, newValue string) {
 			continue
 		}
 	}
+}
+
+func logEditStart(cmdData []string) {
+	fileNames := formatCommaSeparatedString(cmdData[0])
+	formattedKeys := formatCommaSeparatedString(cmdData[1])
+	newValue := cmdData[2]
+	common.Logger.Println(fmt.Sprintf("started editing %s", fileNames))
+	common.Logger.Println(fmt.Sprintf("changing keys %s to %s", formattedKeys, newValue))
 }

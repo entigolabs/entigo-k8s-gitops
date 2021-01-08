@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"os"
 	"strings"
 )
 
@@ -58,16 +57,19 @@ func runCommand(line string) {
 	case dropCmd:
 		drop(cmdData)
 	default:
-		err := fmt.Sprintf("unsupported command '%s'", cmdType)
-		common.Logger.Fatal(common.PrefixedError{Reason: errors.New(err)})
+		msg := fmt.Sprintf("unsupported command '%s'", cmdType)
+		common.Logger.Fatal(common.PrefixedError{Reason: errors.New(msg)})
 	}
+	logCommandEnd(cmdType)
 }
 
-func drop(cmdData []string) {
-	filesToRemove := strings.Split(cmdData[0], ",")
-	for _, file := range filesToRemove {
-		if err := os.RemoveAll(file); err != nil {
-			common.Logger.Fatal(&common.PrefixedError{Reason: err})
-		}
+func logCommandEnd(cmdType string) {
+	cmdString := ""
+	switch cmdType {
+	case editCmd:
+		cmdString = "edit"
+	case dropCmd:
+		cmdString = "drop"
 	}
+	common.Logger.Println(fmt.Sprintf("finised %s command", cmdString))
 }
