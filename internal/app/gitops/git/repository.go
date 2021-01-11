@@ -147,8 +147,8 @@ func (r *Repository) ConfigRepo() {
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
-	cfg.User.Name = "jenkins"
-	cfg.User.Email = "jenkins@localhost"
+	cfg.User.Name = r.GitFlags.AuthorName
+	cfg.User.Email = r.GitFlags.AuthorEmail
 	err = r.Repository.SetConfig(cfg)
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})

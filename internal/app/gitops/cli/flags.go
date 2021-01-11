@@ -14,6 +14,8 @@ func cliFlags(cmd common.Command) []cli.Flag {
 		&gitKeyFileFlag,
 		&gitStrictHostKeyCheckingFlag,
 		&gitPushFlag,
+		&gitAuthorNameFlag,
+		&gitAuthorEmailFlag,
 		&appPrefixFlag,
 		&appNamespaceFlag,
 		&appNameFlag,
@@ -88,6 +90,24 @@ var gitPushFlag = cli.BoolFlag{
 	Value:       true,
 	Usage:       "push changes",
 	Destination: &flags.Git.Push,
+}
+
+var gitAuthorNameFlag = cli.StringFlag{
+	Name:        "git-author-name",
+	Aliases:     []string{"ga"},
+	DefaultText: "jenkins",
+	Value:       "jenkins",
+	Usage:       "Git author name",
+	Destination: &flags.Git.AuthorName,
+}
+
+var gitAuthorEmailFlag = cli.StringFlag{
+	Name:        "git-author-email",
+	Aliases:     []string{"ge"},
+	DefaultText: "jenkins@localhost",
+	Value:       "jenkins@localhost",
+	Usage:       "Git author email",
+	Destination: &flags.Git.AuthorEmail,
 }
 
 var appPathFlag = cli.StringFlag{

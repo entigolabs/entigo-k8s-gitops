@@ -17,6 +17,8 @@ type GitFlags struct {
 	Repo                  string
 	Branch                string
 	KeyFile               string
+	AuthorName            string
+	AuthorEmail           string
 	StrictHostKeyChecking bool
 	Push                  bool
 }

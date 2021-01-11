@@ -31,15 +31,20 @@ func cloneOrPull(workingRepo *git.Repository) {
 	if !workingRepo.DoesRepoExist() {
 		cloneAndConfig(workingRepo)
 	} else {
-		workingRepo.OpenGitOpsRepo()
-		if err := workingRepo.Pull(); err != nil {
-			resetAndUpdate(workingRepo)
-		}
+		pullAndClone(workingRepo)
 	}
 }
 
 func cloneAndConfig(workingRepo *git.Repository) {
 	workingRepo.Clone()
+	workingRepo.ConfigRepo()
+}
+
+func pullAndClone(workingRepo *git.Repository) {
+	workingRepo.OpenGitOpsRepo()
+	if err := workingRepo.Pull(); err != nil {
+		resetAndUpdate(workingRepo)
+	}
 	workingRepo.ConfigRepo()
 }
 
