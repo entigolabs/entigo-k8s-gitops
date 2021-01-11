@@ -20,28 +20,28 @@ This GitOps utility supports 3 commands:
 ##### Example With Application Path Flag
 ```
 ./gitops update \
-    --repo=<repository-ssh-url> \
-    --branch=<repository-branch> \
-    --key-file=<key-file-location> \
+    --git-repo=<repository-ssh-url> \
+    --git-branch=<repository-branch> \
+    --git-key-file=<key-file-location> \
     --images=<image:tag,image2:tag> \ 
-    --path=<app-path>
+    --app-path=<app-path>
 ```
 
 ##### Example With Tokenized Path Flags 
 
 Tokenized path flags: 
-1) ```--prefix=<app-prefix>``` 
-2) ```--namespace=<app-namespace>```
-3) ```--name=<app-name>```
+1) ```--app-prefix=<app-prefix>``` 
+2) ```--app-namespace=<app-namespace>```
+3) ```--app-name=<app-name>```
 
 ```
 ./gitops update \
-    --repo=<repository-ssh-url> \
-    --branch=<repository-branch> \
-    --key-file=<key-file-location> \
+    --git-repo=<repository-ssh-url> \
+    --git-branch=<repository-branch> \
+    --git-key-file=<key-file-location> \
     --images=<image:tag,image2:tag> \ 
-    --prefix=<app-prefix> \
-    --namespace=<app-namespace> \
-    --name=<app-name>
+    --app-prefix=<app-prefix> \
+    --app-namespace=<app-namespace> \
+    --app-name=<app-name>
 ```
-**Valuated ```--path``` with other than default value will override tokenized path flags** 
+**Valuated ```--app-path``` with other than default value will override tokenized path flags** 
