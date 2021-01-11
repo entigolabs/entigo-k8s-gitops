@@ -7,6 +7,7 @@ import (
 	goGitSsh "github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"golang.org/x/crypto/ssh"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -30,13 +31,28 @@ func removeRepoFolder(repoSshUrl string) {
 }
 
 func isRemoteKeyDefined(keyFile string) bool {
-	if _, err := os.Stat(keyFile); err != nil {
+	keyAbsPath := getKeyFileAbsPath(keyFile)
+	if _, err := os.Stat(keyAbsPath); err != nil {
 		common.Logger.Println(fmt.Sprintf("coldn't use SSH key defined via flag. %s", err))
 		common.Logger.Println("using SSH key defined in pipeline")
 		return false
 	}
 	common.Logger.Println(fmt.Sprintf("using SSH key defined in %s", keyFile))
 	return true
+}
+
+func getKeyFileAbsPath(keyPath string) string {
+	if filepath.IsAbs(keyPath) {
+		return keyPath
+	}
+	if err := common.ChangeDir(common.RootPath); err != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+	absKeyPath, err := filepath.Abs(keyPath)
+	if err != nil {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+	return absKeyPath
 }
 
 func (r *Repository) getPublicKeys() *goGitSsh.PublicKeys {
