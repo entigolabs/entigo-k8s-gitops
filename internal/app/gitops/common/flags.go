@@ -4,7 +4,6 @@ import (
 	"fmt"
 )
 
-// todo refactor flags
 type Flags struct {
 	LoggingLevel string
 	Git          GitFlags
