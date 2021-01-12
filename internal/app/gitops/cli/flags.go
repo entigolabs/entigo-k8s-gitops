@@ -51,7 +51,6 @@ var loggingFlag = cli.StringFlag{
 
 var gitRepoFlag = cli.StringFlag{
 	Name:        "git-repo",
-	Aliases:     []string{"gr"},
 	EnvVars:     []string{"GIT_REPO"},
 	DefaultText: "",
 	Usage:       "Git repository `SSH URL`",
@@ -61,7 +60,6 @@ var gitRepoFlag = cli.StringFlag{
 
 var gitBranchFlag = cli.StringFlag{
 	Name:        "git-branch",
-	Aliases:     []string{"gb"},
 	EnvVars:     []string{"GIT_BRANCH"},
 	DefaultText: "",
 	Usage:       "branch `name`",
@@ -71,7 +69,6 @@ var gitBranchFlag = cli.StringFlag{
 
 var gitKeyFileFlag = cli.StringFlag{
 	Name:        "git-key-file",
-	Aliases:     []string{"gk"},
 	EnvVars:     []string{"GIT_KEY_FILE"},
 	DefaultText: "",
 	Usage:       "SSH private key `location`",
@@ -81,7 +78,6 @@ var gitKeyFileFlag = cli.StringFlag{
 
 var gitStrictHostKeyCheckingFlag = cli.BoolFlag{
 	Name:        "git-strict-host-key-checking",
-	Aliases:     []string{"gs"},
 	EnvVars:     []string{"GIT_STRICT_HOST_KEY_CHECKING"},
 	DefaultText: strconv.FormatBool(false),
 	Usage:       "strict host key checking",
@@ -90,7 +86,6 @@ var gitStrictHostKeyCheckingFlag = cli.BoolFlag{
 
 var gitPushFlag = cli.BoolFlag{
 	Name:        "git-push",
-	Aliases:     []string{"gp"},
 	EnvVars:     []string{"GIT_PUSH"},
 	DefaultText: strconv.FormatBool(true),
 	Value:       true,
@@ -100,7 +95,6 @@ var gitPushFlag = cli.BoolFlag{
 
 var gitAuthorNameFlag = cli.StringFlag{
 	Name:        "git-author-name",
-	Aliases:     []string{"gn"},
 	EnvVars:     []string{"GIT_AUTHOR_NAME"},
 	DefaultText: "jenkins",
 	Usage:       "Git author name",
@@ -109,7 +103,6 @@ var gitAuthorNameFlag = cli.StringFlag{
 
 var gitAuthorEmailFlag = cli.StringFlag{
 	Name:        "git-author-email",
-	Aliases:     []string{"ge"},
 	EnvVars:     []string{"GIT_AUTHOR_EMAIL"},
 	DefaultText: "jenkins@localhost",
 	Value:       "jenkins@localhost",
@@ -119,7 +112,6 @@ var gitAuthorEmailFlag = cli.StringFlag{
 
 var appPathFlag = cli.StringFlag{
 	Name:        "app-path",
-	Aliases:     []string{"ap"},
 	EnvVars:     []string{"APP_PATH"},
 	DefaultText: "",
 	Usage:       "path to application folder",
@@ -128,7 +120,6 @@ var appPathFlag = cli.StringFlag{
 
 var appPrefixFlag = cli.StringFlag{
 	Name:        "app-prefix",
-	Aliases:     []string{"ax"},
 	EnvVars:     []string{"APP_PREFIX"},
 	DefaultText: "",
 	Usage:       "`path` prefix to apply",
@@ -137,7 +128,6 @@ var appPrefixFlag = cli.StringFlag{
 
 var appNamespaceFlag = cli.StringFlag{
 	Name:        "app-namespace",
-	Aliases:     []string{"ans"},
 	EnvVars:     []string{"APP_NAMESPACE"},
 	DefaultText: "",
 	Usage:       "application namespace `name`",
@@ -146,7 +136,6 @@ var appNamespaceFlag = cli.StringFlag{
 
 var appNameFlag = cli.StringFlag{
 	Name:        "app-name",
-	Aliases:     []string{"an"},
 	EnvVars:     []string{"APP_NAME"},
 	DefaultText: "",
 	Usage:       "application name",
@@ -155,7 +144,6 @@ var appNameFlag = cli.StringFlag{
 
 var appBranchFlag = cli.StringFlag{
 	Name:        "app-branch",
-	Aliases:     []string{"ab"},
 	EnvVars:     []string{"APP_BRANCH"},
 	DefaultText: "",
 	Usage:       "application branch `name`",
@@ -165,7 +153,6 @@ var appBranchFlag = cli.StringFlag{
 
 var appPrefixArgoFlag = cli.StringFlag{
 	Name:        "app-prefix-argo",
-	Aliases:     []string{"apa"},
 	EnvVars:     []string{"APP_PREFIX_ARGO"},
 	DefaultText: "",
 	Usage:       "Argo app `path`",
@@ -174,7 +161,6 @@ var appPrefixArgoFlag = cli.StringFlag{
 
 var appPrefixYamlFlag = cli.StringFlag{
 	Name:        "app-prefix-yaml",
-	Aliases:     []string{"apy"},
 	EnvVars:     []string{"APP_PREFIX_YAML"},
 	DefaultText: "",
 	Usage:       "yaml configurations `path`",
