@@ -1,6 +1,7 @@
 package common
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -42,17 +43,31 @@ func (f *Flags) Setup(cmd Command) error {
 }
 
 func (f *Flags) ComposeYamlPath() string {
-	if f.App.PrefixYaml == "" {
-		return fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
+	yamlPath := ""
+	if f.App.Prefix != "" {
+		yamlPath = fmt.Sprintf("%s/", f.App.Prefix)
 	}
-	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, f.App.PrefixYaml, f.App.Namespace, f.App.Name)
+	if f.App.PrefixYaml != "" {
+		yamlPath = fmt.Sprintf("%s%s/", yamlPath, f.App.PrefixYaml)
+	}
+	if yamlPath == "" {
+		return fmt.Sprintf("%s/%s", f.App.Namespace, f.App.Name)
+	}
+	return fmt.Sprintf("%s%s/%s", yamlPath, f.App.Namespace, f.App.Name)
 }
 
 func (f *Flags) ComposeArgoPath() string {
-	if f.App.PrefixArgo == "" {
-		return fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
+	yamlPath := ""
+	if f.App.Prefix != "" {
+		yamlPath = fmt.Sprintf("%s/", f.App.Prefix)
 	}
-	return fmt.Sprintf("%s/%s/%s/%s", f.App.Prefix, f.App.PrefixArgo, f.App.Namespace, f.App.Name)
+	if f.App.PrefixArgo != "" {
+		yamlPath = fmt.Sprintf("%s%s/", yamlPath, f.App.PrefixArgo)
+	}
+	if yamlPath == "" {
+		return fmt.Sprintf("%s/%s", f.App.Namespace, f.App.Name)
+	}
+	return fmt.Sprintf("%s%s/%s", yamlPath, f.App.Namespace, f.App.Name)
 }
 
 func (f *Flags) composeAppPath() {
@@ -64,11 +79,15 @@ func (f *Flags) setup() {
 }
 
 func (f *Flags) cmdSpecificSetup(cmd Command) {
-	if cmd == UpdateCmd {
+	switch cmd {
+	case UpdateCmd:
 		if f.isTokenizedPath() {
 			f.composeAppPath()
 		}
-	} else {
-		f.App.Path = f.ComposeYamlPath()
+	case CopyCmd:
+		f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
+	default:
+		Logger.Fatal(&PrefixedError{Reason: errors.New("unsupported command")})
+
 	}
 }
