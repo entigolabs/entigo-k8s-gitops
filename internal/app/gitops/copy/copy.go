@@ -61,7 +61,7 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 	repository := new(git.Repository)
 	repository.GitFlags = flags.Git
 	repository.Images = flags.Images
-	repository.AppPath = flags.App.Path
+	repository.AppFlags = flags.App
 	repository.KeepRegistry = flags.KeepRegistry
 	repository.Command = common.CopyCmd
 	return repository

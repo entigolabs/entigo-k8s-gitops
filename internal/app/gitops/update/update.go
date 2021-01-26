@@ -20,7 +20,7 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 	repository := new(git.Repository)
 	repository.GitFlags = flags.Git
 	repository.Images = flags.Images
-	repository.AppPath = flags.App.Path
+	repository.AppFlags = flags.App
 	repository.KeepRegistry = flags.KeepRegistry
 	repository.Command = common.UpdateCmd
 	return repository
@@ -73,7 +73,7 @@ func pushOnDemand(workingRepo *git.Repository) {
 }
 
 func updateImages(workingRepo *git.Repository) {
-	cdToAppDir(workingRepo.Repo, workingRepo.AppPath)
+	cdToAppDir(workingRepo.Repo, workingRepo.AppFlags.Path)
 	updater := gitOpsUpdated.Updater{Images: workingRepo.Images, KeepRegistry: workingRepo.KeepRegistry}
 	updater.UpdateImages()
 }

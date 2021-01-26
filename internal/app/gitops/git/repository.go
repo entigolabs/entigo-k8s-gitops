@@ -13,8 +13,8 @@ import (
 type Repository struct {
 	*git.Repository
 	common.GitFlags
+	common.AppFlags
 	Images       string
-	AppPath      string
 	KeepRegistry bool
 	Command      common.Command
 }
@@ -94,9 +94,9 @@ func (r *Repository) gitCommit() {
 func (r *Repository) getCommitMessage() (string, error) {
 	switch r.Command {
 	case common.UpdateCmd:
-		return fmt.Sprintf("updated image(s) %s in %s", r.Images, getAppName(r.AppPath)), nil
+		return fmt.Sprintf("updated image(s) %s in %s", r.Images, r.AppFlags.Name), nil
 	case common.CopyCmd:
-		return fmt.Sprintf("copied configurations to %s", r.GitFlags.Branch), nil
+		return fmt.Sprintf("copied configurations from %s/master to %s/%s", r.AppFlags.Name, r.AppFlags.Branch, r.AppFlags.Name), nil
 	}
 	return "", errors.New(fmt.Sprintf("unsupported command '%v' for commit messafe", r.Command))
 }
