@@ -45,29 +45,29 @@ func (f *Flags) Setup(cmd Command) error {
 func (f *Flags) ComposeYamlPath() string {
 	yamlPath := ""
 	if f.App.Prefix != "" {
-		yamlPath = fmt.Sprintf("%s/", f.App.Prefix)
+		yamlPath = appendSlash(f.App.Prefix)
 	}
 	if f.App.PrefixYaml != "" {
-		yamlPath = fmt.Sprintf("%s%s/", yamlPath, f.App.PrefixYaml)
+		yamlPath = yamlPath + appendSlash(f.App.PrefixYaml)
+	} else {
+		defaultPrefixYaml := "yaml"
+		yamlPath = yamlPath + appendSlash(defaultPrefixYaml)
 	}
-	if yamlPath == "" {
-		return fmt.Sprintf("%s/%s", f.App.Namespace, f.App.Name)
-	}
-	return fmt.Sprintf("%s%s/%s", yamlPath, f.App.Namespace, f.App.Name)
+	return yamlPath + appendSlash(f.App.Namespace) + f.App.Name
 }
 
 func (f *Flags) ComposeArgoPath() string {
 	yamlPath := ""
 	if f.App.Prefix != "" {
-		yamlPath = fmt.Sprintf("%s/", f.App.Prefix)
+		yamlPath = appendSlash(f.App.Prefix)
 	}
 	if f.App.PrefixArgo != "" {
-		yamlPath = fmt.Sprintf("%s%s/", yamlPath, f.App.PrefixArgo)
+		yamlPath = yamlPath + appendSlash(f.App.PrefixArgo)
+	} else {
+		defaultPrefixArgo := "argoapps"
+		yamlPath = yamlPath + appendSlash(defaultPrefixArgo)
 	}
-	if yamlPath == "" {
-		return fmt.Sprintf("%s/%s", f.App.Namespace, f.App.Name)
-	}
-	return fmt.Sprintf("%s%s/%s", yamlPath, f.App.Namespace, f.App.Name)
+	return yamlPath + appendSlash(f.App.Namespace) + f.App.Name
 }
 
 func (f *Flags) composeAppPath() {
@@ -90,4 +90,8 @@ func (f *Flags) cmdSpecificSetup(cmd Command) {
 		Logger.Fatal(&PrefixedError{Reason: errors.New("unsupported command")})
 
 	}
+}
+
+func appendSlash(str string) string {
+	return str + "/"
 }
