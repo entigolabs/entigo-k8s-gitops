@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type Flags struct {
@@ -75,7 +76,9 @@ func (f *Flags) composeAppPath() {
 }
 
 func (f *Flags) setup() {
-	f.Git.Branch = sanitizeBranch(f.Git.Branch)
+	f.App.Namespace = strings.ToLower(f.App.Namespace)
+	f.App.Name = strings.ToLower(f.App.Name)
+	f.App.Branch = sanitizeBranch(f.App.Branch)
 }
 
 func (f *Flags) cmdSpecificSetup(cmd Command) {
