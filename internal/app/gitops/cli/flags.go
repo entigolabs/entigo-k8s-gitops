@@ -154,7 +154,8 @@ var appBranchFlag = cli.StringFlag{
 var appPrefixArgoFlag = cli.StringFlag{
 	Name:        "app-prefix-argo",
 	EnvVars:     []string{"APP_PREFIX_ARGO"},
-	DefaultText: "",
+	DefaultText: "argoapps",
+	Value:       "argoapps",
 	Usage:       "Argo app `path`",
 	Destination: &flags.App.PrefixArgo,
 }
@@ -162,7 +163,8 @@ var appPrefixArgoFlag = cli.StringFlag{
 var appPrefixYamlFlag = cli.StringFlag{
 	Name:        "app-prefix-yaml",
 	EnvVars:     []string{"APP_PREFIX_YAML"},
-	DefaultText: "",
+	DefaultText: "yaml",
+	Value:       "yaml",
 	Usage:       "yaml configurations `path`",
 	Destination: &flags.App.PrefixYaml,
 }

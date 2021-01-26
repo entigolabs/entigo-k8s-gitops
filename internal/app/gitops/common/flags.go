@@ -48,12 +48,7 @@ func (f *Flags) ComposeYamlPath() string {
 	if f.App.Prefix != "" {
 		yamlPath = appendSlash(f.App.Prefix)
 	}
-	if f.App.PrefixYaml != "" {
-		yamlPath = yamlPath + appendSlash(f.App.PrefixYaml)
-	} else {
-		defaultPrefixYaml := "yaml"
-		yamlPath = yamlPath + appendSlash(defaultPrefixYaml)
-	}
+	yamlPath = yamlPath + appendSlash(f.App.PrefixYaml)
 	return yamlPath + appendSlash(f.App.Namespace) + f.App.Name
 }
 
@@ -62,12 +57,7 @@ func (f *Flags) ComposeArgoPath() string {
 	if f.App.Prefix != "" {
 		yamlPath = appendSlash(f.App.Prefix)
 	}
-	if f.App.PrefixArgo != "" {
-		yamlPath = yamlPath + appendSlash(f.App.PrefixArgo)
-	} else {
-		defaultPrefixArgo := "argoapps"
-		yamlPath = yamlPath + appendSlash(defaultPrefixArgo)
-	}
+	yamlPath = yamlPath + appendSlash(f.App.PrefixArgo)
 	return yamlPath + appendSlash(f.App.Namespace) + f.App.Name
 }
 
