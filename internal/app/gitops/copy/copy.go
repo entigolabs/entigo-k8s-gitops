@@ -35,7 +35,7 @@ func installArgoApp(flags *common.Flags) { // todo refactor
 
 func getArgoAppInstallInput(flags *common.Flags) string {
 	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.Branch)
-	editName := fmt.Sprintf("edit %s.yaml metadata.name %s", flags.App.Branch, flags.App.Branch)
+	editName := fmt.Sprintf("edit %s.yaml metadata.name %s-%s", flags.App.Branch, flags.App.Name, flags.App.Branch)
 	editPath := fmt.Sprintf("edit %s.yaml spec.source.path %s", flags.App.Branch, destinationDir)
 	editNamespace := fmt.Sprintf("edit %s.yaml spec.destination.namespace %s", flags.App.Branch, flags.App.Namespace)
 	return strings.Join([]string{editName, editPath, editNamespace}, "\n")
