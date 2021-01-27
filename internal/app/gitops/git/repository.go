@@ -7,6 +7,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"strings"
 	"time"
 )
 
@@ -94,9 +95,9 @@ func (r *Repository) gitCommit() {
 func (r *Repository) getCommitMessage() (string, error) {
 	switch r.Command {
 	case common.UpdateCmd:
-		return fmt.Sprintf("updated image(s) %s in %s", r.Images, r.AppFlags.Name), nil
+		return fmt.Sprintf("updated image(s) %s in %s", r.Images, r.getAppName()), nil
 	case common.CopyCmd:
-		return fmt.Sprintf("copied configurations from %s/master to %s/%s", r.AppFlags.Name, r.AppFlags.Name, r.AppFlags.Branch), nil
+		return fmt.Sprintf("copied configurations from %s/master to %s/%s", r.AppFlags.Name, r.getAppName(), r.AppFlags.Branch), nil
 	}
 	return "", errors.New(fmt.Sprintf("unsupported command '%v' for commit messafe", r.Command))
 }
@@ -153,4 +154,12 @@ func (r *Repository) ConfigRepo() {
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
+}
+
+func (r *Repository) getAppName() string {
+	if r.AppFlags.Name == "" {
+		pathTokens := strings.Split(r.AppFlags.Path, "/")
+		return pathTokens[len(pathTokens)-1]
+	}
+	return r.AppFlags.Name
 }
