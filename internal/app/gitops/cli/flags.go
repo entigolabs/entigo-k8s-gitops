@@ -97,6 +97,7 @@ var gitAuthorNameFlag = cli.StringFlag{
 	Name:        "git-author-name",
 	EnvVars:     []string{"GIT_AUTHOR_NAME"},
 	DefaultText: "jenkins",
+	Value:       "jenkins",
 	Usage:       "Git author name",
 	Destination: &flags.Git.AuthorName,
 }
