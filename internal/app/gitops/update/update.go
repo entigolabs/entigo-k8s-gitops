@@ -23,6 +23,7 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 	repository.AppFlags = flags.App
 	repository.KeepRegistry = flags.KeepRegistry
 	repository.Command = common.UpdateCmd
+	repository.LoggingLevel = flags.LoggingLevel
 	return repository
 }
 

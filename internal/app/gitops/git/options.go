@@ -1,9 +1,13 @@
 package git
 
 import (
+	"errors"
 	"fmt"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"io"
+	"io/ioutil"
 	"os"
 )
 
@@ -19,7 +23,7 @@ func (r Repository) getCloneOptionsWithKey() *git.CloneOptions {
 		Auth:          r.getPublicKeys(),
 		URL:           r.Repo,
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", r.GitFlags.Branch)),
-		Progress:      os.Stdout,
+		Progress:      r.getProgressWriter(),
 	}
 }
 
@@ -61,6 +65,19 @@ func (r Repository) getCloneOptionsDefault() *git.CloneOptions {
 	return &git.CloneOptions{
 		URL:           r.Repo,
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", r.GitFlags.Branch)),
-		Progress:      os.Stdout,
+		Progress:      r.getProgressWriter(),
 	}
+}
+
+func (r Repository) getProgressWriter() io.Writer {
+	switch r.LoggingLevel {
+	case "dev":
+		return os.Stdout
+	case "prod":
+		return ioutil.Discard
+	default:
+		msg := fmt.Sprintf("unsupported logger level: %s", r.LoggingLevel)
+		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New(msg)})
+	}
+	return os.Stdout
 }
