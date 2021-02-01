@@ -37,7 +37,9 @@ func getLoggingLvl() string {
 }
 
 func isLoggerFlag(arg string) bool {
-	return strings.Contains(arg, "--logging") || strings.Contains(arg, "-l")
+	isLongLoggingFlag := strings.Contains(arg, "--logging=") || arg == "--logging"
+	isShortLoggingFlag := strings.Contains(arg, "-l=") || arg == "-l"
+	return isLongLoggingFlag || isShortLoggingFlag
 }
 
 func getLoggerFlagValue(index int, loggerArg string) string {
