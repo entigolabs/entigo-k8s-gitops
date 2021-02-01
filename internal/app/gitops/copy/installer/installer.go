@@ -13,8 +13,8 @@ const (
 )
 
 type Installer struct {
-	AppBranch string // featureBranch  // todo rm comment
-	AppName   string // argoapp // todo rm comment
+	AppBranch string
+	AppName   string
 }
 
 func (i *Installer) Install(installInput string) {

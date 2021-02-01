@@ -75,7 +75,6 @@ func cloneOrPull(flags *common.Flags, workingRepo *git.Repository) {
 	} else {
 		workingRepo.OpenGitOpsRepo()
 		if err := workingRepo.Pull(); err != nil {
-			common.Logger.Println("workingRepo pull error") // TODO test and after that rm println
 			resetAndUpdate(flags, workingRepo)
 		}
 	}
@@ -95,7 +94,6 @@ func applyChanges(workingRepo *git.Repository) {
 func pushOnDemand(flags *common.Flags, workingRepo *git.Repository) {
 	if workingRepo.GitFlags.Push {
 		if err := workingRepo.Push(); err != nil {
-			common.Logger.Println("workingRepo push error") // TODO test and after that rm println
 			resetAndUpdate(flags, workingRepo)
 		}
 	} else {
