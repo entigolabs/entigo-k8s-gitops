@@ -9,6 +9,13 @@ const GitOpsWd = "gitops-workdir"
 
 var RootPath = GetWd()
 
+func CdToRepoRoot(repo string) {
+	repoRootPath := GetRepositoryRootPath(repo)
+	if err := ChangeDir(repoRootPath); err != nil {
+		Logger.Fatal(&PrefixedError{Reason: err})
+	}
+}
+
 func CdToGitOpsWd() {
 	path := fmt.Sprintf("%s/%s", RootPath, GitOpsWd)
 	if _, err := os.Stat(path); err != nil {

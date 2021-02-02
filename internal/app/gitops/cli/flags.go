@@ -6,6 +6,21 @@ import (
 	"strconv"
 )
 
+func appendCmdSpecificFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
+	switch cmd {
+	case common.RunCmd:
+	case common.UpdateCmd:
+		baseFlags = append(baseFlags, &imagesFlag)
+		baseFlags = append(baseFlags, &keepRegistryFlag)
+		baseFlags = append(baseFlags, &appPathFlag)
+	case common.CopyCmd:
+		baseFlags = copyAndDeleteSpecificFlags(baseFlags)
+	case common.DeleteCmd:
+		baseFlags = copyAndDeleteSpecificFlags(baseFlags)
+	}
+	return baseFlags
+}
+
 func cliFlags(cmd common.Command) []cli.Flag {
 	baseFlags := []cli.Flag{
 		&loggingFlag,
@@ -24,18 +39,10 @@ func cliFlags(cmd common.Command) []cli.Flag {
 	return baseFlags
 }
 
-func appendCmdSpecificFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
-	switch cmd {
-	case common.RunCmd:
-	case common.UpdateCmd:
-		baseFlags = append(baseFlags, &imagesFlag)
-		baseFlags = append(baseFlags, &keepRegistryFlag)
-		baseFlags = append(baseFlags, &appPathFlag)
-	case common.CopyCmd:
-		baseFlags = append(baseFlags, &appBranchFlag)
-		baseFlags = append(baseFlags, &appPrefixArgoFlag)
-		baseFlags = append(baseFlags, &appPrefixYamlFlag)
-	}
+func copyAndDeleteSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
+	baseFlags = append(baseFlags, &appBranchFlag)
+	baseFlags = append(baseFlags, &appPrefixArgoFlag)
+	baseFlags = append(baseFlags, &appPrefixYamlFlag)
 	return baseFlags
 }
 

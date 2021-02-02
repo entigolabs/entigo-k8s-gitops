@@ -77,6 +77,7 @@ func (r *Repository) gitCommit() {
 		common.Logger.Fatal(&common.PrefixedError{Reason: msgErr})
 	}
 	commit, commitErr := wt.Commit(commitMessage, &git.CommitOptions{
+		All: true,
 		Author: &object.Signature{
 			Name:  cfg.User.Name,
 			Email: cfg.User.Email,
@@ -99,6 +100,8 @@ func (r *Repository) getCommitMessage() (string, error) {
 		return fmt.Sprintf("updated image(s) %s in %s", r.Images, r.getAppName()), nil
 	case common.CopyCmd:
 		return fmt.Sprintf("copied configurations from %s/master to %s/%s", r.AppFlags.Name, r.getAppName(), r.AppFlags.Branch), nil
+	case common.DeleteCmd:
+		return fmt.Sprintf("deleted %s and %s.yaml", r.AppFlags.Branch, r.AppFlags.Branch), nil
 	}
 	return "", errors.New(fmt.Sprintf("unsupported command '%v' for commit messafe", r.Command))
 }

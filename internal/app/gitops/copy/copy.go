@@ -23,7 +23,7 @@ func Run(flags *common.Flags) {
 }
 
 func installArgoApp(flags *common.Flags) { // todo refactor
-	cdToRepoRoot(flags.Git.Repo)
+	common.CdToRepoRoot(flags.Git.Repo)
 	cdToArgoApp(flags.ComposeArgoPath())
 	if err := copy.Copy("master.yaml", fmt.Sprintf("%s.yaml", flags.App.Branch)); err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
@@ -42,7 +42,7 @@ func getArgoAppInstallInput(flags *common.Flags) string {
 }
 
 func copyMasterToNewBranch(flags *common.Flags) {
-	cdToRepoRoot(flags.Git.Repo)
+	common.CdToRepoRoot(flags.Git.Repo)
 	sourceDir := fmt.Sprintf("%s/master", flags.ComposeYamlPath())
 	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.Branch)
 	if err := copy.Copy(sourceDir, destinationDir); err != nil {
@@ -110,8 +110,10 @@ func logEndMessage(workingRepo *git.Repository) {
 
 func resetAndUpdate(flags *common.Flags, workingRepo *git.Repository) {
 	common.RmGitOpsWd()
+	cloneOrPull(flags, workingRepo)
 	copyMasterToNewBranch(flags)
 	installViaFile(flags)
+	installArgoApp(flags)
 	applyChanges(workingRepo)
 	pushOnDemand(flags, workingRepo)
 }

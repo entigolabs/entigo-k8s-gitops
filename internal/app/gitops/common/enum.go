@@ -6,6 +6,7 @@ const (
 	RunCmd Command = iota
 	UpdateCmd
 	CopyCmd
+	DeleteCmd
 )
 
 type LoggingLevel int

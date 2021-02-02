@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/copy"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/delete"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/update"
 	"github.com/urfave/cli/v2"
 )
@@ -27,6 +28,8 @@ func run(cmd common.Command) {
 		update.Run(flags)
 	case common.CopyCmd:
 		copy.Run(flags)
+	case common.DeleteCmd:
+		delete.Run(flags)
 	default:
 		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New("unsupported command")})
 	}

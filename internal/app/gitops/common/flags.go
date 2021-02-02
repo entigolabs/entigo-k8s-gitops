@@ -79,6 +79,8 @@ func (f *Flags) cmdSpecificSetup(cmd Command) {
 		}
 	case CopyCmd:
 		f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
+	case DeleteCmd:
+		f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
 	default:
 		Logger.Fatal(&PrefixedError{Reason: errors.New("unsupported command")})
 
