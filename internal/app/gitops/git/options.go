@@ -69,14 +69,15 @@ func (r Repository) getCloneOptionsDefault() *git.CloneOptions {
 	}
 }
 
+// todo use: type Command int
 func (r Repository) getProgressWriter() io.Writer {
 	switch r.LoggingLevel {
-	case "dev":
+	case common.DevLoggingLvl:
 		return os.Stdout
-	case "prod":
+	case common.ProdLoggingLvl:
 		return ioutil.Discard
 	default:
-		msg := fmt.Sprintf("unsupported logger level: %s", r.LoggingLevel)
+		msg := fmt.Sprintf("unsupported logging level: %v", r.LoggingLevel)
 		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New(msg)})
 	}
 	return os.Stdout

@@ -27,13 +27,13 @@ func addAppInfo(app *cli.App) {
 	app.Usage = "helper utility"
 }
 
-func getLoggingLvl() string {
+func getLoggingLvl() common.LoggingLevel {
 	for i, arg := range os.Args {
 		if isLoggerFlag(arg) {
 			return getLoggerFlagValue(i, arg)
 		}
 	}
-	return "prod"
+	return common.ProdLoggingLvl
 }
 
 func isLoggerFlag(arg string) bool {
@@ -42,11 +42,12 @@ func isLoggerFlag(arg string) bool {
 	return isLongLoggingFlag || isShortLoggingFlag
 }
 
-func getLoggerFlagValue(index int, loggerArg string) string {
+func getLoggerFlagValue(index int, loggerArg string) common.LoggingLevel {
 	if strings.Contains(loggerArg, "=") {
 		splits := strings.Split(loggerArg, "=")
-		return strings.TrimSpace(splits[len(splits)-1])
+		loggingLvlAsString := strings.TrimSpace(splits[len(splits)-1])
+		return common.ConvStrToLoggingLvl(loggingLvlAsString)
 	} else {
-		return os.Args[index+1]
+		return common.ConvStrToLoggingLvl(os.Args[index+1])
 	}
 }

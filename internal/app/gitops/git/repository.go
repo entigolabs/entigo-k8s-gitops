@@ -18,7 +18,7 @@ type Repository struct {
 	Images       string
 	KeepRegistry bool
 	Command      common.Command
-	LoggingLevel string
+	LoggingLevel common.LoggingLevel
 }
 
 func (r *Repository) Clone() {

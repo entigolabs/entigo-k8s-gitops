@@ -7,3 +7,10 @@ const (
 	UpdateCmd
 	CopyCmd
 )
+
+type LoggingLevel int
+
+const (
+	DevLoggingLvl LoggingLevel = iota
+	ProdLoggingLvl
+)
