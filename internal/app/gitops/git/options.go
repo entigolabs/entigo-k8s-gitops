@@ -69,7 +69,6 @@ func (r Repository) getCloneOptionsDefault() *git.CloneOptions {
 	}
 }
 
-// todo use: type Command int
 func (r Repository) getProgressWriter() io.Writer {
 	switch r.LoggingLevel {
 	case common.DevLoggingLvl:
