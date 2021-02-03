@@ -2,9 +2,9 @@ package update
 
 import (
 	"fmt"
+	gitOpsUpdated "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/update/updater"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
-	gitOpsUpdated "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/update/updater"
 )
 
 func Run(flags *common.Flags) {

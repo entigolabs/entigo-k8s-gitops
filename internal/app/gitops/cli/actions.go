@@ -2,10 +2,10 @@ package cli
 
 import (
 	"errors"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/copy"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/delete"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/update"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/copy"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/delete"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/update"
 	"github.com/urfave/cli/v2"
 )
 
