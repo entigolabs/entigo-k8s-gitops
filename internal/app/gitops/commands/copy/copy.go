@@ -2,9 +2,9 @@ package copy
 
 import (
 	"fmt"
-	configInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/copy/installer"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
+	configInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
 	"github.com/otiai10/copy"
 	"strings"
 )
