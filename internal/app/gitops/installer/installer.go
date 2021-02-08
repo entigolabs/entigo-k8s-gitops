@@ -13,8 +13,10 @@ const (
 )
 
 type Installer struct {
-	AppBranch string
-	AppName   string
+	AppBranch    string
+	AppName      string
+	Command      common.Command
+	KeepRegistry bool
 }
 
 func (i *Installer) Install(installInput string) {
@@ -24,10 +26,11 @@ func (i *Installer) Install(installInput string) {
 			return
 		}
 		cmdLine = i.specifyLineVars(cmdLine)
-		runCommand(cmdLine)
+		i.runCommand(cmdLine)
 	}
 }
 
+// todo move to copy, because it's specific to it
 func (i *Installer) specifyLineVars(line string) string {
 	line = strings.ReplaceAll(line, saltedVariable("featureBranch"), i.AppBranch)
 	line = strings.ReplaceAll(line, saltedVariable("workname"), fmt.Sprintf("%s-%s", i.AppName, i.AppBranch))
@@ -46,16 +49,16 @@ func saltedVariable(variable string) string {
 	return fmt.Sprintf("{{%s}}", variable)
 }
 
-func runCommand(line string) {
+func (i *Installer) runCommand(line string) {
 	lineSplits := strings.Split(line, " ")
 	cmdType := lineSplits[0]
 	cmdData := lineSplits[1:]
 
 	switch cmdType {
 	case editCmd:
-		edit(cmdData)
+		i.edit(cmdData)
 	case dropCmd:
-		drop(cmdData)
+		i.drop(cmdData)
 	default:
 		msg := fmt.Sprintf("unsupported command '%s'", cmdType)
 		common.Logger.Fatal(common.PrefixedError{Reason: errors.New(msg)})

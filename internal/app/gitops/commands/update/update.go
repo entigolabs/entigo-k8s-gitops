@@ -2,9 +2,11 @@ package update
 
 import (
 	"fmt"
-	gitOpsUpdated "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/update/updater"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
+	configInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
+	"io/ioutil"
+	"strings"
 )
 
 func Run(flags *common.Flags) {
@@ -75,8 +77,48 @@ func pushOnDemand(workingRepo *git.Repository) {
 
 func updateImages(workingRepo *git.Repository) {
 	cdToAppDir(workingRepo.Repo, workingRepo.AppFlags.Path)
-	updater := gitOpsUpdated.Updater{Images: workingRepo.Images, KeepRegistry: workingRepo.KeepRegistry}
-	updater.UpdateImages()
+	images := strings.Split(workingRepo.Images, ",")
+	installer := configInstaller.Installer{Command: common.UpdateCmd, AppBranch: "placeholder", AppName: "placeholder", KeepRegistry: workingRepo.KeepRegistry}
+	installInput := getInstallInput(images)
+	installer.Install(installInput)
+}
+
+func getInstallInput(images []string) string {
+	yamlNamesArray, err := readDirFiltered(".", ".yaml")
+	if err != nil {
+		common.Logger.Println(common.PrefixedError{Reason: err})
+	}
+	return composeInstallInput(images, yamlNamesArray)
+}
+
+func composeInstallInput(images []string, yamlNamesArray []string) string {
+	installInput := ""
+	for _, image := range images {
+		editLine := fmt.Sprintf("edit %s %s %s", strings.Join(yamlNamesArray, ","), getInstallLocations(), image)
+		installInput += fmt.Sprintf("%s\n", editLine)
+	}
+	return installInput
+}
+
+func getInstallLocations() string {
+	deploymentStatefulSetDaemonSetJobLocation := "spec.template.spec.containers.*.image"
+	podLocation := "spec.containers.*.image"
+	cronJobLocation := "spec.jobTemplate.spec.template.spec.containers.*.image"
+	return strings.Join([]string{deploymentStatefulSetDaemonSetJobLocation, podLocation, cronJobLocation}, ",")
+}
+
+func readDirFiltered(path string, suffix string) ([]string, error) {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+	var result []string
+	for _, file := range files {
+		if file.IsDir() == false && strings.HasSuffix(file.Name(), suffix) {
+			result = append(result, file.Name())
+		}
+	}
+	return result, err
 }
 
 func logEndMessage(workingRepo *git.Repository) {

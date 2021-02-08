@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func drop(cmdData []string) {
+func (i *Installer) drop(cmdData []string) {
 	logDropStart(cmdData)
 	filesToRemove := strings.Split(cmdData[0], ",")
 	for _, file := range filesToRemove {
