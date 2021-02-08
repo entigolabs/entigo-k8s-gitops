@@ -11,8 +11,9 @@ import (
 )
 
 type logInfo struct {
-	workingFile string
-	workingKey  string
+	workingFile  string
+	workingKey   string
+	keyDontExist bool
 }
 
 var editInfo = new(logInfo)
@@ -52,6 +53,7 @@ func (i *Installer) editYaml(yamlNode *yaml.Node, cmdData []string) {
 	newValue := cmdData[2]
 	for _, replaceLocation := range replaceLocations {
 		editInfo.workingKey = replaceLocation
+		editInfo.keyDontExist = false
 		keys := strings.Split(replaceLocation, ".")
 		i.replace(yamlNode, keys, newValue)
 	}
@@ -89,7 +91,7 @@ func (inst *Installer) replace(node *yaml.Node, keys []string, newValue string) 
 				inst.replace(node.Content[i+1], keys[1:], newValue)
 			}
 		} else {
-			continue
+			inst.logIfKeyDontExist(node, keys, i)
 		}
 	}
 }
@@ -107,6 +109,7 @@ func (i *Installer) getNewValue(oldValue string, newValue string) string {
 }
 
 func (i *Installer) getUpdateSpecificNewValue(oldValue string, newValue string) string {
+	editInfo.keyDontExist = true
 	image := strings.Split(newValue, ":")[0]
 	if strings.Contains(oldValue, image) {
 		if i.KeepRegistry {
@@ -116,7 +119,21 @@ func (i *Installer) getUpdateSpecificNewValue(oldValue string, newValue string) 
 		}
 		return newValue
 	}
+	logImageCouldNotBeFound(image)
 	return oldValue
+}
+
+func (i *Installer) logIfKeyDontExist(node *yaml.Node, keys []string, index int) {
+	if len(keys) > 1 && index == len(node.Content)-1 && !editInfo.keyDontExist && i.Command == common.UpdateCmd {
+		msg := errors.New(fmt.Sprintf("skiping '%s' update in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile))
+		common.Logger.Println(&common.Warning{Reason: msg})
+		editInfo.keyDontExist = true
+	}
+}
+
+func logImageCouldNotBeFound(image string) {
+	msg := errors.New(fmt.Sprintf("skiping '%s' update in %s - '%s' couldn't be found", editInfo.workingKey, editInfo.workingFile, image))
+	common.Logger.Println(&common.Warning{Reason: msg})
 }
 
 func logEditStart(cmdData []string) {
