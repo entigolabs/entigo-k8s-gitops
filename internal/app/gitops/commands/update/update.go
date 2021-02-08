@@ -78,7 +78,7 @@ func pushOnDemand(workingRepo *git.Repository) {
 func updateImages(workingRepo *git.Repository) {
 	cdToAppDir(workingRepo.Repo, workingRepo.AppFlags.Path)
 	images := strings.Split(workingRepo.Images, ",")
-	installer := configInstaller.Installer{Command: common.UpdateCmd, AppBranch: "placeholder", AppName: "placeholder", KeepRegistry: workingRepo.KeepRegistry}
+	installer := configInstaller.Installer{Command: common.UpdateCmd, KeepRegistry: workingRepo.KeepRegistry}
 	installInput := getInstallInput(images)
 	installer.Install(installInput)
 }

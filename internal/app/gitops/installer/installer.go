@@ -13,8 +13,6 @@ const (
 )
 
 type Installer struct {
-	AppBranch    string
-	AppName      string
 	Command      common.Command
 	KeepRegistry bool
 }
@@ -22,31 +20,18 @@ type Installer struct {
 func (i *Installer) Install(installInput string) {
 	cmdLines := strings.Split(installInput, "\n")
 	for _, cmdLine := range cmdLines {
-		if cmdLine == "" {
+		if i.isInstallerFinished(cmdLine) {
 			return
 		}
-		cmdLine = i.specifyLineVars(cmdLine)
 		i.runCommand(cmdLine)
 	}
 }
 
-// todo move to copy, because it's specific to it
-func (i *Installer) specifyLineVars(line string) string {
-	line = strings.ReplaceAll(line, saltedVariable("featureBranch"), i.AppBranch)
-	line = strings.ReplaceAll(line, saltedVariable("workname"), fmt.Sprintf("%s-%s", i.AppName, i.AppBranch))
-	line = strings.ReplaceAll(line, saltedVariable("url"), i.getFeatureUrl())
-	return line
-}
-
-func (i *Installer) getFeatureUrl() string {
-	if i.AppBranch == "master" {
-		return i.AppName
+func (i *Installer) isInstallerFinished(cmdLine string) bool {
+	if cmdLine == "" {
+		return true
 	}
-	return fmt.Sprintf("%s-%s.fleetcomplete.dev", i.AppName, i.AppBranch)
-}
-
-func saltedVariable(variable string) string {
-	return fmt.Sprintf("{{%s}}", variable)
+	return false
 }
 
 func (i *Installer) runCommand(line string) {
