@@ -20,18 +20,12 @@ type Installer struct {
 func (i *Installer) Install(installInput string) {
 	cmdLines := strings.Split(installInput, "\n")
 	for _, cmdLine := range cmdLines {
-		if i.isInstallerFinished(cmdLine) {
-			return
+		cmdLine = strings.TrimSpace(cmdLine)
+		if !i.isLineValid(cmdLine) {
+			continue
 		}
 		i.runCommand(cmdLine)
 	}
-}
-
-func (i *Installer) isInstallerFinished(cmdLine string) bool {
-	if cmdLine == "" {
-		return true
-	}
-	return false
 }
 
 func (i *Installer) runCommand(line string) {
