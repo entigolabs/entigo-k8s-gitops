@@ -22,7 +22,28 @@ func Run(flags *common.Flags) {
 	logEndMessage(repo)
 }
 
-func installArgoApp(flags *common.Flags) { // todo refactor
+func initWorkingRepo(flags *common.Flags) *git.Repository {
+	repository := new(git.Repository)
+	repository.GitFlags = flags.Git
+	repository.Images = flags.Images
+	repository.AppFlags = flags.App
+	repository.KeepRegistry = flags.KeepRegistry
+	repository.Command = common.CopyCmd
+	repository.LoggingLevel = common.ConvStrToLoggingLvl(flags.LoggingLevel)
+	return repository
+}
+
+func resetAndUpdate(flags *common.Flags, workingRepo *git.Repository) {
+	common.RmGitOpsWd()
+	cloneOrPull(flags, workingRepo)
+	copyMasterToNewBranch(flags)
+	installViaFile(flags)
+	installArgoApp(flags)
+	applyChanges(workingRepo)
+	pushOnDemand(flags, workingRepo)
+}
+
+func installArgoApp(flags *common.Flags) {
 	common.CdToRepoRoot(flags.Git.Repo)
 	cdToArgoApp(flags.ComposeArgoPath())
 	if err := copy.Copy("master.yaml", fmt.Sprintf("%s.yaml", flags.App.Branch)); err != nil {
@@ -59,63 +80,9 @@ func installViaFile(flags *common.Flags) {
 	installer.Install(installInput)
 }
 
-func initWorkingRepo(flags *common.Flags) *git.Repository {
-	repository := new(git.Repository)
-	repository.GitFlags = flags.Git
-	repository.Images = flags.Images
-	repository.AppFlags = flags.App
-	repository.KeepRegistry = flags.KeepRegistry
-	repository.Command = common.CopyCmd
-	repository.LoggingLevel = common.ConvStrToLoggingLvl(flags.LoggingLevel)
-	return repository
-}
-
-func cloneOrPull(flags *common.Flags, workingRepo *git.Repository) {
-	common.CdToGitOpsWd()
-	if !workingRepo.DoesRepoExist() {
-		cloneAndConfig(workingRepo)
-	} else {
-		workingRepo.OpenGitOpsRepo()
-		if err := workingRepo.Pull(); err != nil {
-			resetAndUpdate(flags, workingRepo)
-		}
-	}
-}
-
-func cloneAndConfig(workingRepo *git.Repository) {
-	workingRepo.Clone()
-	workingRepo.ConfigRepo()
-}
-
-func applyChanges(workingRepo *git.Repository) {
-	workingRepo.OpenGitOpsRepo()
-	workingRepo.Add()
-	workingRepo.CommitIfModified()
-}
-
-func pushOnDemand(flags *common.Flags, workingRepo *git.Repository) {
-	if workingRepo.GitFlags.Push {
-		if err := workingRepo.Push(); err != nil {
-			resetAndUpdate(flags, workingRepo)
-		}
-	} else {
-		common.Logger.Println("commit(s) were chosen not to be pushed")
-	}
-}
-
 func logEndMessage(workingRepo *git.Repository) {
 	if workingRepo.GitFlags.Push {
 		url := common.GetRemoteRepoWebUrl(workingRepo.Repo)
 		common.Logger.Println(fmt.Sprintf("repository url: %s", url))
 	}
-}
-
-func resetAndUpdate(flags *common.Flags, workingRepo *git.Repository) {
-	common.RmGitOpsWd()
-	cloneOrPull(flags, workingRepo)
-	copyMasterToNewBranch(flags)
-	installViaFile(flags)
-	installArgoApp(flags)
-	applyChanges(workingRepo)
-	pushOnDemand(flags, workingRepo)
 }
