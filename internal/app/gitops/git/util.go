@@ -29,8 +29,8 @@ func removeRepoFolder(repoSshUrl string) {
 	}
 }
 
-func isRemoteKeyDefined(keyFile string) bool {
-	keyAbsPath := getKeyFileAbsPath(keyFile)
+func (r *Repository) isRemoteKeyDefined(keyFile string) bool {
+	keyAbsPath := r.getKeyFileAbsPath(keyFile)
 	if _, err := os.Stat(keyAbsPath); err != nil {
 		common.Logger.Println(fmt.Sprintf("coldn't use SSH key defined via flag. %s", err))
 		common.Logger.Println("using SSH key defined in pipeline")
@@ -40,7 +40,7 @@ func isRemoteKeyDefined(keyFile string) bool {
 	return true
 }
 
-func getKeyFileAbsPath(keyPath string) string {
+func (r *Repository) getKeyFileAbsPath(keyPath string) string {
 	if filepath.IsAbs(keyPath) {
 		return keyPath
 	}
@@ -51,6 +51,8 @@ func getKeyFileAbsPath(keyPath string) string {
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
+	r.KeyFile = absKeyPath
+	common.CdToGitOpsWd()
 	return absKeyPath
 }
 

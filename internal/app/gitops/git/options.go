@@ -12,7 +12,7 @@ import (
 )
 
 func (r Repository) getCloneOptions() *git.CloneOptions {
-	if isRemoteKeyDefined(r.KeyFile) {
+	if r.isRemoteKeyDefined(r.KeyFile) {
 		return r.getCloneOptionsWithKey()
 	}
 	return r.getCloneOptionsDefault()
@@ -28,7 +28,7 @@ func (r Repository) getCloneOptionsWithKey() *git.CloneOptions {
 }
 
 func (r Repository) getPullOptions() *git.PullOptions {
-	if isRemoteKeyDefined(r.KeyFile) {
+	if r.isRemoteKeyDefined(r.KeyFile) {
 		return r.getPullOptionsWithKey()
 	}
 	return getPullOptionsDefault()
@@ -45,7 +45,7 @@ func getPullOptionsDefault() *git.PullOptions {
 }
 
 func (r Repository) getPushOptions() *git.PushOptions {
-	if isRemoteKeyDefined(r.KeyFile) {
+	if r.isRemoteKeyDefined(r.KeyFile) {
 		return r.getPushOptionsWithKey()
 	}
 	return getPushOptionsDefault()
