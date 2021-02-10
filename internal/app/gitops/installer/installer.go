@@ -20,7 +20,7 @@ type Installer struct {
 func (i *Installer) Install(installInput string) {
 	cmdLines := strings.Split(installInput, "\n")
 	for _, cmdLine := range cmdLines {
-		cmdLine = strings.TrimSpace(cmdLine)
+		cmdLine = formatCmdLine(cmdLine)
 		if !i.isLineValid(cmdLine) {
 			continue
 		}
@@ -43,6 +43,15 @@ func (i *Installer) runCommand(line string) {
 		common.Logger.Fatal(common.PrefixedError{Reason: errors.New(msg)})
 	}
 	logCommandEnd(cmdType)
+}
+
+func formatCmdLine(cmdLine string) string {
+	cmdLine = strings.TrimSpace(cmdLine)
+	return standardizeSpaces(cmdLine)
+}
+
+func standardizeSpaces(s string) string {
+	return strings.Join(strings.Fields(s), " ")
 }
 
 func logCommandEnd(cmdType string) {
