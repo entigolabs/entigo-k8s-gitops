@@ -7,11 +7,12 @@ import (
 )
 
 type Flags struct {
-	LoggingLevel string
-	Git          GitFlags
-	App          AppFlags
-	Images       string
-	KeepRegistry bool
+	LoggingLevel       string
+	Git                GitFlags
+	App                AppFlags
+	Images             string
+	KeepRegistry       bool
+	DeploymentStrategy string
 }
 
 type GitFlags struct {

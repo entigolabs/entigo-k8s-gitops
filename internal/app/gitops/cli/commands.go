@@ -25,7 +25,7 @@ var runCommand = cli.Command{
 var updateCommand = cli.Command{
 	Name:    "update",
 	Aliases: []string{"up"},
-	Usage:   "update corresponding images",
+	Usage:   "update specified images",
 	Action:  action(common.UpdateCmd),
 	Flags:   cliFlags(common.UpdateCmd),
 }

@@ -6,23 +6,15 @@ import (
 	"strconv"
 )
 
-func appendCmdSpecificFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
-	switch cmd {
-	case common.RunCmd:
-	case common.UpdateCmd:
-		baseFlags = append(baseFlags, &imagesFlag)
-		baseFlags = append(baseFlags, &keepRegistryFlag)
-		baseFlags = append(baseFlags, &appPathFlag)
-	case common.CopyCmd:
-		baseFlags = copyAndDeleteSpecificFlags(baseFlags)
-	case common.DeleteCmd:
-		baseFlags = copyAndDeleteSpecificFlags(baseFlags)
-	}
-	return baseFlags
+func cliFlags(cmd common.Command) []cli.Flag {
+	var flags []cli.Flag
+	flags = appendBaseFlags(flags)
+	flags = appendCmdSpecificFlags(flags, cmd)
+	return flags
 }
 
-func cliFlags(cmd common.Command) []cli.Flag {
-	baseFlags := []cli.Flag{
+func appendBaseFlags(flags []cli.Flag) []cli.Flag {
+	return append(flags,
 		&loggingFlag,
 		&gitRepoFlag,
 		&gitBranchFlag,
@@ -33,9 +25,27 @@ func cliFlags(cmd common.Command) []cli.Flag {
 		&gitAuthorEmailFlag,
 		&appPrefixFlag,
 		&appNamespaceFlag,
-		&appNameFlag,
+		&appNameFlag)
+}
+
+func appendCmdSpecificFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
+	switch cmd {
+	case common.RunCmd:
+	case common.UpdateCmd:
+		baseFlags = updateSpecificFlags(baseFlags)
+	case common.CopyCmd:
+		baseFlags = copyAndDeleteSpecificFlags(baseFlags)
+	case common.DeleteCmd:
+		baseFlags = copyAndDeleteSpecificFlags(baseFlags)
 	}
-	baseFlags = appendCmdSpecificFlags(baseFlags, cmd)
+	return baseFlags
+}
+
+func updateSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
+	baseFlags = append(baseFlags, &imagesFlag)
+	baseFlags = append(baseFlags, &keepRegistryFlag)
+	baseFlags = append(baseFlags, &appPathFlag)
+	baseFlags = append(baseFlags, &deploymentStrategyFlag)
 	return baseFlags
 }
 
@@ -192,6 +202,15 @@ var keepRegistryFlag = cli.BoolFlag{
 	Aliases:     []string{"k"},
 	EnvVars:     []string{"KEEP_REGISTRY"},
 	DefaultText: strconv.FormatBool(false),
-	Usage:       "Keeps registry part of the changeable image",
+	Usage:       "keeps registry part of the changeable image",
 	Destination: &flags.KeepRegistry,
+}
+
+var deploymentStrategyFlag = cli.StringFlag{
+	Name:        "deployment-strategy",
+	Aliases:     []string{"s"},
+	EnvVars:     []string{"DEPLOYMENT-STRATEGY"},
+	DefaultText: "if deployment-strategy is not set then it will remain unchanged",
+	Usage:       "change deployment strategy",
+	Destination: &flags.DeploymentStrategy,
 }
