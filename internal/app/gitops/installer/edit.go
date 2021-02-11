@@ -43,7 +43,7 @@ func (i *Installer) getEditedBuffer(yamlFileName string, cmdData []string) *byte
 		}
 	}
 	if err := encoder.Close(); err != nil {
-		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+		logEncoderClosing(yamlFileName, err)
 	}
 	return &buffer
 }
@@ -134,6 +134,15 @@ func (i *Installer) logIfKeyDontExist(node *yaml.Node, keys []string, index int)
 func logImageCouldNotBeFound(image string) {
 	msg := errors.New(fmt.Sprintf("skiping '%s' update in %s - '%s' couldn't be found", editInfo.workingKey, editInfo.workingFile, image))
 	common.Logger.Println(&common.Warning{Reason: msg})
+}
+
+func logEncoderClosing(yamlFileName string, err error) {
+	if strings.Contains(err.Error(), "yaml: expected STREAM-START") {
+		msg := fmt.Sprintf("%s in %s", err, yamlFileName)
+		common.Logger.Println(&common.Warning{Reason: errors.New(msg)})
+	} else {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
 }
 
 func logEditStart(cmdData []string) {
