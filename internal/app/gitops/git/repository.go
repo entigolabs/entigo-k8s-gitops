@@ -15,10 +15,11 @@ type Repository struct {
 	*git.Repository
 	common.GitFlags
 	common.AppFlags
-	Images       string
-	KeepRegistry bool
-	Command      common.Command
-	LoggingLevel common.LoggingLevel
+	Images             string
+	KeepRegistry       bool
+	Command            common.Command
+	LoggingLevel       common.LoggingLevel
+	DeploymentStrategy common.DeploymentStrategy
 }
 
 func (r *Repository) Clone() {

@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 func ConvStrToLoggingLvl(str string) LoggingLevel {
@@ -16,4 +17,32 @@ func ConvStrToLoggingLvl(str string) LoggingLevel {
 		Logger.Fatal(&PrefixedError{Reason: errors.New(msg)})
 	}
 	return ProdLoggingLvl
+}
+
+func ConvStrToDeploymentStrategy(str string) DeploymentStrategy {
+	switch strings.ToLower(str) {
+	case "rollingupdate":
+		return RollingUpdateStrategy
+	case "recreate":
+		return RecreateStrategy
+	case "":
+		return UnspecifiedStrategy
+	default:
+		msg := fmt.Sprintf("unsupported deployment strategy: %s", str)
+		Logger.Fatal(&PrefixedError{Reason: errors.New(msg)})
+	}
+	return UnspecifiedStrategy
+}
+
+func ConvDeploymentStrategyToStr(deploymentStrategy DeploymentStrategy) string {
+	switch deploymentStrategy {
+	case RollingUpdateStrategy:
+		return "RollingUpdate"
+	case RecreateStrategy:
+		return "Recreate"
+	default:
+		msg := fmt.Sprintf("unsupported deployment strategy: %v", deploymentStrategy)
+		Logger.Fatal(&PrefixedError{Reason: errors.New(msg)})
+	}
+	return ""
 }

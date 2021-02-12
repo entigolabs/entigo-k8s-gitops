@@ -5,7 +5,6 @@ import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
 	configInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
-	"io/ioutil"
 	"strings"
 )
 
@@ -13,6 +12,7 @@ func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
 	cloneOrPull(repo)
 	updateImages(repo)
+	updateDeploymentStrategy(repo)
 	applyChanges(repo)
 	pushOnDemand(repo)
 	logEndMessage(repo)
@@ -26,61 +26,38 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 	repository.KeepRegistry = flags.KeepRegistry
 	repository.Command = common.UpdateCmd
 	repository.LoggingLevel = common.ConvStrToLoggingLvl(flags.LoggingLevel)
+	repository.DeploymentStrategy = common.ConvStrToDeploymentStrategy(flags.DeploymentStrategy)
 	return repository
+}
+
+func updateImages(workingRepo *git.Repository) {
+	cdToAppDir(workingRepo.Repo, workingRepo.AppFlags.Path)
+	images := strings.Split(workingRepo.Images, ",")
+	imgUpdateInput := installInput{installType: imageUpdateInstType, changeData: images}
+	installer := configInstaller.Installer{Command: common.UpdateCmd, KeepRegistry: workingRepo.KeepRegistry, DeploymentStrategy: common.UnspecifiedStrategy}
+	input := getInstallInput(imgUpdateInput)
+	installer.Install(input)
+}
+
+func updateDeploymentStrategy(repo *git.Repository) {
+	if repo.DeploymentStrategy == common.UnspecifiedStrategy {
+		return
+	}
+	cdToAppDir(repo.Repo, repo.AppFlags.Path)
+	strategyAsStr := common.ConvDeploymentStrategyToStr(repo.DeploymentStrategy)
+	strategyUpdateInput := installInput{installType: strategyUpdateInstType, changeData: []string{strategyAsStr}}
+	installer := configInstaller.Installer{Command: common.UpdateCmd, DeploymentStrategy: repo.DeploymentStrategy}
+	input := getInstallInput(strategyUpdateInput)
+	installer.Install(input)
 }
 
 func resetAndUpdate(workingRepo *git.Repository) {
 	common.RmGitOpsWd()
 	cloneOrPull(workingRepo)
 	updateImages(workingRepo)
+	updateDeploymentStrategy(workingRepo)
 	applyChanges(workingRepo)
 	pushOnDemand(workingRepo)
-}
-
-func updateImages(workingRepo *git.Repository) {
-	cdToAppDir(workingRepo.Repo, workingRepo.AppFlags.Path)
-	images := strings.Split(workingRepo.Images, ",")
-	installer := configInstaller.Installer{Command: common.UpdateCmd, KeepRegistry: workingRepo.KeepRegistry}
-	installInput := getInstallInput(images)
-	installer.Install(installInput)
-}
-
-func getInstallInput(images []string) string {
-	yamlNamesArray, err := readDirFiltered(".", ".yaml")
-	if err != nil {
-		common.Logger.Println(common.PrefixedError{Reason: err})
-	}
-	return composeInstallInput(images, yamlNamesArray)
-}
-
-func composeInstallInput(images []string, yamlNamesArray []string) string {
-	installInput := ""
-	for _, image := range images {
-		editLine := fmt.Sprintf("edit %s %s %s", strings.Join(yamlNamesArray, ","), getInstallLocations(), image)
-		installInput += fmt.Sprintf("%s\n", editLine)
-	}
-	return installInput
-}
-
-func getInstallLocations() string {
-	deploymentStatefulSetDaemonSetJobLocation := "spec.template.spec.containers.*.image"
-	podLocation := "spec.containers.*.image"
-	cronJobLocation := "spec.jobTemplate.spec.template.spec.containers.*.image"
-	return strings.Join([]string{deploymentStatefulSetDaemonSetJobLocation, podLocation, cronJobLocation}, ",")
-}
-
-func readDirFiltered(path string, suffix string) ([]string, error) {
-	files, err := ioutil.ReadDir(path)
-	if err != nil {
-		return nil, err
-	}
-	var result []string
-	for _, file := range files {
-		if file.IsDir() == false && strings.HasSuffix(file.Name(), suffix) {
-			result = append(result, file.Name())
-		}
-	}
-	return result, err
 }
 
 func logEndMessage(workingRepo *git.Repository) {

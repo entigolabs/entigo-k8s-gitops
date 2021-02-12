@@ -15,3 +15,11 @@ const (
 	DevLoggingLvl LoggingLevel = iota
 	ProdLoggingLvl
 )
+
+type DeploymentStrategy int
+
+const (
+	RollingUpdateStrategy DeploymentStrategy = iota
+	RecreateStrategy
+	UnspecifiedStrategy
+)

@@ -13,8 +13,9 @@ const (
 )
 
 type Installer struct {
-	Command      common.Command
-	KeepRegistry bool
+	Command            common.Command
+	KeepRegistry       bool
+	DeploymentStrategy common.DeploymentStrategy
 }
 
 func (i *Installer) Install(installInput string) {
