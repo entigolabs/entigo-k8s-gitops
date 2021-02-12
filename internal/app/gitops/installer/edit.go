@@ -117,17 +117,29 @@ func (i *Installer) getUpdateSpecificNewValue(oldValue string, newValue string) 
 
 func (i *Installer) getImageChangeSpecificNewValue(oldValue string, newValue string) string {
 	editInfo.keyDontExist = true
-	image := strings.Split(newValue, ":")[0]
-	if strings.Contains(oldValue, image) {
+	oldImage := strings.Split(oldValue, ":")[0]
+	newImage := strings.Split(newValue, ":")[0]
+	if isOldImageContainingNewImage(oldImage, newImage) {
 		if i.KeepRegistry {
-			registry := strings.Split(oldValue, ":")[0]
 			newTag := strings.Split(newValue, ":")[1]
-			return fmt.Sprintf("%s:%s", registry, newTag)
+			return fmt.Sprintf("%s:%s", oldImage, newTag)
 		}
 		return newValue
 	}
-	logImageCouldNotBeFound(image)
+	logImageCouldNotBeFound(newImage)
 	return oldValue
+}
+
+func isOldImageContainingNewImage(oldImage string, newImage string) bool {
+	return strings.Contains(oldImage, newImage) && areImageEndingsMatching(oldImage, newImage)
+}
+
+func areImageEndingsMatching(oldImage string, newImage string) bool {
+	newImgIndex := strings.Index(oldImage, newImage)
+	if len(oldImage) != newImgIndex+len(newImage) {
+		return false
+	}
+	return true
 }
 
 func getStrategyChangeSpecificNewValue(newValue string) string {
