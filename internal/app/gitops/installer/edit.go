@@ -79,7 +79,7 @@ func (inst *Installer) replace(node *yaml.Node, keys []string, newValue string) 
 		}
 	}
 	if identifier == "*" {
-		for i, _ := range node.Content {
+		for i := range node.Content {
 			inst.replace(node.Content[i], keys[1:], newValue)
 		}
 	}
