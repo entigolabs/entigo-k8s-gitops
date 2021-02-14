@@ -62,7 +62,7 @@ var loggingFlag = cli.StringFlag{
 	EnvVars:     []string{"LOGGING"},
 	DefaultText: "prod",
 	Value:       "prod",
-	Usage:       "set `logging level`",
+	Usage:       "set `logging level` (prod | dev)",
 	Destination: &flags.LoggingLevel,
 }
 
@@ -210,7 +210,7 @@ var deploymentStrategyFlag = cli.StringFlag{
 	Name:        "deployment-strategy",
 	Aliases:     []string{"s"},
 	EnvVars:     []string{"DEPLOYMENT-STRATEGY"},
-	DefaultText: "if deployment-strategy is not set then it will remain unchanged",
-	Usage:       "change deployment strategy",
+	DefaultText: "if not defined then strategy will remain unchanged",
+	Usage:       "change deployment strategy (RollingUpdate | Recreate)",
 	Destination: &flags.DeploymentStrategy,
 }
