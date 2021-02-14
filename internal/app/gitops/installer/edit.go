@@ -10,13 +10,13 @@ import (
 	"strings"
 )
 
-type logInfo struct {
+type editInformation struct {
 	workingFile  string
 	workingKey   string
 	keyDontExist bool
 }
 
-var editInfo = new(logInfo)
+var editInfo = new(editInformation)
 
 func (i *Installer) edit(cmdData []string) {
 	logEditStart(cmdData)
