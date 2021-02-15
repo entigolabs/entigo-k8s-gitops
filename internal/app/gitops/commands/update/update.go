@@ -12,7 +12,6 @@ func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
 	cloneOrPull(repo)
 	updateImages(repo)
-	updateDeploymentStrategy(repo)
 	applyChanges(repo)
 	pushOnDemand(repo)
 	logEndMessage(repo)
@@ -30,24 +29,11 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 	return repository
 }
 
-func updateImages(workingRepo *git.Repository) {
-	cdToAppDir(workingRepo.Repo, workingRepo.AppFlags.Path)
-	images := strings.Split(workingRepo.Images, ",")
-	imgUpdateInput := installInput{installType: imageUpdateInstType, changeData: images}
-	installer := configInstaller.Installer{Command: common.UpdateCmd, KeepRegistry: workingRepo.KeepRegistry, DeploymentStrategy: common.UnspecifiedStrategy}
-	input := getInstallInput(imgUpdateInput)
-	installer.Install(input)
-}
-
-func updateDeploymentStrategy(repo *git.Repository) {
-	if repo.DeploymentStrategy == common.UnspecifiedStrategy {
-		return
-	}
+func updateImages(repo *git.Repository) {
 	cdToAppDir(repo.Repo, repo.AppFlags.Path)
-	strategyAsStr := common.ConvDeploymentStrategyToStr(repo.DeploymentStrategy)
-	strategyUpdateInput := installInput{installType: strategyUpdateInstType, changeData: []string{strategyAsStr}}
-	installer := configInstaller.Installer{Command: common.UpdateCmd, DeploymentStrategy: repo.DeploymentStrategy}
-	input := getInstallInput(strategyUpdateInput)
+	images := strings.Split(repo.Images, ",")
+	input := getInstallInput(images)
+	installer := configInstaller.Installer{Command: common.UpdateCmd, KeepRegistry: repo.KeepRegistry, DeploymentStrategy: repo.DeploymentStrategy}
 	installer.Install(input)
 }
 
@@ -55,7 +41,6 @@ func resetAndUpdate(workingRepo *git.Repository) {
 	common.RmGitOpsWd()
 	cloneOrPull(workingRepo)
 	updateImages(workingRepo)
-	updateDeploymentStrategy(workingRepo)
 	applyChanges(workingRepo)
 	pushOnDemand(workingRepo)
 }

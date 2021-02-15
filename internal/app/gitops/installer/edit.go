@@ -11,9 +11,10 @@ import (
 )
 
 type editInformation struct {
-	workingFile  string
-	workingKey   string
-	keyDontExist bool
+	workingFile    string
+	workingKey     string
+	keyDontExist   bool
+	isImageUpdated bool
 }
 
 var editInfo = new(editInformation)
@@ -38,6 +39,7 @@ func (i *Installer) getEditedBuffer(yamlFileName string, cmdData []string) *byte
 	encoder.SetIndent(2)
 	for decoder.Decode(&yamlNode) == nil {
 		i.editYaml(&yamlNode, cmdData)
+		i.editStrategy(&yamlNode, cmdData[0])
 		if err := encoder.Encode(&yamlNode); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
@@ -57,6 +59,16 @@ func (i *Installer) editYaml(yamlNode *yaml.Node, cmdData []string) {
 		keys := strings.Split(replaceLocation, ".")
 		i.replace(yamlNode, keys, newValue)
 	}
+}
+
+func (i *Installer) editStrategy(yamlNode *yaml.Node, fileNames string) {
+	if editInfo.isImageUpdated {
+		strategyLocation := "spec.strategy.type"
+		newStrategy := common.ConvDeploymentStrategyToStr(i.DeploymentStrategy)
+		editData := []string{fileNames, strategyLocation, newStrategy}
+		i.editYaml(yamlNode, editData)
+	}
+	editInfo.isImageUpdated = false
 }
 
 // TODO Should it be refactored?
@@ -109,10 +121,10 @@ func (i *Installer) getNewValue(oldValue string, newValue string) string {
 }
 
 func (i *Installer) getUpdateSpecificNewValue(oldValue string, newValue string) string {
-	if i.DeploymentStrategy == common.UnspecifiedStrategy {
-		return i.getImageChangeSpecificNewValue(oldValue, newValue)
+	if editInfo.isImageUpdated {
+		return getStrategyChangeSpecificNewValue(newValue)
 	}
-	return getStrategyChangeSpecificNewValue(newValue)
+	return i.getImageChangeSpecificNewValue(oldValue, newValue)
 }
 
 func (i *Installer) getImageChangeSpecificNewValue(oldValue string, newValue string) string {
@@ -120,6 +132,7 @@ func (i *Installer) getImageChangeSpecificNewValue(oldValue string, newValue str
 	oldImage := strings.Split(oldValue, ":")[0]
 	newImage := strings.Split(newValue, ":")[0]
 	if isOldImageContainingNewImage(oldImage, newImage) {
+		editInfo.isImageUpdated = true
 		if i.KeepRegistry {
 			newTag := strings.Split(newValue, ":")[1]
 			return fmt.Sprintf("%s:%s", oldImage, newTag)

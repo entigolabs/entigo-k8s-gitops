@@ -1,27 +1,19 @@
 package update
 
 import (
-	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"io/ioutil"
 	"strings"
 )
 
-type installType int
-
-const (
-	imageUpdateInstType installType = iota
-	strategyUpdateInstType
-)
-
 type installInput struct {
-	installType installType
-	changeData  []string
-	fileNames   []string
+	changeData []string
+	fileNames  []string
 }
 
-func getInstallInput(input installInput) string {
+func getInstallInput(changeData []string) string {
+	input := installInput{changeData: changeData}
 	yamlNames, err := readDirFiltered(".", ".yaml")
 	if err != nil {
 		common.Logger.Println(common.PrefixedError{Reason: err})
@@ -34,27 +26,10 @@ func composeInstallInput(input installInput) string {
 	composedInput := ""
 	for _, d := range input.changeData {
 		yamlNamesStr := strings.Join(input.fileNames, ",")
-		editLine := fmt.Sprintf("edit %s %s %s", yamlNamesStr, getInstallLocations(input.installType), d)
+		editLine := fmt.Sprintf("edit %s %s %s", yamlNamesStr, getUpdateInstallLocations(), d)
 		composedInput += fmt.Sprintf("%s\n", editLine)
 	}
 	return composedInput
-}
-
-func getInstallLocations(installType installType) string {
-	switch installType {
-	case imageUpdateInstType:
-		return getUpdateInstallLocations()
-	case strategyUpdateInstType:
-		return getDeploymentStrategyInstallLocations()
-	default:
-		msg := fmt.Sprintf("unsupported installType: %v", installType)
-		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New(msg)})
-	}
-	return ""
-}
-
-func getDeploymentStrategyInstallLocations() string {
-	return "spec.strategy.type"
 }
 
 func getUpdateInstallLocations() string {
