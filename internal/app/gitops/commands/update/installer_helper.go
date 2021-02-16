@@ -1,6 +1,7 @@
 package update
 
 import (
+	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
@@ -22,10 +23,21 @@ func getInstallInput(repo *git.Repository) string {
 }
 
 func getFileNames(recursively bool) []string {
+	var fileNames []string
 	if recursively {
-		return getFilesRecursively()
+		fileNames = getFilesRecursively()
+	} else {
+		fileNames = getFiles()
 	}
-	return getFiles()
+	validateFileNames(fileNames)
+	return fileNames
+}
+
+func validateFileNames(fileNames []string) {
+	if fileNames == nil {
+		msg := ".yaml files could not be found"
+		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New(msg)})
+	}
 }
 
 func getFilesRecursively() []string {
