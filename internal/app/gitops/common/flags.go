@@ -13,6 +13,7 @@ type Flags struct {
 	Images             string
 	KeepRegistry       bool
 	DeploymentStrategy string
+	Recursive          bool
 }
 
 type GitFlags struct {

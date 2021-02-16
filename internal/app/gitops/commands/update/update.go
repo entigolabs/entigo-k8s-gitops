@@ -5,7 +5,6 @@ import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
 	configInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
-	"strings"
 )
 
 func Run(flags *common.Flags) {
@@ -26,13 +25,13 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 	repository.Command = common.UpdateCmd
 	repository.LoggingLevel = common.ConvStrToLoggingLvl(flags.LoggingLevel)
 	repository.DeploymentStrategy = common.ConvStrToDeploymentStrategy(flags.DeploymentStrategy)
+	repository.Recursive = flags.Recursive
 	return repository
 }
 
 func updateImages(repo *git.Repository) {
 	cdToAppDir(repo.Repo, repo.AppFlags.Path)
-	images := strings.Split(repo.Images, ",")
-	input := getInstallInput(images)
+	input := getInstallInput(repo)
 	installer := configInstaller.Installer{Command: common.UpdateCmd, KeepRegistry: repo.KeepRegistry, DeploymentStrategy: repo.DeploymentStrategy}
 	installer.Install(input)
 }

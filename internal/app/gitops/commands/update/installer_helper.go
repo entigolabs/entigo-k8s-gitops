@@ -3,7 +3,10 @@ package update
 import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -12,14 +15,43 @@ type installInput struct {
 	fileNames  []string
 }
 
-func getInstallInput(changeData []string) string {
-	input := installInput{changeData: changeData}
+func getInstallInput(repo *git.Repository) string {
+	input := installInput{changeData: strings.Split(repo.Images, ",")}
+	input.fileNames = getFileNames(repo.Recursive)
+	return composeInstallInput(input)
+}
+
+func getFileNames(recursively bool) []string {
+	if recursively {
+		return getFilesRecursively()
+	}
+	return getFiles()
+}
+
+func getFilesRecursively() []string {
+	var yamlNames []string
+	err := filepath.Walk(".",
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if strings.HasSuffix(info.Name(), ".yaml") {
+				yamlNames = append(yamlNames, path)
+			}
+			return nil
+		})
+	if err != nil {
+		common.Logger.Println(common.PrefixedError{Reason: err})
+	}
+	return yamlNames
+}
+
+func getFiles() []string {
 	yamlNames, err := readDirFiltered(".", ".yaml")
 	if err != nil {
 		common.Logger.Println(common.PrefixedError{Reason: err})
 	}
-	input.fileNames = yamlNames
-	return composeInstallInput(input)
+	return yamlNames
 }
 
 func composeInstallInput(input installInput) string {

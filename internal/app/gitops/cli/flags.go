@@ -46,6 +46,7 @@ func updateSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 	baseFlags = append(baseFlags, &keepRegistryFlag)
 	baseFlags = append(baseFlags, &appPathFlag)
 	baseFlags = append(baseFlags, &deploymentStrategyFlag)
+	baseFlags = append(baseFlags, &recursiveFlag)
 	return baseFlags
 }
 
@@ -213,4 +214,12 @@ var deploymentStrategyFlag = cli.StringFlag{
 	DefaultText: "if not defined then strategy will remain unchanged",
 	Usage:       "change deployment strategy (RollingUpdate | Recreate)",
 	Destination: &flags.DeploymentStrategy,
+}
+
+var recursiveFlag = cli.BoolFlag{
+	Name:        "recursive",
+	EnvVars:     []string{"RECURSIVE"},
+	DefaultText: strconv.FormatBool(false),
+	Usage:       "updates directories and their contents recursively",
+	Destination: &flags.Recursive,
 }

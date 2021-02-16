@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// TODO refactor Repository
 type Repository struct {
 	*git.Repository
 	common.GitFlags
@@ -20,6 +21,7 @@ type Repository struct {
 	Command            common.Command
 	LoggingLevel       common.LoggingLevel
 	DeploymentStrategy common.DeploymentStrategy
+	Recursive          bool
 }
 
 func (r *Repository) Clone() {
