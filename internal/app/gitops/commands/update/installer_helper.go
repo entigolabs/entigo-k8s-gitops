@@ -77,10 +77,16 @@ func composeInstallInput(input installInput) string {
 }
 
 func getUpdateInstallLocations() string {
-	deploymentStatefulSetDaemonSetJobLocation := "spec.template.spec.containers.*.image"
-	podLocation := "spec.containers.*.image"
-	cronJobLocation := "spec.jobTemplate.spec.template.spec.containers.*.image"
-	return strings.Join([]string{deploymentStatefulSetDaemonSetJobLocation, podLocation, cronJobLocation}, ",")
+	locations := append(getTypeSpecificContainerLocations(containers), getTypeSpecificContainerLocations(initContainers)...)
+	return strings.Join(locations, ",")
+}
+
+func getTypeSpecificContainerLocations(ct containersType) []string {
+	cTypeAsString := ct.string()
+	deploymentStatefulSetDaemonSetJobLocationTemplate := fmt.Sprintf("spec.template.spec.%s.*.image", cTypeAsString)
+	podLocationTemplate := fmt.Sprintf("spec.%s.*.image", cTypeAsString)
+	cronJobLocationTemplate := fmt.Sprintf("spec.jobTemplate.spec.template.spec.%s.*.image", cTypeAsString)
+	return []string{deploymentStatefulSetDaemonSetJobLocationTemplate, podLocationTemplate, cronJobLocationTemplate}
 }
 
 func readDirFiltered(path string, suffix string) ([]string, error) {
