@@ -38,8 +38,7 @@ func (i *Installer) getEditedBuffer(yamlFileName string, cmdData []string) *byte
 	encoder := yaml.NewEncoder(&buffer)
 	encoder.SetIndent(2)
 	for decoder.Decode(&yamlNode) == nil {
-		i.editYaml(&yamlNode, cmdData)
-		i.editStrategy(&yamlNode, cmdData[0])
+		i.protectOrEdit(yamlNode, cmdData)
 		if err := encoder.Encode(&yamlNode); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
@@ -48,6 +47,36 @@ func (i *Installer) getEditedBuffer(yamlFileName string, cmdData []string) *byte
 		logEncoderClosing(yamlFileName, err)
 	}
 	return &buffer
+}
+
+func (i *Installer) protectOrEdit(yamlNode yaml.Node, cmdData []string) {
+	if !i.isObjectProtected(&yamlNode) {
+		i.editNode(yamlNode, cmdData)
+	} else {
+		msg := errors.New(fmt.Sprintf("skiping update in %s, object is protected", editInfo.workingFile))
+		common.Logger.Println(&common.Warning{Reason: msg})
+	}
+}
+
+func (i *Installer) editNode(yamlNode yaml.Node, cmdData []string) {
+	i.editYaml(&yamlNode, cmdData)
+	i.editStrategy(&yamlNode, cmdData[0])
+}
+
+func (i *Installer) isObjectProtected(yamlNode *yaml.Node) bool {
+	protectionLocation := "metadata.annotations.entigo-k8s-gitops/protected"
+	editInfo.workingKey = protectionLocation
+	editInfo.keyDontExist = false
+	keyValue, keyNotFoundErr := i.getKeyValue(yamlNode, strings.Split(protectionLocation, "."))
+	if keyNotFoundErr != nil {
+		return false
+	}
+	isProtected, parseErr := strconv.ParseBool(keyValue)
+	if parseErr != nil {
+		msg := errors.New(fmt.Sprintf("unsupported key value, could not parse to boolean: %s", keyValue))
+		common.Logger.Fatal(&common.PrefixedError{Reason: msg})
+	}
+	return isProtected
 }
 
 func (i *Installer) editYaml(yamlNode *yaml.Node, cmdData []string) {
