@@ -4,17 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"gopkg.in/yaml.v3"
 	"strings"
 )
-
-func (i *Installer) logIfKeyDontExist(node *yaml.Node, keys []string, index int) {
-	if len(keys) > 1 && index == len(node.Content)-1 && !editInfo.keyExist && i.Command == common.UpdateCmd {
-		msg := errors.New(fmt.Sprintf("skiping '%s' update in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile))
-		common.Logger.Println(&common.Warning{Reason: msg})
-		editInfo.keyExist = true
-	}
-}
 
 func logImageCouldNotBeFound(image string) {
 	msg := errors.New(fmt.Sprintf("skiping '%s' update in %s - '%s' couldn't be found", editInfo.workingKey, editInfo.workingFile, image))

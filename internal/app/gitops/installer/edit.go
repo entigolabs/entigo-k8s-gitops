@@ -131,8 +131,6 @@ func (inst *Installer) replace(node *yaml.Node, keys []string, newValue string) 
 			} else {
 				inst.replace(node.Content[i+1], keys[1:], newValue)
 			}
-		} else {
-			inst.logIfKeyDontExist(node, keys, i)
 		}
 	}
 }
