@@ -13,7 +13,7 @@ import (
 type editInformation struct {
 	workingFile    string
 	workingKey     string
-	keyDontExist   bool
+	keyExist       bool
 	isImageUpdated bool
 }
 
@@ -66,7 +66,7 @@ func (i *Installer) editNode(yamlNode yaml.Node, cmdData []string) {
 func (i *Installer) isObjectProtected(yamlNode *yaml.Node) bool {
 	protectionLocation := "metadata.annotations.entigo-k8s-gitops/protected"
 	editInfo.workingKey = protectionLocation
-	editInfo.keyDontExist = false
+	editInfo.keyExist = false
 	keyValue, keyNotFoundErr := i.getKeyValue(yamlNode, strings.Split(protectionLocation, "."))
 	if keyNotFoundErr != nil {
 		return false
@@ -84,7 +84,7 @@ func (i *Installer) editYaml(yamlNode *yaml.Node, cmdData []string) {
 	newValue := cmdData[2]
 	for _, replaceLocation := range replaceLocations {
 		editInfo.workingKey = replaceLocation
-		editInfo.keyDontExist = false
+		editInfo.keyExist = false
 		keys := strings.Split(replaceLocation, ".")
 		i.replace(yamlNode, keys, newValue)
 	}
@@ -157,7 +157,7 @@ func (i *Installer) getUpdateSpecificNewValue(oldValue string, newValue string) 
 }
 
 func (i *Installer) getImageChangeSpecificNewValue(oldValue string, newValue string) string {
-	editInfo.keyDontExist = true
+	editInfo.keyExist = true
 	oldImage := strings.Split(oldValue, ":")[0]
 	newImage := strings.Split(newValue, ":")[0]
 	if isOldImageContainingNewImage(oldImage, newImage) {

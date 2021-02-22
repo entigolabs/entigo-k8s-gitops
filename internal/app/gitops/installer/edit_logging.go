@@ -9,10 +9,10 @@ import (
 )
 
 func (i *Installer) logIfKeyDontExist(node *yaml.Node, keys []string, index int) {
-	if len(keys) > 1 && index == len(node.Content)-1 && !editInfo.keyDontExist && i.Command == common.UpdateCmd {
+	if len(keys) > 1 && index == len(node.Content)-1 && !editInfo.keyExist && i.Command == common.UpdateCmd {
 		msg := errors.New(fmt.Sprintf("skiping '%s' update in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile))
 		common.Logger.Println(&common.Warning{Reason: msg})
-		editInfo.keyDontExist = true
+		editInfo.keyExist = true
 	}
 }
 

@@ -28,13 +28,13 @@ func (inst *Installer) getKeyValue(node *yaml.Node, keys []string) (string, erro
 	for i, n := range node.Content {
 		if n.Value == identifier {
 			if len(keys) <= 1 && node.Content[i+1].Content == nil {
-				editInfo.keyDontExist = true
+				editInfo.keyExist = true
 				return node.Content[i+1].Value, nil
 			} else {
 				returnValue, returnError = inst.getKeyValue(node.Content[i+1], keys[1:])
 			}
 		} else {
-			if len(keys) > 1 && i == len(node.Content)-1 && !editInfo.keyDontExist {
+			if len(keys) > 1 && i == len(node.Content)-1 && !editInfo.keyExist {
 				return "", errors.New(fmt.Sprintf("%s don't have following key '%s'", editInfo.workingFile, editInfo.workingKey))
 			}
 		}
