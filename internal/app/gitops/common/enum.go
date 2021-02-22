@@ -23,3 +23,7 @@ const (
 	RecreateStrategy
 	UnspecifiedStrategy
 )
+
+func (d DeploymentStrategy) String() string {
+	return [...]string{"RollingUpdate", "Recreate"}[d]
+}

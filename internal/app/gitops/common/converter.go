@@ -33,16 +33,3 @@ func ConvStrToDeploymentStrategy(str string) DeploymentStrategy {
 	}
 	return UnspecifiedStrategy
 }
-
-func ConvDeploymentStrategyToStr(deploymentStrategy DeploymentStrategy) string {
-	switch deploymentStrategy {
-	case RollingUpdateStrategy:
-		return "RollingUpdate"
-	case RecreateStrategy:
-		return "Recreate"
-	default:
-		msg := fmt.Sprintf("unsupported deployment strategy: %v", deploymentStrategy)
-		Logger.Fatal(&PrefixedError{Reason: errors.New(msg)})
-	}
-	return ""
-}

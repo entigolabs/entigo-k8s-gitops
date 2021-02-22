@@ -64,7 +64,7 @@ func (i *Installer) editYaml(yamlNode *yaml.Node, cmdData []string) {
 func (i *Installer) editStrategy(yamlNode *yaml.Node, fileNames string) {
 	if i.DeploymentStrategy != common.UnspecifiedStrategy && editInfo.isImageUpdated {
 		strategyLocation := "spec.strategy.type"
-		newStrategy := common.ConvDeploymentStrategyToStr(i.DeploymentStrategy)
+		newStrategy := i.DeploymentStrategy.String()
 		editData := []string{fileNames, strategyLocation, newStrategy}
 		i.editYaml(yamlNode, editData)
 	}
