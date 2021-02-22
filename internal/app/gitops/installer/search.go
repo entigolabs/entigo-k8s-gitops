@@ -7,12 +7,12 @@ import (
 	"strconv"
 )
 
-func (inst *Installer) getKeyValue(node *yaml.Node, keys []string) (string, error) {
+func (inst *Installer) search(node *yaml.Node, keys []string) (string, error) {
 	returnValue := ""
 	var returnError error
 	identifier := keys[0]
 	if node.Kind == yaml.DocumentNode {
-		returnValue, returnError = inst.getKeyValue(node.Content[0], keys)
+		returnValue, returnError = inst.search(node.Content[0], keys)
 	}
 	if seqPos, err := strconv.Atoi(identifier); err == nil {
 		if len(node.Content)-1 < seqPos {
@@ -22,7 +22,7 @@ func (inst *Installer) getKeyValue(node *yaml.Node, keys []string) (string, erro
 		if seqPosNode.Kind == yaml.ScalarNode {
 			return seqPosNode.Value, nil
 		} else {
-			returnValue, returnError = inst.getKeyValue(node.Content[seqPos], keys[1:])
+			returnValue, returnError = inst.search(node.Content[seqPos], keys[1:])
 		}
 	}
 	for i, n := range node.Content {
@@ -31,7 +31,7 @@ func (inst *Installer) getKeyValue(node *yaml.Node, keys []string) (string, erro
 				editInfo.keyExist = true
 				return node.Content[i+1].Value, nil
 			} else {
-				returnValue, returnError = inst.getKeyValue(node.Content[i+1], keys[1:])
+				returnValue, returnError = inst.search(node.Content[i+1], keys[1:])
 			}
 		} else {
 			if len(keys) > 1 && i == len(node.Content)-1 && !editInfo.keyExist {

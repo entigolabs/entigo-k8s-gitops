@@ -67,7 +67,7 @@ func (i *Installer) isObjectProtected(yamlNode *yaml.Node) bool {
 	protectionLocation := "metadata.annotations.entigo-k8s-gitops/protected"
 	editInfo.workingKey = protectionLocation
 	editInfo.keyExist = false
-	keyValue, keyNotFoundErr := i.getKeyValue(yamlNode, strings.Split(protectionLocation, "."))
+	keyValue, keyNotFoundErr := i.search(yamlNode, strings.Split(protectionLocation, "."))
 	if keyNotFoundErr != nil {
 		return false
 	}
