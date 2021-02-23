@@ -12,6 +12,7 @@ import (
 
 type editInformation struct {
 	workingFile    string
+	documentIndex  int
 	workingKey     string
 	keyExist       bool
 	isImageUpdated bool
@@ -37,7 +38,8 @@ func (i *Installer) getEditedBuffer(yamlFileName string, cmdData []string) *byte
 	buffer := *new(bytes.Buffer)
 	encoder := yaml.NewEncoder(&buffer)
 	encoder.SetIndent(2)
-	for decoder.Decode(&yamlNode) == nil {
+	for documentIndex := 1; decoder.Decode(&yamlNode) == nil; documentIndex++ {
+		editInfo.documentIndex = documentIndex
 		i.protectOrEdit(yamlNode, cmdData)
 		if err := encoder.Encode(&yamlNode); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
@@ -53,7 +55,7 @@ func (i *Installer) protectOrEdit(yamlNode yaml.Node, cmdData []string) {
 	if !i.isObjectProtected(&yamlNode) {
 		i.editNode(yamlNode, cmdData)
 	} else {
-		msg := errors.New(fmt.Sprintf("skiping update in %s, object is protected", editInfo.workingFile))
+		msg := errors.New(fmt.Sprintf("skiping update in %s in document nr %v, object is protected", editInfo.workingFile, editInfo.documentIndex))
 		common.Logger.Println(&common.Warning{Reason: msg})
 	}
 }
