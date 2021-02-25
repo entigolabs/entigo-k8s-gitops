@@ -5,6 +5,7 @@ import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
 	configInstaller "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
+	"strings"
 )
 
 func Run(flags *common.Flags) {
@@ -31,7 +32,7 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 
 func updateImages(repo *git.Repository) {
 	cdToAppDir(repo.Repo, repo.AppFlags.Path)
-	input := getInstallInput(repo)
+	input := composeInstallInput(strings.Split(repo.Images, ","), repo.Recursive)
 	installer := configInstaller.Installer{Command: common.UpdateCmd, KeepRegistry: repo.KeepRegistry, DeploymentStrategy: repo.DeploymentStrategy}
 	installer.Install(input)
 }

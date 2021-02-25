@@ -4,22 +4,27 @@ import (
 	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-type installInput struct {
-	changeData []string
-	fileNames  []string
-}
-
-func getInstallInput(repo *git.Repository) string {
-	input := installInput{changeData: strings.Split(repo.Images, ",")}
-	input.fileNames = getFileNames(repo.Recursive)
-	return composeInstallInput(input)
+func composeInstallInput(images []string, recursiveFileSearching bool) []installer.InstallInput {
+	yamlNames := getFileNames(recursiveFileSearching)
+	updateLocations := getUpdateInstallLocations()
+	var installInputs []installer.InstallInput
+	for _, image := range images {
+		installInput := installer.InstallInput{
+			Command:      installer.EditCmd,
+			FileNames:    yamlNames,
+			KeyLocations: updateLocations,
+			NewValue:     image,
+		}
+		installInputs = append(installInputs, installInput)
+	}
+	return installInputs
 }
 
 func getFileNames(recursively bool) []string {
@@ -66,19 +71,9 @@ func getFiles() []string {
 	return yamlNames
 }
 
-func composeInstallInput(input installInput) string {
-	composedInput := ""
-	for _, d := range input.changeData {
-		yamlNamesStr := strings.Join(input.fileNames, ",")
-		editLine := fmt.Sprintf("edit %s %s %s", yamlNamesStr, getUpdateInstallLocations(), d)
-		composedInput += fmt.Sprintf("%s\n", editLine)
-	}
-	return composedInput
-}
-
-func getUpdateInstallLocations() string {
+func getUpdateInstallLocations() []string {
 	locations := append(getTypeSpecificContainerLocations(containers), getTypeSpecificContainerLocations(initContainers)...)
-	return strings.Join(locations, ",")
+	return locations
 }
 
 func getTypeSpecificContainerLocations(ct containersType) []string {

@@ -21,10 +21,7 @@ func logEncoderClosing(yamlFileName string, err error) {
 	}
 }
 
-func logEditStart(cmdData []string) {
-	fileNames := formatCommaSeparatedString(cmdData[0])
-	formattedKeys := formatCommaSeparatedString(cmdData[1])
-	newValue := cmdData[2]
-	common.Logger.Println(fmt.Sprintf("started editing %s", fileNames))
-	common.Logger.Println(fmt.Sprintf("changing keys %s to %s", formattedKeys, newValue))
+func logEditStart(input InstallInput) {
+	common.Logger.Println(fmt.Sprintf("started editing %s", strings.Join(input.FileNames, ", ")))
+	common.Logger.Println(fmt.Sprintf("changing keys %s to %s", strings.Join(input.KeyLocations, ", "), input.NewValue))
 }

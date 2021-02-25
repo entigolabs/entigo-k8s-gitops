@@ -20,17 +20,16 @@ type editInformation struct {
 
 var editInfo = new(editInformation)
 
-func (i *Installer) edit(cmdData []string) {
-	logEditStart(cmdData)
-	yamlFileNames := strings.Split(cmdData[0], ",")
-	for _, yamlFileName := range yamlFileNames {
+func (i *Installer) edit(input InstallInput) {
+	logEditStart(input)
+	for _, yamlFileName := range input.FileNames {
 		editInfo.workingFile = yamlFileName
-		editedBuffer := i.getEditedBuffer(yamlFileName, cmdData)
+		editedBuffer := i.getEditedBuffer(yamlFileName, input)
 		common.OverwriteFile(yamlFileName, editedBuffer.Bytes())
 	}
 }
 
-func (i *Installer) getEditedBuffer(yamlFileName string, cmdData []string) *bytes.Buffer {
+func (i *Installer) getEditedBuffer(yamlFileName string, input InstallInput) *bytes.Buffer {
 	inputYaml := common.GetFileInput(yamlFileName)
 	reader := bytes.NewReader(inputYaml)
 	yamlNode := yaml.Node{}
@@ -40,7 +39,7 @@ func (i *Installer) getEditedBuffer(yamlFileName string, cmdData []string) *byte
 	encoder.SetIndent(2)
 	for documentIndex := 1; decoder.Decode(&yamlNode) == nil; documentIndex++ {
 		editInfo.documentIndex = documentIndex
-		i.protectOrEdit(yamlNode, cmdData)
+		i.protectOrEdit(yamlNode, input)
 		if err := encoder.Encode(&yamlNode); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
@@ -51,18 +50,18 @@ func (i *Installer) getEditedBuffer(yamlFileName string, cmdData []string) *byte
 	return &buffer
 }
 
-func (i *Installer) protectOrEdit(yamlNode yaml.Node, cmdData []string) {
+func (i *Installer) protectOrEdit(yamlNode yaml.Node, input InstallInput) {
 	if !i.isObjectProtected(&yamlNode) {
-		i.editNode(yamlNode, cmdData)
+		i.editNode(yamlNode, input)
 	} else {
 		msg := errors.New(fmt.Sprintf("skiping update in %s in document nr %v, object is protected", editInfo.workingFile, editInfo.documentIndex))
 		common.Logger.Println(&common.Warning{Reason: msg})
 	}
 }
 
-func (i *Installer) editNode(yamlNode yaml.Node, cmdData []string) {
-	i.editYaml(&yamlNode, cmdData)
-	i.editStrategy(&yamlNode, cmdData[0])
+func (i *Installer) editNode(yamlNode yaml.Node, input InstallInput) {
+	i.editYaml(&yamlNode, input)
+	i.editStrategy(&yamlNode, input)
 }
 
 func (i *Installer) isObjectProtected(yamlNode *yaml.Node) bool {
@@ -81,23 +80,24 @@ func (i *Installer) isObjectProtected(yamlNode *yaml.Node) bool {
 	return isProtected
 }
 
-func (i *Installer) editYaml(yamlNode *yaml.Node, cmdData []string) {
-	replaceLocations := strings.Split(cmdData[1], ",")
-	newValue := cmdData[2]
-	for _, replaceLocation := range replaceLocations {
-		editInfo.workingKey = replaceLocation
+func (i *Installer) editYaml(yamlNode *yaml.Node, input InstallInput) {
+	for _, location := range input.KeyLocations {
+		editInfo.workingKey = location
 		editInfo.keyExist = false
-		keys := strings.Split(replaceLocation, ".")
-		i.replace(yamlNode, keys, newValue)
+		keys := strings.Split(location, ".")
+		i.replace(yamlNode, keys, input.NewValue)
 	}
 }
 
-func (i *Installer) editStrategy(yamlNode *yaml.Node, fileNames string) {
+func (i *Installer) editStrategy(yamlNode *yaml.Node, input InstallInput) {
 	if i.DeploymentStrategy != common.UnspecifiedStrategy && editInfo.isImageUpdated {
-		strategyLocation := "spec.strategy.type"
-		newStrategy := i.DeploymentStrategy.String()
-		editData := []string{fileNames, strategyLocation, newStrategy}
-		i.editYaml(yamlNode, editData)
+		newStrategyInput := InstallInput{
+			Command:      input.Command,
+			FileNames:    input.FileNames,
+			KeyLocations: []string{"spec.strategy.type"},
+			NewValue:     i.DeploymentStrategy.String(),
+		}
+		i.editYaml(yamlNode, newStrategyInput)
 	}
 	editInfo.isImageUpdated = false
 }

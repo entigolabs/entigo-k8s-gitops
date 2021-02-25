@@ -7,17 +7,11 @@ import (
 	"strings"
 )
 
-func (i *Installer) drop(cmdData []string) {
-	logDropStart(cmdData)
-	filesToRemove := strings.Split(cmdData[0], ",")
-	for _, file := range filesToRemove {
+func (i *Installer) drop(input InstallInput) {
+	common.Logger.Println(fmt.Sprintf("started removing %s", strings.Join(input.FileNames, ", ")))
+	for _, file := range input.FileNames {
 		if err := os.RemoveAll(file); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
 	}
-}
-
-func logDropStart(cmdData []string) {
-	fileNames := formatCommaSeparatedString(cmdData[0])
-	common.Logger.Println(fmt.Sprintf("started removeing %s", fileNames))
 }

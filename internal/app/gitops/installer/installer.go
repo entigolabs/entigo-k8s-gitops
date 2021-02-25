@@ -4,12 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"strings"
-)
-
-const (
-	editCmd string = "edit"
-	dropCmd string = "drop"
 )
 
 type Installer struct {
@@ -18,50 +12,52 @@ type Installer struct {
 	DeploymentStrategy common.DeploymentStrategy
 }
 
-func (i *Installer) Install(installInput string) {
-	cmdLines := strings.Split(installInput, "\n")
-	for _, cmdLine := range cmdLines {
-		cmdLine = formatCmdLine(cmdLine)
-		if !i.isLineValid(cmdLine) {
-			continue
-		}
-		i.runCommand(cmdLine)
+type InstallCommand int
+
+const (
+	EditCmd InstallCommand = iota
+	DropCmd
+)
+
+func (ic InstallCommand) String() string {
+	return [...]string{"edit", "drop"}[ic]
+}
+
+type InstallInput struct {
+	Command      InstallCommand
+	FileNames    []string
+	KeyLocations []string
+	NewValue     string
+}
+
+func (i *Installer) Install(installInputs []InstallInput) {
+	for _, installInput := range installInputs {
+		i.installSingleInput(installInput)
 	}
 }
 
-func (i *Installer) runCommand(line string) {
-	lineSplits := strings.Split(line, " ")
-	cmdType := lineSplits[0]
-	cmdData := lineSplits[1:]
-
-	switch cmdType {
-	case editCmd:
-		i.edit(cmdData)
-	case dropCmd:
-		i.drop(cmdData)
+func (i *Installer) installSingleInput(input InstallInput) {
+	switch input.Command {
+	case EditCmd:
+		i.edit(input)
+	case DropCmd:
+		i.drop(input)
 	default:
-		msg := fmt.Sprintf("unsupported command '%s'", cmdType)
+		msg := fmt.Sprintf("unsupported command '%s'", input.Command.String())
 		common.Logger.Fatal(common.PrefixedError{Reason: errors.New(msg)})
 	}
-	logCommandEnd(cmdType)
+	common.Logger.Println(fmt.Sprintf("finised %s command", input.Command.String()))
 }
 
-func formatCmdLine(cmdLine string) string {
-	cmdLine = strings.TrimSpace(cmdLine)
-	return standardizeSpaces(cmdLine)
-}
-
-func standardizeSpaces(s string) string {
-	return strings.Join(strings.Fields(s), " ")
-}
-
-func logCommandEnd(cmdType string) {
-	cmdString := ""
-	switch cmdType {
-	case editCmd:
-		cmdString = "edit"
-	case dropCmd:
-		cmdString = "drop"
+func ConvStrToInstallCommand(str string) InstallCommand {
+	switch str {
+	case EditCmd.String():
+		return EditCmd
+	case DropCmd.String():
+		return DropCmd
+	default:
+		msg := fmt.Sprintf("unsupported command '%s'", str)
+		common.Logger.Fatal(common.PrefixedError{Reason: errors.New(msg)})
 	}
-	common.Logger.Println(fmt.Sprintf("finised %s command", cmdString))
+	return EditCmd
 }
