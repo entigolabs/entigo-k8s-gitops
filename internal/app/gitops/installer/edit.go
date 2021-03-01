@@ -162,14 +162,29 @@ func (i *Installer) getImageChangeSpecificNewValue(oldValue string, newValue str
 	newImage := strings.Split(newValue, ":")[0]
 	if isOldImageContainingNewImage(oldImage, newImage) {
 		editInfo.isImageUpdated = true
+		logImageChangeWithRegistry(oldValue, newValue)
 		if i.KeepRegistry {
 			newTag := strings.Split(newValue, ":")[1]
 			return fmt.Sprintf("%s:%s", oldImage, newTag)
 		}
+		logImageChange(oldValue, newValue)
 		return newValue
 	}
 	logImageCouldNotBeFound(newImage)
 	return oldValue
+}
+
+func logImageChange(oldValue string, newValue string) {
+	msg := errors.New(fmt.Sprintf("updating key '%s' in %s in document nr %v from '%s' to '%s'",
+		editInfo.workingKey, editInfo.workingFile, editInfo.documentIndex, oldValue, newValue))
+	common.Logger.Println(msg)
+}
+
+func logImageChangeWithRegistry(oldValue string, newValue string) {
+	newValueWithRegistry := fmt.Sprintf("%s:%s", strings.Split(oldValue, ":")[0], newValue)
+	msg := errors.New(fmt.Sprintf("updating key '%s' in %s in document nr %v from '%s' to '%s'",
+		editInfo.workingKey, editInfo.workingFile, editInfo.documentIndex, oldValue, newValueWithRegistry))
+	common.Logger.Println(msg)
 }
 
 func isOldImageContainingNewImage(oldImage string, newImage string) bool {
@@ -186,4 +201,23 @@ func areImageEndingsMatching(oldImage string, newImage string) bool {
 
 func getStrategyChangeSpecificNewValue(newValue string) string {
 	return newValue
+}
+
+func logImageCouldNotBeFound(image string) {
+	msg := errors.New(fmt.Sprintf("skiping '%s' update in %s - '%s' couldn't be found", editInfo.workingKey, editInfo.workingFile, image))
+	common.Logger.Println(&common.Warning{Reason: msg})
+}
+
+func logEncoderClosing(yamlFileName string, err error) {
+	if strings.Contains(err.Error(), "yaml: expected STREAM-START") {
+		msg := fmt.Sprintf("%s in %s", err, yamlFileName)
+		common.Logger.Println(&common.Warning{Reason: errors.New(msg)})
+	} else {
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	}
+}
+
+func logEditStart(input InstallInput) {
+	common.Logger.Println(fmt.Sprintf("started editing %s", strings.Join(input.FileNames, ", ")))
+	common.Logger.Println(fmt.Sprintf("changing keys %s to %s", strings.Join(input.KeyLocations, ", "), input.NewValue))
 }
