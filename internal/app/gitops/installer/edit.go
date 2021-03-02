@@ -162,8 +162,8 @@ func (i *Installer) getImageChangeSpecificNewValue(oldValue string, newValue str
 	newImage := strings.Split(newValue, ":")[0]
 	if isOldImageContainingNewImage(oldImage, newImage) {
 		editInfo.isImageUpdated = true
-		logImageChangeWithRegistry(oldValue, newValue)
 		if i.KeepRegistry {
+			logImageChangeWithRegistry(oldValue, newValue)
 			newTag := strings.Split(newValue, ":")[1]
 			return fmt.Sprintf("%s:%s", oldImage, newTag)
 		}
