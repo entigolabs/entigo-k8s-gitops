@@ -30,6 +30,9 @@ func removeRepoFolder(repoSshUrl string) {
 }
 
 func (r *Repository) isRemoteKeyDefined(keyFile string) bool {
+	if !r.isRemoteKeySet() {
+		return false
+	}
 	keyAbsPath := r.getKeyFileAbsPath(keyFile)
 	if _, err := os.Stat(keyAbsPath); err != nil {
 		common.Logger.Println(fmt.Sprintf("coldn't use SSH key defined via flag. %s", err))
@@ -37,6 +40,13 @@ func (r *Repository) isRemoteKeyDefined(keyFile string) bool {
 		return false
 	}
 	common.Logger.Println(fmt.Sprintf("using SSH key defined in %s", keyFile))
+	return true
+}
+
+func (r *Repository) isRemoteKeySet() bool {
+	if r.KeyFile == "" {
+		return false
+	}
 	return true
 }
 
