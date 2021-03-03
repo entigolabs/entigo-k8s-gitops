@@ -48,7 +48,7 @@ func installArgoApp(flags *common.Flags) {
 	if err := copy.Copy("master.yaml", fmt.Sprintf("%s.yaml", flags.App.Branch)); err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
-	installer := configInstaller.Installer{Command: common.CopyCmd}
+	installer := configInstaller.Installer{Command: common.CopyCmd, DeploymentStrategy: common.UnspecifiedStrategy}
 	input := composeArgoAppInstallInput(flags)
 	installer.Install(input)
 }
@@ -64,7 +64,7 @@ func copyMasterToNewBranch(flags *common.Flags) {
 }
 
 func installViaFile(flags *common.Flags) {
-	installer := configInstaller.Installer{Command: common.CopyCmd}
+	installer := configInstaller.Installer{Command: common.CopyCmd, DeploymentStrategy: common.UnspecifiedStrategy}
 	installTxt := string(common.GetFileInput(installFile))
 	installTxtVars := *initInstallTxtVariables(flags.App.Branch, flags.App.Name)
 	installTxt = installTxtVars.specifyInstallVariables(installTxt)

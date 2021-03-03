@@ -11,11 +11,11 @@ import (
 )
 
 type editInformation struct {
-	workingFile    string
-	documentIndex  int
-	workingKey     string
-	keyExist       bool
-	isImageUpdated bool
+	workingFile         string
+	documentIndex       int
+	workingKey          string
+	keyExist            bool
+	allowStrategyChange bool
 }
 
 var editInfo = new(editInformation)
@@ -52,16 +52,16 @@ func (i *Installer) getEditedBuffer(yamlFileName string, input InstallInput) *by
 
 func (i *Installer) protectOrEdit(yamlNode yaml.Node, input InstallInput) {
 	if !i.isObjectProtected(&yamlNode) {
-		i.editNode(yamlNode, input)
+		i.editDocumentNode(yamlNode, input)
 	} else {
 		msg := errors.New(fmt.Sprintf("skiping update in %s in document nr %v, object is protected", editInfo.workingFile, editInfo.documentIndex))
 		common.Logger.Println(&common.Warning{Reason: msg})
 	}
 }
 
-func (i *Installer) editNode(yamlNode yaml.Node, input InstallInput) {
+func (i *Installer) editDocumentNode(yamlNode yaml.Node, input InstallInput) {
 	i.editYaml(&yamlNode, input)
-	i.editStrategy(&yamlNode, input)
+	i.editStrategy(&yamlNode, input.FileNames)
 }
 
 func (i *Installer) isObjectProtected(yamlNode *yaml.Node) bool {
@@ -89,20 +89,20 @@ func (i *Installer) editYaml(yamlNode *yaml.Node, input InstallInput) {
 	}
 }
 
-func (i *Installer) editStrategy(yamlNode *yaml.Node, input InstallInput) {
-	if i.DeploymentStrategy != common.UnspecifiedStrategy && editInfo.isImageUpdated {
+func (i *Installer) editStrategy(yamlNode *yaml.Node, fileNames []string) {
+	editInfo.allowStrategyChange = true
+	if i.DeploymentStrategy != common.UnspecifiedStrategy {
 		newStrategyInput := InstallInput{
-			Command:      input.Command,
-			FileNames:    input.FileNames,
+			Command:      EditCmd,
+			FileNames:    fileNames,
 			KeyLocations: []string{"spec.strategy.type"},
 			NewValue:     i.DeploymentStrategy.String(),
 		}
 		i.editYaml(yamlNode, newStrategyInput)
 	}
-	editInfo.isImageUpdated = false
+	editInfo.allowStrategyChange = false
 }
 
-// TODO Should it be refactored?
 func (inst *Installer) replace(node *yaml.Node, keys []string, newValue string) {
 	identifier := keys[0]
 	if node.Kind == yaml.DocumentNode {
@@ -150,7 +150,7 @@ func (i *Installer) getNewValue(oldValue string, newValue string) string {
 }
 
 func (i *Installer) getUpdateSpecificNewValue(oldValue string, newValue string) string {
-	if editInfo.isImageUpdated {
+	if editInfo.allowStrategyChange {
 		return getStrategyChangeSpecificNewValue(newValue)
 	}
 	return i.getImageChangeSpecificNewValue(oldValue, newValue)
@@ -161,7 +161,6 @@ func (i *Installer) getImageChangeSpecificNewValue(oldValue string, newValue str
 	oldImage := strings.Split(oldValue, ":")[0]
 	newImage := strings.Split(newValue, ":")[0]
 	if isOldImageContainingNewImage(oldImage, newImage) {
-		editInfo.isImageUpdated = true
 		if i.KeepRegistry {
 			logImageChangeWithRegistry(oldValue, newValue)
 			newTag := strings.Split(newValue, ":")[1]
