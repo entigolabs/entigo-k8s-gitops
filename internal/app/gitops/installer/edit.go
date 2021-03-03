@@ -151,7 +151,7 @@ func (i *Installer) getNewValue(oldValue string, newValue string) string {
 
 func (i *Installer) getUpdateSpecificNewValue(oldValue string, newValue string) string {
 	if editInfo.allowStrategyChange {
-		return getStrategyChangeSpecificNewValue(newValue)
+		return getStrategyChangeSpecificNewValue(oldValue, newValue)
 	}
 	return i.getImageChangeSpecificNewValue(oldValue, newValue)
 }
@@ -198,7 +198,8 @@ func areImageEndingsMatching(oldImage string, newImage string) bool {
 	return true
 }
 
-func getStrategyChangeSpecificNewValue(newValue string) string {
+func getStrategyChangeSpecificNewValue(oldValue string, newValue string) string {
+	logImageChange(oldValue, newValue)
 	return newValue
 }
 
