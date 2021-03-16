@@ -15,18 +15,40 @@ func composeInstallInput(installTxt string) []installer.InstallInput {
 		if !isLineValid(line) {
 			continue
 		}
-		installInputs = append(installInputs, installLineToInstallInput(line))
+		installInput, err := convInstallLineToInstallInput(line)
+		if err != nil {
+			common.Logger.Fatal(&common.PrefixedError{Reason: err})
+		}
+		installInputs = append(installInputs, installInput)
 	}
 	return installInputs
 }
 
-func installLineToInstallInput(installLine string) installer.InstallInput {
+func convInstallLineToInstallInput(installLine string) (installer.InstallInput, error) {
 	lineSplits := strings.Split(installLine, " ")
+	installCommand := installer.ConvStrToInstallCommand(lineSplits[0])
+	switch installCommand {
+	case installer.EditCmd:
+		return convInstallLineToEditInput(lineSplits), nil
+	case installer.DropCmd:
+		return convInstallLineToDropInput(lineSplits), nil
+	}
+	return installer.InstallInput{}, errors.New(fmt.Sprintf("unsupported installer command: %s", lineSplits[0]))
+}
+
+func convInstallLineToEditInput(lineSplits []string) installer.InstallInput {
 	return installer.InstallInput{
-		Command:      installer.ConvStrToInstallCommand(lineSplits[0]),
+		Command:      installer.EditCmd,
 		FileNames:    strings.Split(lineSplits[1], ","),
 		KeyLocations: strings.Split(lineSplits[2], ","),
 		NewValue:     lineSplits[3],
+	}
+}
+
+func convInstallLineToDropInput(lineSplits []string) installer.InstallInput {
+	return installer.InstallInput{
+		Command:   installer.DropCmd,
+		FileNames: strings.Split(lineSplits[1], ","),
 	}
 }
 
@@ -57,8 +79,8 @@ func isValidForSkip(firstSplit string) bool {
 	return firstSplit == "" || strings.Contains(firstSplit, "#")
 }
 
-func isValidCommand(firstSplit string) bool {
-	return firstSplit == installer.EditCmd.String() || firstSplit == installer.DropCmd.String()
+func isValidCommand(str string) bool {
+	return str == installer.EditCmd.String() || str == installer.DropCmd.String()
 }
 
 func composeArgoAppInstallInput(flags *common.Flags) []installer.InstallInput {
