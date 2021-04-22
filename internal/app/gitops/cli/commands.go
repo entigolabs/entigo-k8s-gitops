@@ -11,6 +11,8 @@ func cliCommands() []*cli.Command {
 		&updateCommand,
 		&copyCommand,
 		&deleteCommand,
+		&argoCDSyncCommand,
+		&argoCDDeleteCommand,
 	}
 }
 
@@ -44,4 +46,20 @@ var deleteCommand = cli.Command{
 	Usage:   "deletes specified branch/folder and ArgoCD configuration",
 	Action:  action(common.DeleteCmd),
 	Flags:   cliFlags(common.DeleteCmd),
+}
+
+var argoCDSyncCommand = cli.Command{
+	Name:    "argocd-sync",
+	Aliases: []string{"a-sync"},
+	Usage:   "synchronizes ArgoCD application",
+	Action:  action(common.ArgoCDSyncCmd),
+	Flags:   ArgoCDFlags(common.ArgoCDSyncCmd),
+}
+
+var argoCDDeleteCommand = cli.Command{
+	Name:    "argocd-delete",
+	Aliases: []string{"a-delete"},
+	Usage:   "deletes ArgoCD application",
+	Action:  action(common.ArgoCDDeleteCmd),
+	Flags:   ArgoCDFlags(common.ArgoCDDeleteCmd),
 }

@@ -7,6 +7,8 @@ const (
 	UpdateCmd
 	CopyCmd
 	DeleteCmd
+	ArgoCDSyncCmd
+	ArgoCDDeleteCmd
 )
 
 type LoggingLevel int

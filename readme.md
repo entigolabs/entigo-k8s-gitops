@@ -8,11 +8,13 @@ This is [gitops](https://www.gitops.tech/) helper CLI
 
 ## How to Use
 
-This GitOps utility supports 3 commands:
+This GitOps utility supports 5 commands:
 
 - ```run``` - run update and copy logic
 - ```update``` - updates specified images
 - ```copy``` - copies from master branch to specified branch
+- ```argocd-sync``` - syncs an ArgoCD application
+- ```argocd-delete``` - deletes an ArgoCD application
 
 ## Examples
 
