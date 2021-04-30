@@ -6,7 +6,9 @@ This is [gitops](https://www.gitops.tech/) helper CLI
 * [How to use](#how-to-use)
 * [Examples](#examples)
 * [ArgoCD Commands](#argocd-commands)
+    * [argocd-get](#argocd-get)
     * [argocd-sync](#argocd-sync)
+    * [argocd-update](#argocd-update)
     * [argocd-delete](#argocd-delete)
 
 ## Compiling Source
@@ -15,12 +17,14 @@ This is [gitops](https://www.gitops.tech/) helper CLI
 
 ## How to Use
 
-This GitOps utility supports 5 commands:
+This GitOps utility supports 7 commands:
 
 - ```run``` - run update and copy logic
 - ```update``` - updates specified images
 - ```copy``` - copies from master branch to specified branch
+- ```argocd-get``` - gets an ArgoCD application as json output
 - ```argocd-sync``` - syncs an ArgoCD application
+- ```argocd-update``` - updates an ArgoCD application, combines argocd-get, git update and argocd-sync
 - ```argocd-delete``` - deletes an ArgoCD application
 
 ## Examples
@@ -57,6 +61,25 @@ Tokenized path flags:
 
 ## ArgoCD Commands
 
+### argocd-get
+
+Gets an ArgoCD application as json in standard output.
+
+OPTIONS:
+* app-name - **Required**, name of the ArgoCD application [$APP_NAME]
+* server - **Required**, server tcp address with port [$ARGO_CD_SERVER]
+* auth-token - **Required**, authentication token [$ARGO_CD_TOKEN]
+* insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
+* timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]
+
+Minimal example
+
+```./gitops argocd-get --app-name='application-name' --server='localhost:443' --auth-token='auth-token'```
+
+Full example
+
+```./gitops argocd-get --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 insecure=false```
+
 ### argocd-sync
 
 Syncs an ArgoCD application and waits for it to reach synced and healthy status.
@@ -68,6 +91,7 @@ OPTIONS:
 * insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
 * timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]
 * async - don't wait for sync to complete (default: **false**) [$ARGO_CD_ASYNC]
+* wait-failure - Fail the command when waiting for the sync to complete exceeds the timeout (default: **true**) [$ARGO_CD_WAIT_FAILURE]
 
 Minimal example
 
@@ -75,7 +99,33 @@ Minimal example
 
 Full example
 
-```./gitops argocd-sync --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 insecure=false async=false```
+```./gitops argocd-sync --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 insecure=false async=false wait-failure=true```
+
+### argocd-update
+
+Updates an ArgoCD application. Combines argocd-get, git update and argocd-sync commands.
+
+OPTIONS:
+* app-name - **Required**, name of the ArgoCD application [$APP_NAME]
+* server - **Required**, server tcp address with port [$ARGO_CD_SERVER]
+* auth-token - **Required**, authentication token [$ARGO_CD_TOKEN]
+* git-key-file - **Required**,SSH private key location [$GIT_KEY_FILE]
+* images [-i] - **Required**, images with tags, comma separated list [$IMAGES]
+* insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
+* timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]
+* git-strict-host-key-checking - strict host key checking (default: **false**) [$GIT_STRICT_HOST_KEY_CHECKING]
+* git-push - push changes (default: **true**) [$GIT_PUSH]
+* git-author-name value - Git author name (default: **jenkins**) [$GIT_AUTHOR_NAME]
+* git-author-email value - Git author email (default: **jenkins@localhost**) [$GIT_AUTHOR_EMAIL]
+* keep-registry [-k] - keeps registry part of the changeable image (default: **false**) [$KEEP_REGISTRY]
+* deployment-strategy [-s] - change deployment strategy (RollingUpdate | Recreate) (default: if not defined then strategy will remain unchanged) [$DEPLOYMENT-STRATEGY]
+* recursive - updates directories and their contents recursively (default: **false**) [$RECURSIVE]
+* async - don't wait for argoCD sync to complete (default: **false**) [$ARGO_CD_ASYNC]
+* wait-failure - Fail the command when waiting for the sync to complete exceeds the timeout (default: **true**) [$ARGO_CD_WAIT_FAILURE]
+
+Minimal example
+
+```./gitops argocd-update --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --git-token-file='file' --images='image:1'```
 
 ### argocd-delete
 

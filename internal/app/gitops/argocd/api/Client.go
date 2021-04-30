@@ -26,8 +26,9 @@ const (
 
 type Client interface {
 	DeleteRequest(applicationName string, cascade bool, timeout int)
+	GetRequest(applicationName string, timeout int) *v1alpha1.Application
 	SyncRequest(applicationName string, timeout int) *v1alpha1.Application
-	WaitApplicationSync(applicationName string, timeout int, resourceVersion string)
+	WaitApplicationSync(applicationName string, timeout int, resourceVersion string, waitFailure bool)
 }
 
 type client struct {
@@ -52,10 +53,43 @@ func NewClientOrDie(flags *common.Flags) Client {
 	return &client
 }
 
+func (c *client) GetRequest(applicationName string, timeout int) *v1alpha1.Application {
+	common.Logger.Println(fmt.Sprintf("Getting ArgoCD app: %s, timeout: %d seconds", applicationName, timeout))
+	ctx, cancel := context.WithCancel(context.Background())
+	if timer := addFatalTimeout(timeout, cancel, "Getting application timed out"); timer != nil {
+		defer timer.Stop()
+	}
+	defer cancel()
+	retryDelay := initialRetryDelay
+	for ctx.Err() == nil {
+		connection, applicationServiceClient := c.newApplicationClient()
+		if applicationServiceClient != nil {
+			app, err := applicationServiceClient.Get(ctx, &applicationpkg.ApplicationQuery{Name: &applicationName})
+			closeConnection(connection)
+			if err == nil {
+				return app
+			} else {
+				status, _ := grpcstatus.FromError(err)
+				switch status.Code() {
+				case codes.Unavailable:
+					common.Logger.Println("Connection failed")
+				case codes.NotFound:
+					return nil
+				default:
+					common.Logger.Fatal(&common.PrefixedError{Reason: err})
+				}
+			}
+		}
+		sleep(&retryDelay)
+	}
+	common.Logger.Fatal(&common.PrefixedError{Reason: ctx.Err()})
+	return nil
+}
+
 func (c *client) SyncRequest(applicationName string, timeout int) *v1alpha1.Application {
 	common.Logger.Println(fmt.Sprintf("Syncing ArgoCD app: %s, timeout: %d seconds", applicationName, timeout))
 	ctx, cancel := context.WithCancel(context.Background())
-	if timer := addTimeout(timeout, cancel, "Syncing application timed out"); timer != nil {
+	if timer := addFatalTimeout(timeout, cancel, "Syncing application timed out"); timer != nil {
 		defer timer.Stop()
 	}
 	defer cancel()
@@ -74,7 +108,7 @@ func (c *client) sendSyncReq(ctx context.Context, syncReq applicationpkg.Applica
 		connection, applicationServiceClient := c.newApplicationClient()
 		if applicationServiceClient != nil {
 			application, err := applicationServiceClient.Sync(ctx, &syncReq)
-			close(connection)
+			closeConnection(connection)
 			if err == nil {
 				return application
 			} else {
@@ -91,13 +125,14 @@ func (c *client) sendSyncReq(ctx context.Context, syncReq applicationpkg.Applica
 		}
 		sleep(&retryDelay)
 	}
+	common.Logger.Fatal(&common.PrefixedError{Reason: ctx.Err()})
 	return nil
 }
 
 func (c *client) DeleteRequest(applicationName string, cascade bool, timeout int) {
 	common.Logger.Println(fmt.Sprintf("Deleting ArgoCD app: %s, timeout: %d seconds", applicationName, timeout))
 	ctx, cancel := context.WithCancel(context.Background())
-	if timer := addTimeout(timeout, cancel, "Syncing application timed out"); timer != nil {
+	if timer := addFatalTimeout(timeout, cancel, "Deleting application timed out"); timer != nil {
 		defer timer.Stop()
 	}
 	defer cancel()
@@ -110,7 +145,7 @@ func (c *client) DeleteRequest(applicationName string, cascade bool, timeout int
 		connection, applicationServiceClient := c.newApplicationClient()
 		if applicationServiceClient != nil {
 			_, err := applicationServiceClient.Delete(ctx, &deleteReq)
-			close(connection)
+			closeConnection(connection)
 			if err == nil {
 				return
 			} else {
@@ -125,11 +160,13 @@ func (c *client) DeleteRequest(applicationName string, cascade bool, timeout int
 		}
 		sleep(&retryDelay)
 	}
+	common.Logger.Fatal(&common.PrefixedError{Reason: ctx.Err()})
 }
 
-func (c *client) WaitApplicationSync(applicationName string, timeout int, resourceVersion string) {
+func (c *client) WaitApplicationSync(applicationName string, timeout int, resourceVersion string, waitFailure bool) {
 	ctx, cancel := context.WithCancel(context.Background())
-	if timer := addTimeout(timeout, cancel, "Syncing application timed out"); timer != nil {
+	timer := addTimeout(timeout, cancel, "Waiting for application to sync timed out", waitFailure)
+	if timer != nil {
 		defer timer.Stop()
 	}
 	defer cancel()
@@ -144,12 +181,19 @@ func (c *client) WaitApplicationSync(applicationName string, timeout int, resour
 	}
 }
 
-func addTimeout(timeout int, cancel context.CancelFunc, message string) *time.Timer {
+func addFatalTimeout(timeout int, cancel context.CancelFunc, message string) *time.Timer {
+	return addTimeout(timeout, cancel, message, true)
+}
+
+func addTimeout(timeout int, cancel context.CancelFunc, message string, fatal bool) *time.Timer {
 	if timeout > 0 {
 		return time.AfterFunc(time.Duration(timeout)*time.Second, func() {
 			cancel()
-			// TODO Should it be fatal, warning or selectable with boolean?
-			common.Logger.Fatal(&common.PrefixedError{Reason: errors.New(message)})
+			if fatal {
+				common.Logger.Fatal(&common.PrefixedError{Reason: errors.New(message)})
+			} else {
+				common.Logger.Println(&common.Warning{Reason: errors.New(message)})
+			}
 		})
 	} else {
 		return nil
@@ -170,7 +214,7 @@ func (c *client) newApplicationClient() (io.Closer, applicationpkg.ApplicationSe
 	return nil, nil
 }
 
-func close(conn io.Closer) {
+func closeConnection(conn io.Closer) {
 	if conn != nil {
 		if err := conn.Close(); err != nil {
 			common.Logger.Println(&common.Warning{Reason: err})

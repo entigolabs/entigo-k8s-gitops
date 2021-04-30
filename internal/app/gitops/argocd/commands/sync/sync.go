@@ -11,10 +11,9 @@ func Run(flags *common.Flags) {
 	timeout := flags.ArgoCD.Timeout
 	client := api.NewClientOrDie(flags)
 	application := client.SyncRequest(appName, timeout)
-	// TODO Is waitFailure boolean needed to not fail the build when waiting times out?
 	if !flags.ArgoCD.Async {
 		common.Logger.Println(fmt.Sprintf("Waiting for application to sync, timeout: %d seconds", timeout))
-		client.WaitApplicationSync(appName, timeout, application.ResourceVersion)
+		client.WaitApplicationSync(appName, timeout, application.ResourceVersion, flags.ArgoCD.WaitFailure)
 	} else {
 		common.Logger.Println("Waiting disabled, won't wait for sync to complete")
 	}

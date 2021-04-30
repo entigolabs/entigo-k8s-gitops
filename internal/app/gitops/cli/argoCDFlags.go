@@ -14,21 +14,41 @@ func ArgoCDFlags(cmd common.Command) []cli.Flag {
 
 func appendArgoCDFlags(flags []cli.Flag) []cli.Flag {
 	return append(flags,
+		&loggingFlag,
 		&appNameFlag,
 		&argoCDServerAddrFlag,
-		&argoCDInsecureFlag,
 		&argoCDTokenFlag,
+		&argoCDInsecureFlag,
 		&argoCDTimeoutFlag)
 }
 
 func appendArgoCDCmdFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
 	switch cmd {
 	case common.ArgoCDSyncCmd:
-		baseFlags = append(baseFlags, &argoCDAsyncFlag)
+		baseFlags = append(baseFlags,
+			&argoCDAsyncFlag,
+			&argoCDWaitFailureFlag)
 	case common.ArgoCDDeleteCmd:
 		baseFlags = append(baseFlags, &argoCDCascadeFlag)
+	case common.ArgoCDUpdateCmd:
+		baseFlags = argoCDUpdateSpecificFlags(baseFlags)
 	}
 	return baseFlags
+}
+
+func argoCDUpdateSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
+	return append(baseFlags,
+		&gitKeyFileFlag,
+		&imagesFlag,
+		&gitStrictHostKeyCheckingFlag,
+		&gitPushFlag,
+		&gitAuthorNameFlag,
+		&gitAuthorEmailFlag,
+		&keepRegistryFlag,
+		&deploymentStrategyFlag,
+		&recursiveFlag,
+		&argoCDAsyncFlag,
+		&argoCDWaitFailureFlag)
 }
 
 var argoCDServerAddrFlag = cli.StringFlag{
@@ -77,6 +97,16 @@ var argoCDAsyncFlag = cli.BoolFlag{
 	DefaultText: "false",
 	Usage:       "Don't wait for sync to complete",
 	Destination: &flags.ArgoCD.Async,
+	Required:    false,
+}
+
+var argoCDWaitFailureFlag = cli.BoolFlag{
+	Name:        "wait-failure",
+	EnvVars:     []string{"ARGO_CD_WAIT_FAILURE"},
+	Value:       true,
+	DefaultText: "true",
+	Usage:       "Fail the command when waiting for the sync to complete exceeds the timeout",
+	Destination: &flags.ArgoCD.WaitFailure,
 	Required:    false,
 }
 
