@@ -4,11 +4,14 @@ go 1.15
 
 require (
 	github.com/argoproj/argo-cd v1.8.7
+	github.com/argoproj/gitops-engine v0.2.2
 	github.com/go-git/go-git/v5 v5.2.0
 	github.com/otiai10/copy v1.3.0
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
+	google.golang.org/grpc v1.29.1
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
+	k8s.io/apimachinery v0.19.2
 )
 
 replace (
