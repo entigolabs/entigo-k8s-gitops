@@ -10,6 +10,7 @@ type Flags struct {
 	LoggingLevel       string
 	Git                GitFlags
 	App                AppFlags
+	ArgoCD             ArgoCDFlags
 	Images             string
 	KeepRegistry       bool
 	DeploymentStrategy string
@@ -34,6 +35,17 @@ type AppFlags struct {
 	Branch     string
 	PrefixArgo string
 	PrefixYaml string
+}
+
+type ArgoCDFlags struct {
+	ServerAddr  string
+	Insecure    bool
+	AuthToken   string
+	Timeout     int
+	GRPCWeb     bool
+	Async       bool
+	WaitFailure bool
+	Cascade     bool
 }
 
 func (f *Flags) Setup(cmd Command) error {
@@ -83,6 +95,10 @@ func (f *Flags) cmdSpecificSetup(cmd Command) {
 		f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
 	case DeleteCmd:
 		f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
+	case ArgoCDGetCmd:
+	case ArgoCDSyncCmd:
+	case ArgoCDUpdateCmd:
+	case ArgoCDDeleteCmd:
 	default:
 		Logger.Fatal(&PrefixedError{Reason: errors.New("unsupported command")})
 
