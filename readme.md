@@ -71,6 +71,7 @@ OPTIONS:
 * auth-token - **Required**, authentication token [$ARGO_CD_TOKEN]
 * insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
 * timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]
+* grpc-web - Enables gRPC-web protocol. Useful if Argo CD server is behind proxy which does not support HTTP2 (default: **false**) [$ARGO_CD_GRPC_WEB]
 
 Minimal example
 
@@ -78,7 +79,7 @@ Minimal example
 
 Full example
 
-```./gitops argocd-get --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 insecure=false```
+```./gitops argocd-get --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 --insecure=false --grpc-web=false```
 
 ### argocd-sync
 
@@ -90,6 +91,7 @@ OPTIONS:
 * auth-token - **Required**, authentication token [$ARGO_CD_TOKEN]
 * insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
 * timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]
+* grpc-web - Enables gRPC-web protocol. Useful if Argo CD server is behind proxy which does not support HTTP2 (default: **false**) [$ARGO_CD_GRPC_WEB]
 * async - don't wait for sync to complete (default: **false**) [$ARGO_CD_ASYNC]
 * wait-failure - Fail the command when waiting for the sync to complete exceeds the timeout (default: **true**) [$ARGO_CD_WAIT_FAILURE]
 
@@ -99,7 +101,7 @@ Minimal example
 
 Full example
 
-```./gitops argocd-sync --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 insecure=false async=false wait-failure=true```
+```./gitops argocd-sync --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 --insecure=false --grpc-web=false --async=false --wait-failure=true```
 
 ### argocd-update
 
@@ -113,6 +115,7 @@ OPTIONS:
 * images [-i] - **Required**, images with tags, comma separated list [$IMAGES]
 * insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
 * timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]
+* grpc-web - Enables gRPC-web protocol. Useful if Argo CD server is behind proxy which does not support HTTP2 (default: **false**) [$ARGO_CD_GRPC_WEB]
 * git-strict-host-key-checking - strict host key checking (default: **false**) [$GIT_STRICT_HOST_KEY_CHECKING]
 * git-push - push changes (default: **true**) [$GIT_PUSH]
 * git-author-name value - Git author name (default: **jenkins**) [$GIT_AUTHOR_NAME]
@@ -137,6 +140,7 @@ OPTIONS:
 * auth-token - **Required**, authentication token [$ARGO_CD_TOKEN]
 * insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
 * timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]
+* grpc-web - Enables gRPC-web protocol. Useful if Argo CD server is behind proxy which does not support HTTP2 (default: **false**) [$ARGO_CD_GRPC_WEB]
 * cascade - perform a cascaded deletion of all application resources (default: **true**) [$ARGO_CD_CASCADE]
 
 Minimal example
@@ -145,4 +149,4 @@ Minimal example
 
 Full example
 
-```./gitops argocd-sync --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 insecure=false cascade=true```
+```./gitops argocd-sync --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 --insecure=false --grpc-web=false --cascade=true```

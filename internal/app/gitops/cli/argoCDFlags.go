@@ -19,7 +19,8 @@ func appendArgoCDFlags(flags []cli.Flag) []cli.Flag {
 		&argoCDServerAddrFlag,
 		&argoCDTokenFlag,
 		&argoCDInsecureFlag,
-		&argoCDTimeoutFlag)
+		&argoCDTimeoutFlag,
+		&argoCDGRPCWebFlag)
 }
 
 func appendArgoCDCmdFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
@@ -87,6 +88,16 @@ var argoCDTimeoutFlag = cli.IntFlag{
 	DefaultText: "300",
 	Usage:       "Timeout for single ArgoCD operation",
 	Destination: &flags.ArgoCD.Timeout,
+	Required:    false,
+}
+
+var argoCDGRPCWebFlag = cli.BoolFlag{
+	Name:        "grpc-web",
+	EnvVars:     []string{"ARGO_CD_GRPC_WEB"},
+	Value:       false,
+	DefaultText: "false",
+	Usage:       "Enables gRPC-web protocol. Useful if Argo CD server is behind proxy which does not support HTTP2",
+	Destination: &flags.ArgoCD.GRPCWeb,
 	Required:    false,
 }
 

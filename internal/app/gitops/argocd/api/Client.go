@@ -41,6 +41,7 @@ func NewClientOrDie(flags *common.Flags) Client {
 		ServerAddr: flags.ArgoCD.ServerAddr,
 		Insecure:   flags.ArgoCD.Insecure,
 		AuthToken:  flags.ArgoCD.AuthToken,
+		GRPCWeb:    flags.ArgoCD.GRPCWeb,
 	}
 	var (
 		client client
