@@ -43,6 +43,7 @@ type ArgoCDFlags struct {
 	AuthToken   string
 	Timeout     int
 	GRPCWeb     bool
+	Sync        bool
 	Async       bool
 	WaitFailure bool
 	Cascade     bool

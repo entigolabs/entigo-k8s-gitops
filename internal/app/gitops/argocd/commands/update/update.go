@@ -19,7 +19,9 @@ func Run(flags *common.Flags) {
 	}
 	addFlags(flags, app)
 	update.Run(flags)
-	sync.Run(flags)
+	if flags.ArgoCD.Sync {
+		sync.Run(flags)
+	}
 }
 
 func addFlags(flags *common.Flags, app *v1alpha1.Application) {

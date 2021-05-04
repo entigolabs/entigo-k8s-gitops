@@ -48,6 +48,7 @@ func argoCDUpdateSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 		&keepRegistryFlag,
 		&deploymentStrategyFlag,
 		&recursiveFlag,
+		&argoCDSyncFlag,
 		&argoCDAsyncFlag,
 		&argoCDWaitFailureFlag)
 }
@@ -98,6 +99,16 @@ var argoCDGRPCWebFlag = cli.BoolFlag{
 	DefaultText: "false",
 	Usage:       "Enables gRPC-web protocol. Useful if Argo CD server is behind proxy which does not support HTTP2",
 	Destination: &flags.ArgoCD.GRPCWeb,
+	Required:    false,
+}
+
+var argoCDSyncFlag = cli.BoolFlag{
+	Name:        "sync",
+	EnvVars:     []string{"ARGO_CD_SYNC"},
+	Value:       true,
+	DefaultText: "true",
+	Usage:       "Sync the application after update",
+	Destination: &flags.ArgoCD.Sync,
 	Required:    false,
 }
 
