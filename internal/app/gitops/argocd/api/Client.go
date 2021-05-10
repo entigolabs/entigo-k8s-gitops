@@ -180,7 +180,9 @@ func (c *client) WaitApplicationSync(applicationName string, timeout int, resour
 			return
 		}
 	}
-	common.Logger.Fatal(&common.PrefixedError{Reason: errors.New("waiting was interrupted before sync completed")})
+	if waitFailure && ctx.Err() != context.Canceled {
+		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New("waiting was interrupted before sync completed")})
+	}
 }
 
 func addFatalTimeout(timeout int, cancel context.CancelFunc, message string) *time.Timer {
