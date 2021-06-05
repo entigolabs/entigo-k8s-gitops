@@ -15,8 +15,11 @@ func main() {
 
 	go func() {
 		cli.Run()
+		close(terminated)
 	}()
 
-	<-terminated
-	common.Logger.Println(&common.Warning{Reason: errors.New("utility was terminated, exiting")})
+	sig := <-terminated
+	if sig != nil {
+		common.Logger.Println(&common.Warning{Reason: errors.New("utility was terminated, exiting")})
+	}
 }
