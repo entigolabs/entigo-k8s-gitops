@@ -98,8 +98,8 @@ func (c *client) SyncRequest(applicationName string, timeout int) *v1alpha1.Appl
 		Name:  &applicationName,
 		Prune: true,
 	}
-	syncReq.Strategy = &argoappv1.SyncStrategy{Apply: &argoappv1.SyncStrategyApply{}}
-	syncReq.Strategy.Apply.Force = true
+	syncReq.Strategy = &argoappv1.SyncStrategy{Hook: &argoappv1.SyncStrategyHook{}}
+	syncReq.Strategy.Hook.Force = true
 	return c.sendSyncReq(ctx, syncReq)
 }
 
