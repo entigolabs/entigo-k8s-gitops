@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"gopkg.in/yaml.v3"
+	"io"
 	"strconv"
 	"strings"
 )
@@ -37,15 +38,25 @@ func (i *Installer) getEditedBuffer(yamlFileName string, input InstallInput) *by
 	buffer := *new(bytes.Buffer)
 	encoder := yaml.NewEncoder(&buffer)
 	encoder.SetIndent(2)
-	for documentIndex := 1; decoder.Decode(&yamlNode) == nil; documentIndex++ {
-		editInfo.documentIndex = documentIndex
+	if isFileEmpty(reader.Len(), yamlFileName) {
+		return &buffer
+	}
+	for {
+		err := decoder.Decode(&yamlNode)
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			common.Logger.Fatal(&common.PrefixedError{Reason: err})
+		}
+		editInfo.documentIndex = editInfo.documentIndex + 1
 		i.protectOrEdit(yamlNode, input)
 		if err := encoder.Encode(&yamlNode); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
 	}
 	if err := encoder.Close(); err != nil {
-		logEncoderClosing(yamlFileName, err)
+		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 	return &buffer
 }
@@ -203,18 +214,18 @@ func getStrategyChangeSpecificNewValue(oldValue string, newValue string) string 
 	return newValue
 }
 
+func isFileEmpty(readerLen int, yamlFileName string) bool {
+	if readerLen == 0 {
+		msg := fmt.Sprintf("%s is empty, nothing is changed", yamlFileName)
+		common.Logger.Println(&common.Warning{Reason: errors.New(msg)})
+		return true
+	}
+	return false
+}
+
 func logImageCouldNotBeFound(image string) {
 	msg := errors.New(fmt.Sprintf("skiping '%s' update in %s - '%s' couldn't be found", editInfo.workingKey, editInfo.workingFile, image))
 	common.Logger.Println(&common.Warning{Reason: msg})
-}
-
-func logEncoderClosing(yamlFileName string, err error) {
-	if strings.Contains(err.Error(), "yaml: expected STREAM-START") {
-		msg := fmt.Sprintf("%s in %s", err, yamlFileName)
-		common.Logger.Println(&common.Warning{Reason: errors.New(msg)})
-	} else {
-		common.Logger.Fatal(&common.PrefixedError{Reason: err})
-	}
 }
 
 func logEditStart(input InstallInput) {
