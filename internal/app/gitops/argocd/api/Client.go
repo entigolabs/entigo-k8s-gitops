@@ -192,10 +192,10 @@ func addFatalTimeout(timeout int, cancel context.CancelFunc, message string) *ti
 func addTimeout(timeout int, cancel context.CancelFunc, message string, fatal bool) *time.Timer {
 	if timeout > 0 {
 		return time.AfterFunc(time.Duration(timeout)*time.Second, func() {
-			cancel()
 			if fatal {
 				common.Logger.Fatal(&common.PrefixedError{Reason: errors.New(message)})
 			} else {
+				cancel()
 				common.Logger.Println(&common.Warning{Reason: errors.New(message)})
 			}
 		})
