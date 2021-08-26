@@ -149,4 +149,4 @@ Minimal example
 
 Full example
 
-```./gitops argocd-sync --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 --insecure=false --grpc-web=false --cascade=true```
+```./gitops argocd-delete --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 --insecure=false --grpc-web=false --cascade=true```
