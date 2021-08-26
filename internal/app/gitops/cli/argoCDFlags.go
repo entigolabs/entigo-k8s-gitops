@@ -138,6 +138,6 @@ var argoCDCascadeFlag = cli.BoolFlag{
 	Value:       true,
 	DefaultText: "true",
 	Usage:       "Perform a cascaded deletion of all application resources",
-	Destination: &flags.ArgoCD.Async,
+	Destination: &flags.ArgoCD.Cascade,
 	Required:    false,
 }
