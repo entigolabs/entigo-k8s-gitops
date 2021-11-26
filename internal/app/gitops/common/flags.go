@@ -32,6 +32,7 @@ type AppFlags struct {
 	Prefix     string
 	Namespace  string
 	Name       string
+    Domain     string
 	Branch     string
 	PrefixArgo string
 	PrefixYaml string
