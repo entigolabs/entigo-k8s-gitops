@@ -13,6 +13,9 @@ type installTxtVariables struct {
 
 func initInstallTxtVariables(appBranch string, appName string, appDomain string) *installTxtVariables {
 	featureUrl := ""
+	if appDomain == "" {
+	    appDomain = "localhost"
+	}
 	if appBranch == "master" {
 		featureUrl = appName
 	} else {
@@ -27,6 +30,7 @@ func (i *installTxtVariables) specifyInstallVariables(installInput string) strin
 	for _, unspecifiedLine := range unspecifiedLines {
 		specifiedLines += fmt.Sprintf("%s\n", i.specifyLineVariables(unspecifiedLine))
 	}
+	fmt.Println("specifyInstallVariables: %s",specifiedLines)
 	return specifiedLines
 }
 

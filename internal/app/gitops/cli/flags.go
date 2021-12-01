@@ -25,7 +25,8 @@ func appendBaseFlags(flags []cli.Flag) []cli.Flag {
 		&gitAuthorEmailFlag,
 		&appPrefixFlag,
 		&appNamespaceFlag,
-		&appNameFlag)
+		&appNameFlag,
+		&appDomainFlag)
 }
 
 func appendCmdSpecificFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
@@ -54,7 +55,6 @@ func copyAndDeleteSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 	baseFlags = append(baseFlags, &appBranchFlag)
 	baseFlags = append(baseFlags, &appPrefixArgoFlag)
 	baseFlags = append(baseFlags, &appPrefixYamlFlag)
-    baseFlags = append(baseFlags, &appDomainFlag)
 	return baseFlags
 }
 
@@ -164,10 +164,10 @@ var appNameFlag = cli.StringFlag{
 
 var appDomainFlag = cli.StringFlag{
 	Name:        "app-domain",
-    Aliases:     []string{"d"},
 	EnvVars:     []string{"APP_DOMAIN"},
 	DefaultText: "localhost",
-	Usage:       "application domain",
+	Value:       "localhost",
+	Usage:       "application domain `name` ",
 	Destination: &flags.App.Domain,
 }
 

@@ -85,6 +85,7 @@ func (f *Flags) setup() {
 	f.App.Namespace = strings.ToLower(f.App.Namespace)
 	f.App.Name = strings.ToLower(f.App.Name)
 	f.App.Branch = sanitizeBranch(f.App.Branch)
+    f.App.Domain = strings.ToLower(f.App.Domain)
 }
 
 func (f *Flags) cmdSpecificSetup(cmd Command) {
