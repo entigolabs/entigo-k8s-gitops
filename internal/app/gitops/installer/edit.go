@@ -13,6 +13,7 @@ import (
 
 type editInformation struct {
 	workingFile         string
+	objectKind          string
 	documentIndex       int
 	workingKey          string
 	keyExist            bool
@@ -26,6 +27,9 @@ func (i *Installer) edit(input InstallInput) {
 	for _, yamlFileName := range input.FileNames {
 		editInfo.workingFile = yamlFileName
 		editedBuffer := i.getEditedBuffer(yamlFileName, input)
+		if editInfo.objectKind == "ConfigMap" {
+			continue
+		}
 		common.OverwriteFile(yamlFileName, editedBuffer.Bytes())
 	}
 }
@@ -50,7 +54,7 @@ func (i *Installer) getEditedBuffer(yamlFileName string, input InstallInput) *by
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
 		editInfo.documentIndex = editInfo.documentIndex + 1
-		i.protectOrEdit(yamlNode, input)
+		i.skipOrEdit(yamlNode, input)
 		if err := encoder.Encode(&yamlNode); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}
@@ -61,13 +65,17 @@ func (i *Installer) getEditedBuffer(yamlFileName string, input InstallInput) *by
 	return &buffer
 }
 
-func (i *Installer) protectOrEdit(yamlNode yaml.Node, input InstallInput) {
-	if !i.isObjectProtected(&yamlNode) {
-		i.editDocumentNode(yamlNode, input)
-	} else {
+func (i *Installer) skipOrEdit(yamlNode yaml.Node, input InstallInput) {
+	if kind, _ := i.getObjectKind(&yamlNode); kind == "ConfigMap" {
+		msg := errors.New(fmt.Sprintf("skiping update in %s in document nr %v, object is ConfigMap", editInfo.workingFile, editInfo.documentIndex))
+		common.Logger.Println(&common.Warning{Reason: msg})
+		return
+	} else if i.isObjectProtected(&yamlNode) {
 		msg := errors.New(fmt.Sprintf("skiping update in %s in document nr %v, object is protected", editInfo.workingFile, editInfo.documentIndex))
 		common.Logger.Println(&common.Warning{Reason: msg})
+		return
 	}
+	i.editDocumentNode(yamlNode, input)
 }
 
 func (i *Installer) editDocumentNode(yamlNode yaml.Node, input InstallInput) {
@@ -76,10 +84,7 @@ func (i *Installer) editDocumentNode(yamlNode yaml.Node, input InstallInput) {
 }
 
 func (i *Installer) isObjectProtected(yamlNode *yaml.Node) bool {
-	protectionLocation := "metadata.annotations.entigo-k8s-gitops/protected"
-	editInfo.workingKey = protectionLocation
-	editInfo.keyExist = false
-	keyValue, keyNotFoundErr := i.search(yamlNode, strings.Split(protectionLocation, "."))
+	keyValue, keyNotFoundErr := i.getValue(yamlNode, "metadata.annotations.entigo-k8s-gitops/protected")
 	if keyNotFoundErr != nil {
 		return false
 	}
@@ -89,6 +94,25 @@ func (i *Installer) isObjectProtected(yamlNode *yaml.Node) bool {
 		common.Logger.Fatal(&common.PrefixedError{Reason: msg})
 	}
 	return isProtected
+}
+
+func (i *Installer) getValue(yamlNode *yaml.Node, keyLocation string) (string, error) {
+	editInfo.workingKey = keyLocation
+	editInfo.keyExist = false
+	keyValue, keyNotFoundErr := i.search(yamlNode, strings.Split(keyLocation, "."))
+	if keyNotFoundErr != nil {
+		return "", keyNotFoundErr
+	}
+	return keyValue, nil
+}
+
+func (i *Installer) getObjectKind(yamlNode *yaml.Node) (string, error) {
+	kind, keyNotFoundErr := i.getValue(yamlNode, "kind")
+	if keyNotFoundErr != nil {
+		return "", keyNotFoundErr
+	}
+	editInfo.objectKind = kind
+	return kind, nil
 }
 
 func (i *Installer) editYaml(yamlNode *yaml.Node, input InstallInput) {
