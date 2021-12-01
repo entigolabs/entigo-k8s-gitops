@@ -2,13 +2,6 @@ FROM golang:1.15 as build
 COPY . /go/gitops
 RUN cd /go/gitops && go build -o bin/gitops -ldflags "-linkmode external -extldflags -static" cmd/gitops/main.go
 
-FROM harbor.fleetcomplete.dev/dockerhub/library/alpine:3
-RUN apk add --no-cache bash ca-certificates openssl git unzip jq curl vim python3 py3-pip && \
-    pip install ruamel.yaml && \
-    update-ca-certificates && \
-    curl -sSL -o /usr/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')/argocd-linux-amd64 && \
-    curl -sSL -o /usr/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
-    chmod +x /usr/bin/argocd /usr/bin/kubectl
+FROM alpine:3
 COPY  --from=build /go/gitops/bin/gitops /usr/bin/gitops
-COPY *.py /usr/bin/
-
+ENTRYPOINT ["sh"]
