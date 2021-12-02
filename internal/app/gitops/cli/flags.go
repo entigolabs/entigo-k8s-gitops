@@ -54,6 +54,7 @@ func copyAndDeleteSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 	baseFlags = append(baseFlags, &appBranchFlag)
 	baseFlags = append(baseFlags, &appPrefixArgoFlag)
 	baseFlags = append(baseFlags, &appPrefixYamlFlag)
+    baseFlags = append(baseFlags, &appDomainFlag)
 	return baseFlags
 }
 
@@ -168,6 +169,14 @@ var appBranchFlag = cli.StringFlag{
 	Usage:       "application branch `name`",
 	Destination: &flags.App.Branch,
 	Required:    true,
+}
+
+var appDomainFlag = cli.StringFlag{
+	Name:        "app-domain",
+	EnvVars:     []string{"APP_DOMAIN"},
+	DefaultText: "localhost",
+	Usage:       "application domain",
+	Destination: &flags.App.Domain,
 }
 
 var appPrefixArgoFlag = cli.StringFlag{

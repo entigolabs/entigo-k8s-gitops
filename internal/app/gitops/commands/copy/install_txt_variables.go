@@ -11,12 +11,12 @@ type installTxtVariables struct {
 	featureUrl string
 }
 
-func initInstallTxtVariables(appBranch string, appName string) *installTxtVariables {
+func initInstallTxtVariables(appBranch string, appName string, appDomain string) *installTxtVariables {
 	featureUrl := ""
 	if appBranch == "master" {
 		featureUrl = appName
 	} else {
-		featureUrl = fmt.Sprintf("%s-%s.fleetcomplete.dev", appName, appBranch)
+		featureUrl = fmt.Sprintf("%s-%s.%s", appName, appBranch, appDomain)
 	}
 	return &installTxtVariables{appBranch: appBranch, appName: appName, featureUrl: featureUrl}
 }

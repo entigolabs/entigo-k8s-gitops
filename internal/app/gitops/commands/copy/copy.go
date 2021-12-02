@@ -66,7 +66,7 @@ func copyMasterToNewBranch(flags *common.Flags) {
 func installViaFile(flags *common.Flags) {
 	installer := configInstaller.Installer{Command: common.CopyCmd, DeploymentStrategy: common.UnspecifiedStrategy}
 	installTxt := string(common.GetFileInput(installFile))
-	installTxtVars := *initInstallTxtVariables(flags.App.Branch, flags.App.Name)
+	installTxtVars := *initInstallTxtVariables(flags.App.Branch, flags.App.Name, flags.App.Domain)
 	installTxt = installTxtVars.specifyInstallVariables(installTxt)
 	input := composeInstallInput(installTxt)
 	installer.Install(input)
