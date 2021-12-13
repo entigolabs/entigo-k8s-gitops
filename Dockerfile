@@ -1,4 +1,4 @@
-FROM golang:1.15 as build
+FROM golang:1.16 as build
 COPY . /go/gitops
 RUN cd /go/gitops && go build -o bin/gitops -ldflags "-linkmode external -extldflags -static" cmd/gitops/main.go
 
