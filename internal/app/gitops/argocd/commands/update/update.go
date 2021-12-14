@@ -13,7 +13,7 @@ import (
 func Run(flags *common.Flags) {
 	appName := flags.App.Name
 	client := api.NewClientOrDie(flags)
-	app := client.GetRequest(appName, flags.ArgoCD.Timeout)
+	app := client.GetRequest(appName, flags.ArgoCD.Timeout, flags.ArgoCD.Refresh)
 	if app == nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New(fmt.Sprintf("App '%s' not found", appName))})
 	}

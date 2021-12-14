@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
 	"k8s.io/apimachinery/pkg/watch"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -26,7 +27,7 @@ const (
 
 type Client interface {
 	DeleteRequest(applicationName string, cascade bool, timeout int)
-	GetRequest(applicationName string, timeout int) *v1alpha1.Application
+	GetRequest(applicationName string, timeout int, refresh bool) *v1alpha1.Application
 	SyncRequest(applicationName string, timeout int) *v1alpha1.Application
 	WaitApplicationSync(applicationName string, timeout int, resourceVersion string, waitFailure bool)
 }
@@ -54,7 +55,7 @@ func NewClientOrDie(flags *common.Flags) Client {
 	return &client
 }
 
-func (c *client) GetRequest(applicationName string, timeout int) *v1alpha1.Application {
+func (c *client) GetRequest(applicationName string, timeout int, refresh bool) *v1alpha1.Application {
 	common.Logger.Println(fmt.Sprintf("Getting ArgoCD app: %s, timeout: %d seconds", applicationName, timeout))
 	ctx, cancel := context.WithCancel(context.Background())
 	if timer := addFatalTimeout(timeout, cancel, "Getting application timed out"); timer != nil {
@@ -65,7 +66,12 @@ func (c *client) GetRequest(applicationName string, timeout int) *v1alpha1.Appli
 	for ctx.Err() == nil {
 		connection, applicationServiceClient := c.newApplicationClient()
 		if applicationServiceClient != nil {
-			app, err := applicationServiceClient.Get(ctx, &applicationpkg.ApplicationQuery{Name: &applicationName})
+			refreshString := strconv.FormatBool(refresh)
+			appQuery := &applicationpkg.ApplicationQuery{
+				Name:    &applicationName,
+				Refresh: &refreshString,
+			}
+			app, err := applicationServiceClient.Get(ctx, appQuery)
 			closeConnection(connection)
 			if err == nil {
 				return app
