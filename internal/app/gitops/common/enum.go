@@ -11,6 +11,7 @@ const (
 	ArgoCDGetCmd
 	ArgoCDSyncCmd
 	ArgoCDUpdateCmd
+    VersionCmd
 )
 
 type LoggingLevel int
