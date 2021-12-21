@@ -5,5 +5,6 @@ RUN cd /go/gitops && go build -o bin/gitops -ldflags "-linkmode external -extldf
 FROM alpine:3
 RUN apk add bash
 COPY  --from=build /go/gitops/bin/gitops /usr/bin/gitops
+COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["env"]
+CMD ["/entrypoint.sh"]
