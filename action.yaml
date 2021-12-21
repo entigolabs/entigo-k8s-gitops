@@ -3,8 +3,9 @@ author: 'Entigo'
 description: 'A GitHub Action that updates yamls files in git repos and synchronizes argocd'
 inputs:
   command:
-    description: 'Command to invoke update or argocd-update'
+    description: 'Command to invoke update(git_repo,git_branch,git_key,images,app_path) or argocd-update(argocd_server,argocd_token,app_name,images)'
     required: true
+    default: "update"
   git_repo:
     description: 'Git repo where yamls files are'
     required: false

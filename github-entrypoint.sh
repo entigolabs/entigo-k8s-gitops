@@ -1,6 +1,6 @@
 #!/bin/bash
 touch /dev/shm/key-file && chmod 600 /dev/shm/key-file && echo "$INPUT_GIT_KEY" > /dev/shm/key-file
-
+set -x
 if [ "$INPUT_COMMAND" == "update" ]
 then
 gitops update \
