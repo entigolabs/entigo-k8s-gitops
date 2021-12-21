@@ -23,5 +23,4 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - -c
     - /github-entrypoint.sh

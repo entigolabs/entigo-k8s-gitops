@@ -3,6 +3,7 @@ COPY . /go/gitops
 RUN cd /go/gitops && go build -o bin/gitops -ldflags "-linkmode external -extldflags -static" cmd/gitops/main.go
 
 FROM alpine:3
+RUN apk add bash
 COPY  --from=build /go/gitops/bin/gitops /usr/bin/gitops
 COPY github-entrypoint.sh /github-entrypoint.sh
-ENTRYPOINT ["sh"]
+ENTRYPOINT ["bash", "-c"]
