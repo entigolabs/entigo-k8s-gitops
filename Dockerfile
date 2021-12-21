@@ -6,5 +6,4 @@ FROM alpine:3
 RUN apk add bash
 COPY  --from=build /go/gitops/bin/gitops /usr/bin/gitops
 COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["sh"]
