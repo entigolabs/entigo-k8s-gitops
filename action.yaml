@@ -2,12 +2,15 @@ name: 'entigo-k8s-gitops'
 author: 'Entigo'
 description: 'A GitHub Action that updates yamls files in git repos and synchronizes argocd'
 inputs:
+  command:
+    description: 'Command to invoke update or argocd-update'
+    required: true
   git_repo:
     description: 'Git repo where yamls files are'
-    required: true
+    required: false
   git_branch:
     description: 'Git repo branch where yamls files are'
-    required: true
+    required: false
     default: "main"
   git_key:
     description: 'Git repo private key with write access'
@@ -16,9 +19,19 @@ inputs:
     description: 'Image tags to update to'
     required: true
   app_path:
-    description: 'Image tags to update to'
-    required: true
-    default: "main"
+    description: 'Path where yaml files are in the repo'
+    required: false
+    default: "."
+  app_name:
+    description: 'Argocd Application name to update.'
+    required: false
+    default: ""
+  argocd_server:
+    description: 'URL of argocd'
+    required: false
+  argocd_token:
+    description: 'Authentication token for argocd'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
