@@ -1,0 +1,26 @@
+name: 'entigo-k8s-gitops'
+author: 'Entigo'
+description: 'A GitHub Action that updates yamls files in git repos and synchronizes argocd'
+inputs:
+  git-repo:
+    description: 'Git repo where yamls files are'
+    required: true
+  git-branch:
+    description: 'Git repo branch where yamls files are'
+    required: true
+    default: "main"
+  git-key:
+    description: 'Git repo private key with write access'
+    required: true
+  images:
+    description: 'Image tags to update to'
+    required: true
+  app-path:
+    description: 'Image tags to update to'
+    required: true
+    default: "main"
+runs:
+  using: 'docker'
+  image: 'docker://entigolabs/entigo-k8s-gitops:stable'
+  args:
+    - env
