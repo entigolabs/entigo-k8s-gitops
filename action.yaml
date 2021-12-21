@@ -21,6 +21,6 @@ inputs:
     default: "main"
 runs:
   using: 'docker'
-  image: 'docker://entigolabs/entigo-k8s-gitops:stable'
+  image: 'Dockerfile'
   args:
     - env
