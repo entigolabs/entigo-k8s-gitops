@@ -4,5 +4,5 @@ RUN cd /go/gitops && go build -o bin/gitops -ldflags "-linkmode external -extldf
 
 FROM alpine:3
 COPY  --from=build /go/gitops/bin/gitops /usr/bin/gitops
-COPY entrypoint.sh /entrypoint.sh
+COPY github-entrypoint.sh /github-entrypoint.sh
 ENTRYPOINT ["sh"]
