@@ -17,5 +17,7 @@ RUN set -xe && \
     cmd/gitops/main.go
 
 FROM alpine:3
-COPY  --from=build /go/gitops/bin/gitops /usr/bin/gitops
-ENTRYPOINT ["sh"]
+RUN apk add bash
+ENTRYPOINT ["bash", "-c"]
+COPY github-entrypoint.sh /github-entrypoint.sh
+COPY --from=build /go/gitops/bin/gitops /usr/bin/gitops
