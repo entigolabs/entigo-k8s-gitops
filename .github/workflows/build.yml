@@ -48,6 +48,7 @@ jobs:
       with:
         context: .
         push: true
+        file: Dockerfile.github
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
     - name: Create Release
