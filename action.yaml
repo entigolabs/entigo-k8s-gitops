@@ -35,6 +35,6 @@ inputs:
     required: false
 runs:
   using: 'docker'
-  image: 'docker://entigolabs/entigo-k8s-gitops:githubaction-latest'
+  image: 'docker://entigolabs/entigo-k8s-gitops:main-latest'
   args:
     - /github-entrypoint.sh
