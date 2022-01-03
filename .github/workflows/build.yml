@@ -42,6 +42,7 @@ jobs:
         images: entigolabs/entigo-k8s-gitops
         tags: |
           type=raw,value={{branch}}-${{ github.run_number }}
+          type=raw,value={{branch}}-latest
     - name: Build and push Docker image
       uses: docker/build-push-action@v2 
       with:
