@@ -51,6 +51,7 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
     - name: Create Release
+      if: github.ref == 'refs/heads/main'
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -63,6 +64,7 @@ jobs:
         draft: true
         prerelease: true
     - name: Upload Release Artifact
+      if: github.ref == 'refs/heads/main'
       id: upload_release_asset 
       uses: actions/upload-release-asset@v1
       env:
