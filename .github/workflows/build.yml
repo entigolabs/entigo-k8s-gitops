@@ -63,7 +63,7 @@ jobs:
         body: |
           TODO
         draft: true
-        prerelease: true
+        prerelease: false
     - name: Upload Release Artifact
       if: github.ref == 'refs/heads/main'
       id: upload_release_asset 
