@@ -42,6 +42,8 @@ func run(cmd common.Command) {
 		argoCDUpdate.Run(flags)
 	case common.ArgoCDDeleteCmd:
 		argoCDDelete.Run(flags)
+    case common.VersionCmd:
+        common.PrintVersion()
 	default:
 		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New("unsupported command")})
 	}

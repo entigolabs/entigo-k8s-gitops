@@ -15,6 +15,7 @@ func cliCommands() []*cli.Command {
 		&argoCDSyncCommand,
 		&argoCDUpdateCommand,
 		&argoCDDeleteCommand,
+		&versionCommand,
 	}
 }
 
@@ -80,4 +81,12 @@ var argoCDDeleteCommand = cli.Command{
 	Usage:   "deletes ArgoCD application",
 	Action:  action(common.ArgoCDDeleteCmd),
 	Flags:   ArgoCDFlags(common.ArgoCDDeleteCmd),
+}
+
+var versionCommand = cli.Command{
+	Name:    "version",
+	Aliases: []string{"ver"},
+	Usage:   "Utility version",
+	Action:  action(common.VersionCmd),
+	Flags: nil,
 }
