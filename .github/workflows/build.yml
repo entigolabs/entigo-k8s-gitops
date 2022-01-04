@@ -61,7 +61,7 @@ jobs:
         tag_name: v${{ github.run_number }}
         release_name: Release ${{ github.run_number }}
         body: |
-          TODO
+          ${{ github.event.head_commit.message}}
         draft: true
         prerelease: false
     - name: Upload Release Artifact
