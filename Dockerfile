@@ -3,7 +3,7 @@ COPY . /go/gitops
 ARG PACKAGE="github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 WORKDIR /go/gitops
 RUN set -xe && \
-    VERSION=$(cat ./VERSION) && \
+    VERSION=DOCKER && \
     BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') && \
     GIT_COMMIT=$(git rev-parse HEAD) && \
     GIT_TREE_STATE=$(if [ -z "`git status --porcelain`" ]; then echo "clean" ; else echo "dirty"; fi) && \
