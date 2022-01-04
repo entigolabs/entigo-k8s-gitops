@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ main, argocd-integration, githubaction ]
+    branches: [ main, argocd-integration, build_improvments ]
   workflow_dispatch:
 
 jobs:
@@ -19,7 +19,14 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build the go application
-      run: go build -o bin/gitops -ldflags "-linkmode external -extldflags -static" cmd/gitops/main.go
+      run: |
+        go build -o bin/gitops 
+                 -ldflags "-X ${PACKAGE}.version=${{ github.run_number }} \
+                           -X ${PACKAGE}.buildDate=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+                           -X ${PACKAGE}.gitCommit=${GITHUB_SHA} \
+                           -X ${PACKAGE}.gitTreeState=clean \
+                           -linkmode external -extldflags -static" \
+                 cmd/gitops/main.go
     - name: Analyze with SonarCloud
       uses: sonarsource/sonarcloud-github-action@master
       env:
