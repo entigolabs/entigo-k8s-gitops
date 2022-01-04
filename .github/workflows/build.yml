@@ -20,11 +20,11 @@ jobs:
         fetch-depth: 0
     - name: Build the go application
       run: |
-        go build -o bin/gitops 
-                 -ldflags "-X ${PACKAGE}.version=${{ github.run_number }} \
-                           -X ${PACKAGE}.buildDate=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
-                           -X ${PACKAGE}.gitCommit=${GITHUB_SHA} \
-                           -X ${PACKAGE}.gitTreeState=clean \
+        go build -o bin/gitops \
+                 -ldflags "-X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.version=${{ github.run_number }} \
+                           -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.buildDate=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+                           -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.gitCommit=${GITHUB_SHA} \
+                           -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.gitTreeState=clean \
                            -linkmode external -extldflags -static" \
                  cmd/gitops/main.go
     - name: Analyze with SonarCloud
