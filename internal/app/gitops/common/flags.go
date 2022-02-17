@@ -102,6 +102,7 @@ func (f *Flags) cmdSpecificSetup(cmd Command) {
 	case ArgoCDSyncCmd:
 	case ArgoCDUpdateCmd:
 	case ArgoCDDeleteCmd:
+    case VersionCmd:
 	default:
 		Logger.Fatal(&PrefixedError{Reason: errors.New("unsupported command")})
 
