@@ -3,8 +3,8 @@ module github.com/entigolabs/entigo-k8s-gitops
 go 1.16
 
 require (
-	github.com/argoproj/argo-cd/v2 v2.2.1
-	github.com/argoproj/gitops-engine v0.5.1
+	github.com/argoproj/argo-cd/v2 v2.2.5
+	github.com/argoproj/gitops-engine v0.5.2
 	github.com/go-git/go-git/v5 v5.2.0
 	github.com/otiai10/copy v1.3.0
 	github.com/urfave/cli/v2 v2.3.0
