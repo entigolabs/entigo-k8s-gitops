@@ -72,6 +72,7 @@ OPTIONS:
 * insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
 * timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]
 * grpc-web - Enables gRPC-web protocol. Useful if Argo CD server is behind proxy which does not support HTTP2 (default: **false**) [$ARGO_CD_GRPC_WEB]
+* refresh - Refresh application data when retrieving (default: **true**) [$ARGO_CD_REFRESH]
 
 Minimal example
 
@@ -79,7 +80,7 @@ Minimal example
 
 Full example
 
-```./gitops argocd-get --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 --insecure=false --grpc-web=false```
+```./gitops argocd-get --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 --insecure=false --grpc-web=false --refresh=true```
 
 ### argocd-sync
 
@@ -101,7 +102,7 @@ Minimal example
 
 Full example
 
-```./gitops argocd-sync --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 --insecure=false --grpc-web=false --async=false --wait-failure=true```
+```./gitops argocd-sync --app-name='application-name' --server='localhost:443' --auth-token='auth-token' --timeout=300 --insecure=false --grpc-web=false --refresh=true --async=false --wait-failure=true```
 
 ### argocd-update
 
@@ -123,6 +124,7 @@ OPTIONS:
 * keep-registry [-k] - keeps registry part of the changeable image (default: **false**) [$KEEP_REGISTRY]
 * deployment-strategy [-s] - change deployment strategy (RollingUpdate | Recreate) (default: if not defined then strategy will remain unchanged) [$DEPLOYMENT-STRATEGY]
 * recursive - updates directories and their contents recursively (default: **false**) [$RECURSIVE]
+* refresh - Refresh application data when retrieving (default: **true**) [$ARGO_CD_REFRESH]
 * async - don't wait for argoCD sync to complete (default: **false**) [$ARGO_CD_ASYNC]
 * wait-failure - Fail the command when waiting for the sync to complete exceeds the timeout (default: **true**) [$ARGO_CD_WAIT_FAILURE]
 

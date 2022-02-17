@@ -25,6 +25,9 @@ func appendArgoCDFlags(flags []cli.Flag) []cli.Flag {
 
 func appendArgoCDCmdFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
 	switch cmd {
+	case common.ArgoCDGetCmd:
+		baseFlags = append(baseFlags,
+			&argoCDGetRefreshFlag)
 	case common.ArgoCDSyncCmd:
 		baseFlags = append(baseFlags,
 			&argoCDAsyncFlag,
@@ -50,7 +53,8 @@ func argoCDUpdateSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 		&recursiveFlag,
 		&argoCDSyncFlag,
 		&argoCDAsyncFlag,
-		&argoCDWaitFailureFlag)
+		&argoCDWaitFailureFlag,
+		&argoCDGetRefreshFlag)
 }
 
 var argoCDServerAddrFlag = cli.StringFlag{
@@ -139,5 +143,15 @@ var argoCDCascadeFlag = cli.BoolFlag{
 	DefaultText: "true",
 	Usage:       "Perform a cascaded deletion of all application resources",
 	Destination: &flags.ArgoCD.Cascade,
+	Required:    false,
+}
+
+var argoCDGetRefreshFlag = cli.BoolFlag{
+	Name:        "refresh",
+	EnvVars:     []string{"ARGO_CD_REFRESH"},
+	Value:       true,
+	DefaultText: "true",
+	Usage:       "Refresh application data when retrieving",
+	Destination: &flags.ArgoCD.Refresh,
 	Required:    false,
 }

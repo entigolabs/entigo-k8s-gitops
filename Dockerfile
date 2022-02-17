@@ -1,4 +1,4 @@
-FROM golang:1.15 as build
+FROM golang:1.16 as build
 COPY . /go/gitops
 ARG PACKAGE="github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 WORKDIR /go/gitops

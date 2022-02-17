@@ -35,7 +35,7 @@ type AppFlags struct {
 	Branch     string
 	PrefixArgo string
 	PrefixYaml string
-    Domain     string
+	Domain     string
 }
 
 type ArgoCDFlags struct {
@@ -48,6 +48,7 @@ type ArgoCDFlags struct {
 	Async       bool
 	WaitFailure bool
 	Cascade     bool
+	Refresh     bool
 }
 
 func (f *Flags) Setup(cmd Command) error {
