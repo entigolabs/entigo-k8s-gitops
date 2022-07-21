@@ -66,10 +66,7 @@ func (f *Flags) Setup(cmd Command) error {
 		return err
 	}
 	f.setup()
-	if err := f.cmdSpecificSetup(cmd); err != nil {
-		return err
-	}
-	return nil
+	return f.cmdSpecificSetup(cmd)
 }
 
 func (f *Flags) ComposeYamlPath() string {

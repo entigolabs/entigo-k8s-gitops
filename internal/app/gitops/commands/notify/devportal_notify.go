@@ -36,7 +36,7 @@ func runNotificationRequest(notificationFlags common.DeploymentNotificationFlags
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			common.Logger.Fatal(&common.PrefixedError{Reason: err})
+			common.Logger.Println(&common.Warning{Reason: err})
 		}
 	}(resp.Body)
 	logResponseInfo(resp)
