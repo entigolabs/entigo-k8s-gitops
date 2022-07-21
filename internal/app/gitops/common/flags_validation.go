@@ -26,7 +26,7 @@ func (f *Flags) validatePaths() error {
 }
 
 func (f *Flags) isTokenizedPath() bool {
-	if isPathSet, _ := f.isFlagSet(f.App.Path); isPathSet {
+	if isPathSet, _ := f.isFlagSet(f.App.Path, "app-path"); isPathSet {
 		return false
 	}
 	return true
@@ -38,21 +38,54 @@ func (f *Flags) validatePath() error {
 }
 
 func (f *Flags) validateTokenizedPath() error {
-	if _, err := f.isFlagSet(f.App.Prefix); err != nil {
+	if _, err := f.isFlagSet(f.App.Prefix, "app-prefix"); err != nil {
 		return err
 	}
-	if _, err := f.isFlagSet(f.App.Namespace); err != nil {
+	if _, err := f.isFlagSet(f.App.Namespace, "app-namespace"); err != nil {
 		return err
 	}
-	if _, err := f.isFlagSet(f.App.Name); err != nil {
+	if _, err := f.isFlagSet(f.App.Name, "app-name"); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (f *Flags) isFlagSet(flagValue string) (bool, error) {
+func (f *Flags) isFlagSet(flagValue string, flagType string) (bool, error) {
 	if flagValue != "" {
 		return true, nil
 	}
-	return false, errors.New(fmt.Sprintf(`required flag "%s" not set`, f.App.Prefix))
+	return false, errors.New(flagNotSetMsg(flagType))
+}
+
+func (f *Flags) validateUpdate() error {
+	isNotificationFlagSet := f.Notification.URL != "" || f.Notification.RegistryUri != "" ||
+		f.Notification.AuthToken != "" || f.Notification.Environment != ""
+	if !isNotificationFlagSet {
+		return nil
+	}
+	return f.validateNotificationFlags()
+}
+
+func (f *Flags) validateNotificationFlags() error {
+	if f.Notification.URL == "" {
+		return errors.New(notifyFlagNotSetMsg("notify-api-url"))
+	}
+	if f.Notification.RegistryUri == "" {
+		return errors.New(notifyFlagNotSetMsg("notify-registry-uri"))
+	}
+	if f.Notification.AuthToken == "" {
+		return errors.New(notifyFlagNotSetMsg("notify-auth-token"))
+	}
+	if f.Notification.Environment == "" {
+		return errors.New(notifyFlagNotSetMsg("notify-env-flag"))
+	}
+	return nil
+}
+
+func flagNotSetMsg(flagType string) string {
+	return fmt.Sprintf("required flag '%s' not set", flagType)
+}
+
+func notifyFlagNotSetMsg(flagType string) string {
+	return fmt.Sprintf("required notification flag '%s' not set", flagType)
 }

@@ -8,6 +8,7 @@ import (
 	argoCDUpdate "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/argocd/commands/update"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/copy"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/delete"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/notify"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/update"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/urfave/cli/v2"
@@ -34,6 +35,8 @@ func run(cmd common.Command) {
 		copy.Run(flags)
 	case common.DeleteCmd:
 		delete.Run(flags)
+	case common.DeploymentNotificationCmd:
+		notify.Run(flags)
 	case common.ArgoCDGetCmd:
 		argoCDGet.Run(flags)
 	case common.ArgoCDSyncCmd:
@@ -42,10 +45,9 @@ func run(cmd common.Command) {
 		argoCDUpdate.Run(flags)
 	case common.ArgoCDDeleteCmd:
 		argoCDDelete.Run(flags)
-    case common.VersionCmd:
-        common.PrintVersion()
+	case common.VersionCmd:
+		common.PrintVersion()
 	default:
 		common.Logger.Fatal(&common.PrefixedError{Reason: errors.New("unsupported command")})
 	}
-
 }
