@@ -11,6 +11,7 @@ func cliCommands() []*cli.Command {
 		&updateCommand,
 		&copyCommand,
 		&deleteCommand,
+		&notificationCommand,
 		&argoCDGetCommand,
 		&argoCDSyncCommand,
 		&argoCDUpdateCommand,
@@ -51,6 +52,14 @@ var deleteCommand = cli.Command{
 	Flags:   cliFlags(common.DeleteCmd),
 }
 
+var notificationCommand = cli.Command{
+	Name:    "notify",
+	Aliases: []string{"ntf"},
+	Usage:   "notifies API about new deployment",
+	Action:  action(common.DeploymentNotificationCmd),
+	Flags:   deploymentNotificationFlags(common.DeploymentNotificationCmd),
+}
+
 var argoCDGetCommand = cli.Command{
 	Name:    "argocd-get",
 	Aliases: []string{"a-get"},
@@ -86,7 +95,7 @@ var argoCDDeleteCommand = cli.Command{
 var versionCommand = cli.Command{
 	Name:    "version",
 	Aliases: []string{"ver"},
-	Usage:   "Utility version",
+	Usage:   "utility version",
 	Action:  action(common.VersionCmd),
-	Flags: nil,
+	Flags:   nil,
 }

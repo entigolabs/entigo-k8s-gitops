@@ -7,11 +7,12 @@ const (
 	UpdateCmd
 	CopyCmd
 	DeleteCmd
+	DeploymentNotificationCmd
 	ArgoCDDeleteCmd
 	ArgoCDGetCmd
 	ArgoCDSyncCmd
 	ArgoCDUpdateCmd
-    VersionCmd
+	VersionCmd
 )
 
 type LoggingLevel int

@@ -11,6 +11,7 @@ type Flags struct {
 	Git                GitFlags
 	App                AppFlags
 	ArgoCD             ArgoCDFlags
+	Notification       DeploymentNotificationFlags
 	Images             string
 	KeepRegistry       bool
 	DeploymentStrategy string
@@ -51,13 +52,21 @@ type ArgoCDFlags struct {
 	Refresh     bool
 }
 
+type DeploymentNotificationFlags struct {
+	URL         string
+	Environment string
+	OldImage    string
+	NewImage    string
+	RegistryUri string
+	AuthToken   string
+}
+
 func (f *Flags) Setup(cmd Command) error {
 	if err := f.validate(cmd); err != nil {
 		return err
 	}
 	f.setup()
-	f.cmdSpecificSetup(cmd)
-	return nil
+	return f.cmdSpecificSetup(cmd)
 }
 
 func (f *Flags) ComposeYamlPath() string {
@@ -88,7 +97,7 @@ func (f *Flags) setup() {
 	f.App.Branch = sanitizeBranch(f.App.Branch)
 }
 
-func (f *Flags) cmdSpecificSetup(cmd Command) {
+func (f *Flags) cmdSpecificSetup(cmd Command) error {
 	switch cmd {
 	case UpdateCmd:
 		if f.isTokenizedPath() {
@@ -98,15 +107,16 @@ func (f *Flags) cmdSpecificSetup(cmd Command) {
 		f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
 	case DeleteCmd:
 		f.App.Path = fmt.Sprintf("%s/%s/%s", f.App.Prefix, f.App.Namespace, f.App.Name)
+	case DeploymentNotificationCmd:
 	case ArgoCDGetCmd:
 	case ArgoCDSyncCmd:
 	case ArgoCDUpdateCmd:
 	case ArgoCDDeleteCmd:
-    case VersionCmd:
+	case VersionCmd:
 	default:
 		Logger.Fatal(&PrefixedError{Reason: errors.New("unsupported command")})
-
 	}
+	return nil
 }
 
 func appendSlash(str string) string {

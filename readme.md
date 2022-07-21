@@ -22,6 +22,7 @@ This GitOps utility supports 7 commands:
 - ```run``` - run update and copy logic
 - ```update``` - updates specified images
 - ```copy``` - copies from master branch to specified branch
+- ```notify``` - notifies about new deployment 
 - ```argocd-get``` - gets an ArgoCD application as json output
 - ```argocd-sync``` - syncs an ArgoCD application
 - ```argocd-update``` - updates an ArgoCD application, combines argocd-get, git update and argocd-sync
@@ -58,6 +59,18 @@ Tokenized path flags:
     --app-name=<app-name>
 ```
 **Valuated ```--app-path``` with other than default value will override tokenized path flags**
+
+#### Notify Command Example
+
+```
+notify
+    --url=<api-endpoint>
+    --deployment-env=<environment-name>
+    --old-img=<image:tag>
+    --new-img=<image:tag>
+    --registry-uri=<rigistry-uri>
+    --auth-token=<key=value>
+```
 
 ## ArgoCD Commands
 

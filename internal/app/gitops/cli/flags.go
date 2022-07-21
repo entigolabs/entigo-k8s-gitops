@@ -8,12 +8,12 @@ import (
 
 func cliFlags(cmd common.Command) []cli.Flag {
 	var flags []cli.Flag
-	flags = appendBaseFlags(flags)
-	flags = appendCmdSpecificFlags(flags, cmd)
+	flags = appendFlags(flags)
+	flags = appendCmdFlags(flags, cmd)
 	return flags
 }
 
-func appendBaseFlags(flags []cli.Flag) []cli.Flag {
+func appendFlags(flags []cli.Flag) []cli.Flag {
 	return append(flags,
 		&loggingFlag,
 		&gitRepoFlag,
@@ -28,7 +28,7 @@ func appendBaseFlags(flags []cli.Flag) []cli.Flag {
 		&appNameFlag)
 }
 
-func appendCmdSpecificFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
+func appendCmdFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
 	switch cmd {
 	case common.RunCmd:
 	case common.UpdateCmd:
@@ -54,7 +54,7 @@ func copyAndDeleteSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 	baseFlags = append(baseFlags, &appBranchFlag)
 	baseFlags = append(baseFlags, &appPrefixArgoFlag)
 	baseFlags = append(baseFlags, &appPrefixYamlFlag)
-    baseFlags = append(baseFlags, &appDomainFlag)
+	baseFlags = append(baseFlags, &appDomainFlag)
 	return baseFlags
 }
 
