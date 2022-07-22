@@ -47,6 +47,10 @@ func updateSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 	baseFlags = append(baseFlags, &appPathFlag)
 	baseFlags = append(baseFlags, &deploymentStrategyFlag)
 	baseFlags = append(baseFlags, &recursiveFlag)
+	baseFlags = append(baseFlags, &notifyApiUrlFlag)
+	baseFlags = append(baseFlags, &notifyRegistryUriFlag)
+	baseFlags = append(baseFlags, &notifyDevelopmentEnvFlag)
+	baseFlags = append(baseFlags, &notifyAuthTokenFlag)
 	return baseFlags
 }
 
@@ -231,4 +235,36 @@ var recursiveFlag = cli.BoolFlag{
 	DefaultText: strconv.FormatBool(false),
 	Usage:       "updates directories and their contents recursively",
 	Destination: &flags.Recursive,
+}
+
+var notifyApiUrlFlag = cli.StringFlag{
+	Name:        "notify-api-url",
+	EnvVars:     []string{"NOTIFY_API_URL"},
+	DefaultText: "",
+	Usage:       "URL where to post notification",
+	Destination: &flags.Notification.URL,
+}
+
+var notifyDevelopmentEnvFlag = cli.StringFlag{
+	Name:        "notify-env",
+	EnvVars:     []string{"NOTIFY_ENV"},
+	DefaultText: "",
+	Usage:       "environment name where the image has been deployed",
+	Destination: &flags.Notification.Environment,
+}
+
+var notifyRegistryUriFlag = cli.StringFlag{
+	Name:        "notify-registry-uri",
+	EnvVars:     []string{"NOTIFY_REGISTRY_URI"},
+	DefaultText: "",
+	Usage:       "docker registry URI",
+	Destination: &flags.Notification.RegistryUri,
+}
+
+var notifyAuthTokenFlag = cli.StringFlag{
+	Name:        "notify-auth-token",
+	EnvVars:     []string{"NOTIFY_AUTH_TOKEN"},
+	DefaultText: "",
+	Usage:       "authentication token as key and value pair ('key=value')",
+	Destination: &flags.Notification.AuthToken,
 }

@@ -63,21 +63,21 @@ func (f *Flags) validateUpdate() error {
 	if !isNotificationFlagSet {
 		return nil
 	}
-	return f.validateNotificationFlags()
+	return ValidateNotificationFlags(f.Notification)
 }
 
-func (f *Flags) validateNotificationFlags() error {
-	if f.Notification.URL == "" {
+func ValidateNotificationFlags(notificationFlags DeploymentNotificationFlags) error {
+	if notificationFlags.URL == "" {
 		return errors.New(notifyFlagNotSetMsg("notify-api-url"))
 	}
-	if f.Notification.RegistryUri == "" {
+	if notificationFlags.RegistryUri == "" {
 		return errors.New(notifyFlagNotSetMsg("notify-registry-uri"))
 	}
-	if f.Notification.AuthToken == "" {
+	if notificationFlags.AuthToken == "" {
 		return errors.New(notifyFlagNotSetMsg("notify-auth-token"))
 	}
-	if f.Notification.Environment == "" {
-		return errors.New(notifyFlagNotSetMsg("notify-env-flag"))
+	if notificationFlags.Environment == "" {
+		return errors.New(notifyFlagNotSetMsg("notify-env"))
 	}
 	return nil
 }

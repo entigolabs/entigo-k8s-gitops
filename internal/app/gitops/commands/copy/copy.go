@@ -18,7 +18,7 @@ func Run(flags *common.Flags) {
 	installArgoApp(flags)
 	applyChanges(repo)
 	pushOnDemand(flags, repo)
-	logEndMessage(repo)
+	logRepoUrl(repo)
 }
 
 func initWorkingRepo(flags *common.Flags) *git.Repository {
@@ -72,7 +72,7 @@ func installViaFile(flags *common.Flags) {
 	installer.Install(input)
 }
 
-func logEndMessage(workingRepo *git.Repository) {
+func logRepoUrl(workingRepo *git.Repository) {
 	if workingRepo.GitFlags.Push {
 		url := common.GetRemoteRepoWebUrl(workingRepo.Repo)
 		common.Logger.Println(fmt.Sprintf("repository url: %s", url))

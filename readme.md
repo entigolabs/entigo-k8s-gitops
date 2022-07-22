@@ -30,8 +30,8 @@ This GitOps utility supports 7 commands:
 
 ## Examples
 
-#### Update Command Example
-##### Example With Application Path Flag
+#### Update Command
+##### Example: Update With Application Path Flag
 ```
 ./gitops update \
     --git-repo=<repository-ssh-url> \
@@ -41,8 +41,7 @@ This GitOps utility supports 7 commands:
     --app-path=<app-path>
 ```
 
-##### Example With Tokenized Path Flags 
-
+##### Example: Update With Tokenized Path Flags
 Tokenized path flags: 
 1) ```--app-prefix=<app-prefix>``` 
 2) ```--app-namespace=<app-namespace>```
@@ -60,10 +59,24 @@ Tokenized path flags:
 ```
 **Valuated ```--app-path``` with other than default value will override tokenized path flags**
 
-#### Notify Command Example
-
+##### Example: Update With Notification
 ```
-notify
+./gitops update
+    --git-repo=<repository-ssh-url> \
+    --git-branch=<repository-branch> \
+    --git-key-file=<key-file-location> \
+    --images=<image:tag,image2:tag> \ 
+    --app-path=<app-path>
+    --notify-api-url=<api-endpoint>
+    --notify-env=<deployment-env-name>
+    --notify-registry-uri=<img-registry-uri>
+    --notify-auth-token=<api-auth-token>
+```
+
+#### Notify Command
+##### Example: Basic Usage
+```
+./gitops notify
     --url=<api-endpoint>
     --deployment-env=<environment-name>
     --old-img=<image:tag>
