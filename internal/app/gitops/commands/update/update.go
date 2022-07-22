@@ -16,7 +16,7 @@ func Run(flags *common.Flags) {
 	applyChanges(repo)
 	pushOnDemand(repo)
 	logRepoUrl(repo)
-	notifyChanges(repo)
+	notifyOnDemand(repo)
 }
 
 func initWorkingRepo(flags *common.Flags) *git.Repository {
@@ -54,6 +54,12 @@ func logRepoUrl(workingRepo *git.Repository) {
 	if workingRepo.GitFlags.Push {
 		url := common.GetRemoteRepoWebUrl(workingRepo.Repo)
 		common.Logger.Println(fmt.Sprintf("repository url: %s", url))
+	}
+}
+
+func notifyOnDemand(repo *git.Repository) {
+	if err := common.ValidateNotificationFlags(repo.DeploymentNotificationFlags); err == nil {
+		notifyChanges(repo)
 	}
 }
 

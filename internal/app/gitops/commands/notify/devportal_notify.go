@@ -23,10 +23,10 @@ type authToken struct {
 }
 
 func Run(flags *common.Flags) {
-	runNotificationRequest(flags.Notification)
+	RunNotificationRequest(flags.Notification)
 }
 
-func runNotificationRequest(notificationFlags common.DeploymentNotificationFlags) {
+func RunNotificationRequest(notificationFlags common.DeploymentNotificationFlags) {
 	req := createNotificationRequest(notificationFlags)
 	client := &http.Client{}
 	resp, err := client.Do(req)
