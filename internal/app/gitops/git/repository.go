@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing/object"
@@ -16,12 +17,14 @@ type Repository struct {
 	*git.Repository
 	common.GitFlags
 	common.AppFlags
+	common.DeploymentNotificationFlags
 	Images             string
 	KeepRegistry       bool
 	Command            common.Command
 	LoggingLevel       common.LoggingLevel
 	DeploymentStrategy common.DeploymentStrategy
 	Recursive          bool
+	InstallHistory     []installer.InstallHistory
 }
 
 func (r *Repository) Clone() {

@@ -10,6 +10,15 @@ type Installer struct {
 	Command            common.Command
 	KeepRegistry       bool
 	DeploymentStrategy common.DeploymentStrategy
+	InstallHistory     []InstallHistory
+}
+
+type InstallHistory struct {
+	NewValue      string
+	OldValue      string
+	workingFile   string
+	documentIndex int
+	workingKey    string
 }
 
 type InstallCommand int
@@ -30,10 +39,12 @@ type InstallInput struct {
 	NewValue     string
 }
 
-func (i *Installer) Install(installInputs []InstallInput) {
+func (i *Installer) Install(installInputs []InstallInput) []InstallHistory {
 	for _, installInput := range installInputs {
+		editInfo.documentIndex = 0
 		i.installSingleInput(installInput)
 	}
+	return i.InstallHistory
 }
 
 func (i *Installer) installSingleInput(input InstallInput) {

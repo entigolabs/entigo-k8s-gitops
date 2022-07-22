@@ -191,14 +191,29 @@ func (i *Installer) getUpdateSpecificNewValue(oldValue string, newValue string) 
 	return i.getImageChangeSpecificNewValue(oldValue, newValue)
 }
 
+func (i *Installer) appendHistoryEntry(oldValue string, newValue string) {
+	historyEntry := InstallHistory{
+		NewValue:      newValue,
+		OldValue:      oldValue,
+		workingFile:   editInfo.workingFile,
+		documentIndex: editInfo.documentIndex,
+		workingKey:    editInfo.workingKey,
+	}
+	i.InstallHistory = append(i.InstallHistory, historyEntry)
+}
+
 func (i *Installer) getImageChangeSpecificNewValue(oldValue string, newValue string) string {
 	editInfo.keyExist = true
-	oldImage := strings.Split(oldValue, ":")[0]
-	newImage := strings.Split(newValue, ":")[0]
+	oldValueSplits := strings.Split(oldValue, ":")
+	oldImage := oldValueSplits[0]
+	newValueSplits := strings.Split(newValue, ":")
+	newImage := newValueSplits[0]
 	if isOldImageContainingNewImage(oldImage, newImage) {
+		oldValueImgAndTag := fmt.Sprintf("%s:%s", newImage, oldValueSplits[1])
+		i.appendHistoryEntry(oldValueImgAndTag, newValue)
 		if i.KeepRegistry {
 			logImageChangeWithRegistry(oldValue, newValue)
-			newTag := strings.Split(newValue, ":")[1]
+			newTag := newValueSplits[1]
 			return fmt.Sprintf("%s:%s", oldImage, newTag)
 		}
 		logImageChange(oldValue, newValue)

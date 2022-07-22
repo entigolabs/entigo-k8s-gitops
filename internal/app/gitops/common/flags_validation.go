@@ -77,7 +77,7 @@ func (f *Flags) validateNotificationFlags() error {
 		return errors.New(notifyFlagNotSetMsg("notify-auth-token"))
 	}
 	if f.Notification.Environment == "" {
-		return errors.New(notifyFlagNotSetMsg("notify-env-flag"))
+		return errors.New(notifyFlagNotSetMsg("notify-env"))
 	}
 	return nil
 }

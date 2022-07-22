@@ -100,6 +100,9 @@ func (f *Flags) setup() {
 func (f *Flags) cmdSpecificSetup(cmd Command) error {
 	switch cmd {
 	case UpdateCmd:
+		if err := f.validateUpdate(); err != nil {
+			return err
+		}
 		if f.isTokenizedPath() {
 			f.composeAppPath()
 		}
