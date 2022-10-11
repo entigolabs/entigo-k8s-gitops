@@ -22,7 +22,7 @@ This GitOps utility supports 7 commands:
 - ```run``` - run update and copy logic
 - ```update``` - updates specified images
 - ```copy``` - copies from master branch to specified branch
-- ```notify``` - notifies about new deployment 
+- ```notify``` - notifies [Jira](https://www.atlassian.com/software/jira) about new deployment. Read more how to use in [documents/jira-notification](./documents/jira-deployment-notification.md)
 - ```argocd-get``` - gets an ArgoCD application as json output
 - ```argocd-sync``` - syncs an ArgoCD application
 - ```argocd-update``` - updates an ArgoCD application, combines argocd-get, git update and argocd-sync
