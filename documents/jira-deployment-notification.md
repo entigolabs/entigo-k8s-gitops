@@ -1,6 +1,6 @@
-# Jenkins with Jira
+# Jira Deployment Notification via Jenkins
 
-**Caveat - currently this feature is only available for Entigo customers. Feel free to [write us](mailto:info@entigo.com)  and ask for support.**
+**Caveat - currently this feature is only available for [Entigo](https://www.entigo.com/) customers. Feel free to [write us](mailto:info@entigo.com)  and ask for support.**
 
 This document describes how to use [entigo-k8s-gitops](../readme.md) ```update``` command with notification feature that notifies [Jira](https://www.atlassian.com/software/jira) about specified deployments.
 
