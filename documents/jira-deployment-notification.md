@@ -10,14 +10,14 @@ Instructions how to set up the integration.
 
 ### Plugins setup
 
-1. In Jira go to **Apps** → **Explore more app** and install **Jenkins for Jira (Official)** plugin.  
+1. In Jira go to **Apps** → **Explore more app** and install **[Jenkins for Jira (Official)](https://marketplace.atlassian.com/apps/1227791/jenkins-for-jira-official?hosting=cloud&tab=overview)** plugin.  
     * Then go to **Apps** → **Manage your apps** and on the left sidebar click on **Jenkins for Jira**. 
     * Then click on **Connect a Jenkins server**. Follow the instructions to create a webhook.
 
 2. Install **Atlassian Jira Software Cloud** 
     * Open your Jenkins server
     * Navigate to Manage **Jenkins** -> **Manage plugins**
-    * In the **Available** tab, search for “**Atlassian Jira Software Cloud**”
+    * In the **Available** tab, search for “[**Atlassian Jira Software Cloud**](https://plugins.jenkins.io/atlassian-jira-software-cloud/)”
     * Check the "**Install**" checkbox
     * Click "**Download now and install after restart**"
 
@@ -121,5 +121,6 @@ def jiraSendDeploymentInfoCustom(JiraDeploymentInfo deploymentInfo, String state
     }
 }
 ```
-
-In this example```<repositoryCredentials>``` variable means that in **Jeknkins Dashboard** -> **Manage Jenksins** -> **Manage Credentials** you have to add **+ Add Credentials** with kind of ```SSH Username with private key``` where username is ```git```, **Treat username as secret** checkbox is checked and priate key is entered directly.
+#### ```Jenkinsfile``` notes
+* In this example credentialsId ```<repositoryCredentials>``` means that in **Jeknkins Dashboard** -> **Manage Jenksins** -> **Manage Credentials** you have to add **+ Add Credentials** with kind of ```SSH Username with private key``` where **username** is ```git```, **username as secret** checkbox is ```checked``` and **private key is entered directly**.
+* The ```environmentType``` must be one of the following: ```unmapped```, ```development```, ```testing```, ```staging```, ```production```.
