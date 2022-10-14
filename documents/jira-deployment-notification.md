@@ -10,7 +10,7 @@ Instructions how to set up the integration.
 
 ### Plugins setup
 
-1. Enable Deployments for your Jira Software project
+1. [Enable Deployments](https://support.atlassian.com/jira-software-cloud/docs/enable-deployments/) for your Jira Software project
    1. Navigate to your project. 
    2. Go to **Project Settings** -> **Features**. 
    3. Enable the **Deployments** feature. A new menu item, Deployments, will be added to the project menu.
