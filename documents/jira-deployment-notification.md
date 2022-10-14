@@ -10,11 +10,16 @@ Instructions how to set up the integration.
 
 ### Plugins setup
 
-1. In Jira go to **Apps** → **Explore more app** and install **[Jenkins for Jira (Official)](https://marketplace.atlassian.com/apps/1227791/jenkins-for-jira-official?hosting=cloud&tab=overview)** plugin.  
+1. Enable Deployments for your Jira Software project
+   1. Navigate to your project. 
+   2. Go to **Project Settings** -> **Features**. 
+   3. Enable the **Deployments** feature. A new menu item, Deployments, will be added to the project menu.
+A new menu item, Deployments, will be added to the project menu.
+2. In Jira go to **Apps** → **Explore more app** and install **[Jenkins for Jira (Official)](https://marketplace.atlassian.com/apps/1227791/jenkins-for-jira-official?hosting=cloud&tab=overview)** plugin.  
     * Then go to **Apps** → **Manage your apps** and on the left sidebar click on **Jenkins for Jira**. 
     * Then click on **Connect a Jenkins server**. Follow the instructions to create a webhook.
 
-2. Install **Atlassian Jira Software Cloud** 
+3. Install **Atlassian Jira Software Cloud** 
     * Open your Jenkins server
     * Navigate to Manage **Jenkins** -> **Manage plugins**
     * In the **Available** tab, search for “[**Atlassian Jira Software Cloud**](https://plugins.jenkins.io/atlassian-jira-software-cloud/)”
