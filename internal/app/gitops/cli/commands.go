@@ -39,7 +39,7 @@ var updateCommand = cli.Command{
 var copyCommand = cli.Command{
 	Name:    "copy",
 	Aliases: []string{"cp"},
-	Usage:   "copy from master branch",
+	Usage:   "copy from specified branch",
 	Action:  action(common.CopyCmd),
 	Flags:   cliFlags(common.CopyCmd),
 }

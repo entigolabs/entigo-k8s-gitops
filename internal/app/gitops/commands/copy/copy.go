@@ -13,7 +13,7 @@ const installFile = "install.txt"
 func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
 	cloneOrPull(flags, repo)
-	copyMasterToNewBranch(flags)
+	copyDirToNewBranch(flags)
 	installViaFile(flags)
 	installArgoApp(flags)
 	applyChanges(repo)
@@ -35,7 +35,7 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 func resetAndUpdate(flags *common.Flags, workingRepo *git.Repository) {
 	common.RmGitOpsWd()
 	cloneOrPull(flags, workingRepo)
-	copyMasterToNewBranch(flags)
+	copyDirToNewBranch(flags)
 	installViaFile(flags)
 	installArgoApp(flags)
 	applyChanges(workingRepo)
@@ -53,9 +53,9 @@ func installArgoApp(flags *common.Flags) {
 	installer.Install(input)
 }
 
-func copyMasterToNewBranch(flags *common.Flags) {
+func copyDirToNewBranch(flags *common.Flags) {
 	common.CdToRepoRoot(flags.Git.Repo)
-	sourceDir := fmt.Sprintf("%s/master", flags.ComposeYamlPath())
+	sourceDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.SourceDir)
 	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.Branch)
 	if err := copy.Copy(sourceDir, destinationDir); err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})

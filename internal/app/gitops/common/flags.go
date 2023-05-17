@@ -37,6 +37,7 @@ type AppFlags struct {
 	PrefixArgo string
 	PrefixYaml string
 	Domain     string
+	SourceDir  string
 }
 
 type ArgoCDFlags struct {
