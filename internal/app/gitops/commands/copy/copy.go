@@ -13,7 +13,7 @@ const installFile = "install.txt"
 func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
 	cloneOrPull(flags, repo)
-	copyMasterToNewBranch(flags)
+	copyIntoNewBranch(flags)
 	installViaFile(flags)
 	installArgoApp(flags)
 	applyChanges(repo)
@@ -35,7 +35,7 @@ func initWorkingRepo(flags *common.Flags) *git.Repository {
 func resetAndUpdate(flags *common.Flags, workingRepo *git.Repository) {
 	common.RmGitOpsWd()
 	cloneOrPull(flags, workingRepo)
-	copyMasterToNewBranch(flags)
+	copyIntoNewBranch(flags)
 	installViaFile(flags)
 	installArgoApp(flags)
 	applyChanges(workingRepo)
@@ -45,7 +45,7 @@ func resetAndUpdate(flags *common.Flags, workingRepo *git.Repository) {
 func installArgoApp(flags *common.Flags) {
 	common.CdToRepoRoot(flags.Git.Repo)
 	cdToArgoApp(flags.ComposeArgoPath())
-	if err := copy.Copy("master.yaml", fmt.Sprintf("%s.yaml", flags.App.Branch)); err != nil {
+	if err := copy.Copy("master.yaml", fmt.Sprintf("%s.yaml", flags.App.DestBranch)); err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 	installer := configInstaller.Installer{Command: common.CopyCmd, DeploymentStrategy: common.UnspecifiedStrategy}
@@ -53,10 +53,10 @@ func installArgoApp(flags *common.Flags) {
 	installer.Install(input)
 }
 
-func copyMasterToNewBranch(flags *common.Flags) {
+func copyIntoNewBranch(flags *common.Flags) {
 	common.CdToRepoRoot(flags.Git.Repo)
-	sourceDir := fmt.Sprintf("%s/master", flags.ComposeYamlPath())
-	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.Branch)
+	sourceDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.SourceBranch)
+	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.DestBranch)
 	if err := copy.Copy(sourceDir, destinationDir); err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
@@ -66,7 +66,7 @@ func copyMasterToNewBranch(flags *common.Flags) {
 func installViaFile(flags *common.Flags) {
 	installer := configInstaller.Installer{Command: common.CopyCmd, DeploymentStrategy: common.UnspecifiedStrategy}
 	installTxt := string(common.GetFileInput(installFile))
-	installTxtVars := *initInstallTxtVariables(flags.App.Branch, flags.App.Name, flags.App.Domain)
+	installTxtVars := *initInstallTxtVariables(flags.App.DestBranch, flags.App.Name, flags.App.Domain)
 	installTxt = installTxtVars.specifyInstallVariables(installTxt)
 	input := composeInstallInput(installTxt)
 	installer.Install(input)

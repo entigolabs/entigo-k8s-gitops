@@ -55,10 +55,12 @@ func updateSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 }
 
 func copyAndDeleteSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
-	baseFlags = append(baseFlags, &appBranchFlag)
+	baseFlags = append(baseFlags, &appDestBranchFlag)
 	baseFlags = append(baseFlags, &appPrefixArgoFlag)
 	baseFlags = append(baseFlags, &appPrefixYamlFlag)
 	baseFlags = append(baseFlags, &appDomainFlag)
+	baseFlags = append(baseFlags, &appSourceBranchFlag)
+
 	return baseFlags
 }
 
@@ -166,12 +168,12 @@ var appNameFlag = cli.StringFlag{
 	Destination: &flags.App.Name,
 }
 
-var appBranchFlag = cli.StringFlag{
-	Name:        "app-branch",
-	EnvVars:     []string{"APP_BRANCH"},
+var appDestBranchFlag = cli.StringFlag{
+	Name:        "app-dest-branch",
+	EnvVars:     []string{"APP_DEST_BRANCH"},
 	DefaultText: "",
-	Usage:       "application branch `name`",
-	Destination: &flags.App.Branch,
+	Usage:       "application destination branch `name`",
+	Destination: &flags.App.DestBranch,
 	Required:    true,
 }
 
@@ -181,6 +183,15 @@ var appDomainFlag = cli.StringFlag{
 	DefaultText: "localhost",
 	Usage:       "application domain",
 	Destination: &flags.App.Domain,
+}
+
+var appSourceBranchFlag = cli.StringFlag{
+	Name:        "app-source-branch",
+	EnvVars:     []string{"APP_SOURCE_BRANCH"},
+	DefaultText: "master",
+	Value:       "master",
+	Usage:       "application source branch `name`",
+	Destination: &flags.App.SourceBranch,
 }
 
 var appPrefixArgoFlag = cli.StringFlag{
