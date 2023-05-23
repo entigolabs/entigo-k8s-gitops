@@ -29,15 +29,15 @@ type GitFlags struct {
 }
 
 type AppFlags struct {
-	Path       string
-	Prefix     string
-	Namespace  string
-	Name       string
-	Branch     string
-	PrefixArgo string
-	PrefixYaml string
-	Domain     string
-	SourceDir  string
+	Path         string
+	Prefix       string
+	Namespace    string
+	Name         string
+	DestBranch   string
+	PrefixArgo   string
+	PrefixYaml   string
+	Domain       string
+	SourceBranch string
 }
 
 type ArgoCDFlags struct {
@@ -95,7 +95,7 @@ func (f *Flags) composeAppPath() {
 func (f *Flags) setup() {
 	f.App.Namespace = strings.ToLower(f.App.Namespace)
 	f.App.Name = strings.ToLower(f.App.Name)
-	f.App.Branch = sanitizeBranch(f.App.Branch)
+	f.App.DestBranch = sanitizeBranch(f.App.DestBranch)
 }
 
 func (f *Flags) cmdSpecificSetup(cmd Command) error {

@@ -94,17 +94,17 @@ func composeArgoAppInstallInput(flags *common.Flags) []installer.InstallInput {
 func getEditNamespaceInput(flags *common.Flags) installer.InstallInput {
 	return installer.InstallInput{
 		Command:      installer.EditCmd,
-		FileNames:    []string{fmt.Sprintf("%s.yaml", flags.App.Branch)},
+		FileNames:    []string{fmt.Sprintf("%s.yaml", flags.App.DestBranch)},
 		KeyLocations: []string{"spec.destination.namespace"},
 		NewValue:     flags.App.Namespace,
 	}
 }
 
 func getEditPathInput(flags *common.Flags) installer.InstallInput {
-	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.Branch)
+	destinationDir := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.DestBranch)
 	return installer.InstallInput{
 		Command:      installer.EditCmd,
-		FileNames:    []string{fmt.Sprintf("%s.yaml", flags.App.Branch)},
+		FileNames:    []string{fmt.Sprintf("%s.yaml", flags.App.DestBranch)},
 		KeyLocations: []string{"spec.source.path"},
 		NewValue:     destinationDir,
 	}
@@ -113,8 +113,8 @@ func getEditPathInput(flags *common.Flags) installer.InstallInput {
 func getEditNameInput(flags *common.Flags) installer.InstallInput {
 	return installer.InstallInput{
 		Command:      installer.EditCmd,
-		FileNames:    []string{fmt.Sprintf("%s.yaml", flags.App.Branch)},
+		FileNames:    []string{fmt.Sprintf("%s.yaml", flags.App.DestBranch)},
 		KeyLocations: []string{"metadata.name"},
-		NewValue:     fmt.Sprintf("%s-%s", flags.App.Name, flags.App.Branch),
+		NewValue:     fmt.Sprintf("%s-%s", flags.App.Name, flags.App.DestBranch),
 	}
 }

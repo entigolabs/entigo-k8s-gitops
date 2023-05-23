@@ -105,9 +105,9 @@ func (r *Repository) getCommitMessage() (string, error) {
 	case common.UpdateCmd:
 		return fmt.Sprintf("updated image(s) %s in %s", r.Images, r.getAppName()), nil
 	case common.CopyCmd:
-		return fmt.Sprintf("copied configurations from %s/%s to %s/%s", r.AppFlags.Name, r.AppFlags.SourceDir, r.getAppName(), r.AppFlags.Branch), nil
+		return fmt.Sprintf("copied configurations from %s/%s to %s/%s", r.AppFlags.Name, r.AppFlags.SourceBranch, r.getAppName(), r.AppFlags.DestBranch), nil
 	case common.DeleteCmd:
-		return fmt.Sprintf("deleted %s and %s.yaml", r.AppFlags.Branch, r.AppFlags.Branch), nil
+		return fmt.Sprintf("deleted %s and %s.yaml", r.AppFlags.DestBranch, r.AppFlags.DestBranch), nil
 	}
 	return "", errors.New(fmt.Sprintf("unsupported command '%v' for commit messafe", r.Command))
 }

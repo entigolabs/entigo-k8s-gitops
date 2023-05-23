@@ -17,18 +17,32 @@ This is [gitops](https://www.gitops.tech/) helper CLI
 
 ## How to Use
 
-This GitOps utility supports 7 commands:
+This GitOps utility supports 8 commands:
 
 - ```run``` - run update and copy logic
 - ```update``` - updates specified images
-- ```copy``` - copies from specified branch to specified branch
-- ```notify``` - notifies [Jira](https://www.atlassian.com/software/jira) about new deployment. Read more how to use in [documents/jira-notification](./documents/jira-deployment-notification.md)
+- ```copy``` - copy from source (default: master) into destination and install changes from ```install.txt```
+- ```notify``` - notifies [Jira](https://www.atlassian.com/software/jira) about new deployment. Read more how to use in [docs/jira-notification](./docs/jira-deployment-notification.md)
 - ```argocd-get``` - gets an ArgoCD application as json output
 - ```argocd-sync``` - syncs an ArgoCD application
 - ```argocd-update``` - updates an ArgoCD application, combines argocd-get, git update and argocd-sync
 - ```argocd-delete``` - deletes an ArgoCD application
 
 ## Examples
+
+#### Copy Command
+```
+copy
+  --git-repo=<git-repo-ssh-url>
+  --git-branch=<git-repo-branch-name>
+  --git-key-file=<ssh-private-key-location>
+  --app-prefix=<path-prefix-to-apply>
+  --app-prefix-argo=<path-to-argoapp-configuration>
+  --app-prefix-yaml=<path-to-yaml-configuration>
+  --app-namespace=<application-namespace-name>
+  --app-name=<application-nam>
+  --app-dest-branch=<new-branch-name>
+```
 
 #### Update Command
 ##### Example: Update With Application Path Flag
