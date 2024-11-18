@@ -50,6 +50,7 @@ func (r *Repository) Pull() error {
 
 func (r *Repository) Push() error {
 	pushOptions := r.getPushOptions()
+	common.Logger.Println(fmt.Sprintf("pushOptions RemoteName: %s, RemoteURL: %s", pushOptions.RemoteName, pushOptions.RemoteURL))
 	err := r.Repository.Push(pushOptions)
 	if err != nil {
 		return handlePushErr(err)
@@ -60,6 +61,7 @@ func (r *Repository) Push() error {
 }
 
 func (r *Repository) OpenGitOpsRepo() {
+	common.Logger.Println("In OpenGitOpsRepo method")
 	repo, err := git.PlainOpen(common.GetRepositoryRootPath(r.Repo))
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
@@ -68,6 +70,7 @@ func (r *Repository) OpenGitOpsRepo() {
 }
 
 func (r *Repository) Add() {
+	common.Logger.Println("In repository.go Add method")
 	wt := r.getWorkTree()
 	_, err := wt.Add(".")
 	if err != nil {
@@ -76,12 +79,17 @@ func (r *Repository) Add() {
 }
 
 func (r *Repository) gitCommit() {
+	common.Logger.Println("In gitCommit method")
 	cfg := r.getGitConfig()
+	common.Logger.Println(fmt.Sprintf("cfg.Core.Worktree: %s", cfg.Core.Worktree))
+	// common.Logger.Println(fmt.Sprintf("cfg.Core.Worktree: %s", cfg.URLs[0].Name))
 	wt := r.getWorkTree()
 	commitMessage, msgErr := r.getCommitMessage()
+	common.Logger.Println(fmt.Sprintf("commitMessage: %s", commitMessage))
 	if msgErr != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: msgErr})
 	}
+	common.Logger.Println("Starting to produce commit at wt.Commit")
 	commit, commitErr := wt.Commit(commitMessage, &git.CommitOptions{
 		All: true,
 		Author: &object.Signature{
@@ -93,6 +101,7 @@ func (r *Repository) gitCommit() {
 	if commitErr != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: commitErr})
 	}
+	common.Logger.Println("Starting to commit at r.Repository.CommitObject")
 	_, commitObjErr := r.Repository.CommitObject(commit)
 	if commitObjErr != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: commitObjErr})
@@ -121,7 +130,9 @@ func (r *Repository) getGitConfig() *config.Config {
 }
 
 func (r *Repository) CommitIfModified() {
+	common.Logger.Println("In CommitIfModified method")
 	if r.isRepoModified() {
+		common.Logger.Println("Repo is modified, starting with gitCommit method")
 		r.gitCommit()
 	} else {
 		common.Logger.Println("nothing to commit, working tree clean")
@@ -146,6 +157,7 @@ func getGitStatus(wt *git.Worktree) git.Status {
 }
 
 func (r *Repository) getWorkTree() *git.Worktree {
+	common.Logger.Println("In getWorkTree method")
 	wt, err := r.Repository.Worktree()
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})

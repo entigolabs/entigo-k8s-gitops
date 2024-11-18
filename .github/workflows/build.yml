@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ main, argocd-integration, build_improvments ]
+    branches: [ main, argocd-integration, build_improvments, debugging ]
   workflow_dispatch:
 
 jobs:
@@ -49,7 +49,6 @@ jobs:
         images: entigolabs/entigo-k8s-gitops
         tags: |
           type=raw,value={{branch}}-${{ github.run_number }}
-          type=raw,value={{branch}}-latest
     - name: Build and push Docker image
       uses: docker/build-push-action@v2 
       with:
@@ -59,7 +58,7 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
     - name: Create Release
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/debugging'
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -72,7 +71,7 @@ jobs:
         draft: true
         prerelease: false
     - name: Upload Release Artifact
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/debugging'
       id: upload_release_asset 
       uses: actions/upload-release-asset@v1
       env:
