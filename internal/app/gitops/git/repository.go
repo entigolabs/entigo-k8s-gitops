@@ -72,9 +72,12 @@ func (r *Repository) OpenGitOpsRepo() {
 func (r *Repository) Add() {
 	common.Logger.Println("In repository.go Add method")
 	wt := r.getWorkTree()
+	common.Logger.Println("finished getWorkTree method")
 	_, err := wt.Add(".")
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
+	} else {
+		common.Logger.Println("finished Add method without error")
 	}
 }
 
