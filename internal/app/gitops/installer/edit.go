@@ -67,11 +67,11 @@ func (i *Installer) getEditedBuffer(yamlFileName string, input InstallInput) *by
 
 func (i *Installer) skipOrEdit(yamlNode yaml.Node, input InstallInput) {
 	if kind, _ := i.getObjectKind(&yamlNode); kind == "ConfigMap" {
-		msg := errors.New(fmt.Sprintf("skiping update in %s in document nr %v, object is ConfigMap", editInfo.workingFile, editInfo.documentIndex))
+		msg := fmt.Errorf("skiping update in %s in document nr %v, object is ConfigMap", editInfo.workingFile, editInfo.documentIndex)
 		common.Logger.Println(&common.Warning{Reason: msg})
 		return
 	} else if i.isObjectProtected(&yamlNode) {
-		msg := errors.New(fmt.Sprintf("skiping update in %s in document nr %v, object is protected", editInfo.workingFile, editInfo.documentIndex))
+		msg := fmt.Errorf("skiping update in %s in document nr %v, object is protected", editInfo.workingFile, editInfo.documentIndex)
 		common.Logger.Println(&common.Warning{Reason: msg})
 		return
 	}
@@ -90,7 +90,7 @@ func (i *Installer) isObjectProtected(yamlNode *yaml.Node) bool {
 	}
 	isProtected, parseErr := strconv.ParseBool(keyValue)
 	if parseErr != nil {
-		msg := errors.New(fmt.Sprintf("unsupported key value, could not parse to boolean: %s", keyValue))
+		msg := fmt.Errorf("unsupported key value, could not parse to boolean: %s", keyValue)
 		common.Logger.Fatal(&common.PrefixedError{Reason: msg})
 	}
 	return isProtected
@@ -138,35 +138,35 @@ func (i *Installer) editStrategy(yamlNode *yaml.Node, fileNames []string) {
 	editInfo.allowStrategyChange = false
 }
 
-func (inst *Installer) replace(node *yaml.Node, keys []string, newValue string) {
+func (i *Installer) replace(node *yaml.Node, keys []string, newValue string) {
 	identifier := keys[0]
 	if node.Kind == yaml.DocumentNode {
-		inst.replace(node.Content[0], keys, newValue)
+		i.replace(node.Content[0], keys, newValue)
 	}
 	if seqPos, err := strconv.Atoi(identifier); err == nil {
 		if len(node.Content)-1 < seqPos {
-			msg := errors.New(fmt.Sprintf("skiping '%s' copy in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile))
+			msg := fmt.Errorf("skiping '%s' copy in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile)
 			common.Logger.Println(&common.Warning{Reason: msg})
 			return
 		}
 		seqPosNode := node.Content[seqPos]
 		if seqPosNode.Kind == yaml.ScalarNode {
-			seqPosNode.Value = inst.getNewValue(seqPosNode.Value, newValue)
+			seqPosNode.Value = i.getNewValue(seqPosNode.Value, newValue)
 		} else {
-			inst.replace(node.Content[seqPos], keys[1:], newValue)
+			i.replace(node.Content[seqPos], keys[1:], newValue)
 		}
 	}
 	if identifier == "*" {
-		for i := range node.Content {
-			inst.replace(node.Content[i], keys[1:], newValue)
+		for j := range node.Content {
+			i.replace(node.Content[j], keys[1:], newValue)
 		}
 	}
-	for i, n := range node.Content {
+	for j, n := range node.Content {
 		if n.Value == identifier {
-			if len(keys) <= 1 && node.Content[i+1].Content == nil {
-				node.Content[i+1].Value = inst.getNewValue(node.Content[i+1].Value, newValue)
+			if len(keys) <= 1 && node.Content[j+1].Content == nil {
+				node.Content[j+1].Value = i.getNewValue(node.Content[j+1].Value, newValue)
 			} else {
-				inst.replace(node.Content[i+1], keys[1:], newValue)
+				i.replace(node.Content[j+1], keys[1:], newValue)
 			}
 		}
 	}
@@ -224,15 +224,15 @@ func (i *Installer) getImageChangeSpecificNewValue(oldValue string, newValue str
 }
 
 func logImageChange(oldValue string, newValue string) {
-	msg := errors.New(fmt.Sprintf("updating key '%s' in %s in document nr %v from '%s' to '%s'",
-		editInfo.workingKey, editInfo.workingFile, editInfo.documentIndex, oldValue, newValue))
+	msg := fmt.Errorf("updating key '%s' in %s in document nr %v from '%s' to '%s'",
+		editInfo.workingKey, editInfo.workingFile, editInfo.documentIndex, oldValue, newValue)
 	common.Logger.Println(msg)
 }
 
 func logImageChangeWithRegistry(oldValue string, newValue string) {
 	newValueWithRegistry := fmt.Sprintf("%s:%s", strings.Split(oldValue, ":")[0], newValue)
-	msg := errors.New(fmt.Sprintf("updating key '%s' in %s in document nr %v from '%s' to '%s'",
-		editInfo.workingKey, editInfo.workingFile, editInfo.documentIndex, oldValue, newValueWithRegistry))
+	msg := fmt.Errorf("updating key '%s' in %s in document nr %v from '%s' to '%s'",
+		editInfo.workingKey, editInfo.workingFile, editInfo.documentIndex, oldValue, newValueWithRegistry)
 	common.Logger.Println(msg)
 }
 
@@ -242,10 +242,7 @@ func isOldImageContainingNewImage(oldImage string, newImage string) bool {
 
 func areImageEndingsMatching(oldImage string, newImage string) bool {
 	newImgIndex := strings.Index(oldImage, newImage)
-	if len(oldImage) != newImgIndex+len(newImage) {
-		return false
-	}
-	return true
+	return len(oldImage) == newImgIndex+len(newImage)
 }
 
 func getStrategyChangeSpecificNewValue(oldValue string, newValue string) string {
@@ -263,11 +260,11 @@ func isFileEmpty(readerLen int, yamlFileName string) bool {
 }
 
 func logImageCouldNotBeFound(image string) {
-	msg := errors.New(fmt.Sprintf("skiping '%s' update in %s - '%s' couldn't be found", editInfo.workingKey, editInfo.workingFile, image))
+	msg := fmt.Errorf("skiping '%s' update in %s - '%s' couldn't be found", editInfo.workingKey, editInfo.workingFile, image)
 	common.Logger.Println(&common.Warning{Reason: msg})
 }
 
 func logEditStart(input InstallInput) {
-	common.Logger.Println(fmt.Sprintf("started editing %s", strings.Join(input.FileNames, ", ")))
-	common.Logger.Println(fmt.Sprintf("changing keys %s to %s", strings.Join(input.KeyLocations, ", "), input.NewValue))
+	common.Logger.Printf("started editing %s\n", strings.Join(input.FileNames, ", "))
+	common.Logger.Printf("changing keys %s to %s\n", strings.Join(input.KeyLocations, ", "), input.NewValue)
 }

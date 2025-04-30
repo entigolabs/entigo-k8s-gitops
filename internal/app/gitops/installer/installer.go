@@ -57,7 +57,7 @@ func (i *Installer) installSingleInput(input InstallInput) {
 		msg := fmt.Sprintf("unsupported command '%s'", input.Command.String())
 		common.Logger.Fatal(common.PrefixedError{Reason: errors.New(msg)})
 	}
-	common.Logger.Println(fmt.Sprintf("finised %s command", input.Command.String()))
+	common.Logger.Printf("finised %s command\n", input.Command.String())
 }
 
 func ConvStrToInstallCommand(str string) InstallCommand {

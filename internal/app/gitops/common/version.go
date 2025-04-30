@@ -8,24 +8,23 @@ import (
 // Version information set by link flags during build. We fall back to these sane
 // default values when we build outside the Makefile context (e.g. go run, go build, or go test).
 var (
-	version        = "99.99.99"             // value from VERSION file
-	buildDate      = "1970-01-01T00:00:00Z" // output from `date -u +'%Y-%m-%dT%H:%M:%SZ'`
-	gitCommit      = ""                     // output from `git rev-parse HEAD`
-	gitTag         = ""                     // output from `git describe --exact-match --tags HEAD` (if clean tree state)
-	gitTreeState   = ""                     // determined from `git status --porcelain`. either 'clean' or 'dirty'
-	kubectlVersion = ""                     // determined from go.mod file
+	version      = "99.99.99"             // value from VERSION file
+	buildDate    = "1970-01-01T00:00:00Z" // output from `date -u +'%Y-%m-%dT%H:%M:%SZ'`
+	gitCommit    = ""                     // output from `git rev-parse HEAD`
+	gitTag       = ""                     // output from `git describe --exact-match --tags HEAD` (if clean tree state)
+	gitTreeState = ""                     // determined from `git status --porcelain`. either 'clean' or 'dirty'
 )
 
 // Version contains Gitops version information
 type Version struct {
-	Version        string
-	BuildDate      string
-	GitCommit      string
-	GitTag         string
-	GitTreeState   string
-	GoVersion      string
-	Compiler       string
-	Platform       string
+	Version      string
+	BuildDate    string
+	GitCommit    string
+	GitTag       string
+	GitTreeState string
+	GoVersion    string
+	Compiler     string
+	Platform     string
 }
 
 func (v Version) String() string {
@@ -54,19 +53,19 @@ func getVersion() Version {
 		}
 	}
 	return Version{
-		Version:        versionStr,
-		BuildDate:      buildDate,
-		GitCommit:      gitCommit,
-		GitTag:         gitTag,
-		GitTreeState:   gitTreeState,
-		GoVersion:      runtime.Version(),
-		Compiler:       runtime.Compiler,
-		Platform:       fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
-		}
+		Version:      versionStr,
+		BuildDate:    buildDate,
+		GitCommit:    gitCommit,
+		GitTag:       gitTag,
+		GitTreeState: gitTreeState,
+		GoVersion:    runtime.Version(),
+		Compiler:     runtime.Compiler,
+		Platform:     fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
+	}
 }
 
 func PrintVersion() {
-    version := getVersion()
+	version := getVersion()
 	fmt.Printf("gitops: %s\n", version)
 	fmt.Printf("  BuildDate: %s\n", version.BuildDate)
 	fmt.Printf("  GitCommit: %s\n", version.GitCommit)

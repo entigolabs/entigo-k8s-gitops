@@ -1,7 +1,6 @@
 package git
 
 import (
-	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
@@ -28,7 +27,7 @@ type Repository struct {
 }
 
 func (r *Repository) Clone() {
-	common.Logger.Println(fmt.Sprintf("git clone %s", r.Repo))
+	common.Logger.Printf("git clone %s\n", r.Repo)
 	repo, err := git.PlainClone(common.GetRepositoryName(r.Repo), false, r.getCloneOptions())
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
@@ -109,7 +108,7 @@ func (r *Repository) getCommitMessage() (string, error) {
 	case common.DeleteCmd:
 		return fmt.Sprintf("deleted %s and %s.yaml", r.AppFlags.DestBranch, r.AppFlags.DestBranch), nil
 	}
-	return "", errors.New(fmt.Sprintf("unsupported command '%v' for commit messafe", r.Command))
+	return "", fmt.Errorf("unsupported command '%v' for commit messafe", r.Command)
 }
 
 func (r *Repository) getGitConfig() *config.Config {
@@ -131,10 +130,7 @@ func (r *Repository) CommitIfModified() {
 func (r *Repository) isRepoModified() bool {
 	wt := r.getWorkTree()
 	status := getGitStatus(wt)
-	if !status.IsClean() {
-		return true
-	}
-	return false
+	return !status.IsClean()
 }
 
 func getGitStatus(wt *git.Worktree) git.Status {

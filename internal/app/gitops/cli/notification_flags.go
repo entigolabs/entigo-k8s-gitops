@@ -2,7 +2,7 @@ package cli
 
 import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func deploymentNotificationFlags(cmd common.Command) []cli.Flag {
@@ -37,7 +37,7 @@ func notificationSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 
 var notificationUrlFlag = cli.StringFlag{
 	Name:        "url",
-	EnvVars:     []string{"NOTIFICATION_URL"},
+	Sources:     cli.EnvVars("NOTIFICATION_URL"),
 	DefaultText: "",
 	Usage:       "URL where to post notification",
 	Destination: &flags.Notification.URL,
@@ -46,7 +46,7 @@ var notificationUrlFlag = cli.StringFlag{
 
 var notificationDeploymentEnvNameFlag = cli.StringFlag{
 	Name:        "deployment-env",
-	EnvVars:     []string{"NOTIFICATION_DEPLOYMENT_ENV"},
+	Sources:     cli.EnvVars("NOTIFICATION_DEPLOYMENT_ENV"),
 	DefaultText: "",
 	Usage:       "environment name where the image has been deployed",
 	Destination: &flags.Notification.Environment,
@@ -55,7 +55,7 @@ var notificationDeploymentEnvNameFlag = cli.StringFlag{
 
 var oldImgWithTagFlag = cli.StringFlag{
 	Name:        "old-img",
-	EnvVars:     []string{"NOTIFICATION_IMG_OLD"},
+	Sources:     cli.EnvVars("NOTIFICATION_IMG_OLD"),
 	DefaultText: "",
 	Usage:       "old image value",
 	Destination: &flags.Notification.OldImage,
@@ -64,7 +64,7 @@ var oldImgWithTagFlag = cli.StringFlag{
 
 var newImgWithTagFlag = cli.StringFlag{
 	Name:        "new-img",
-	EnvVars:     []string{"NOTIFICATION_IMG_NEW"},
+	Sources:     cli.EnvVars("NOTIFICATION_IMG_NEW"),
 	DefaultText: "",
 	Usage:       "new image value",
 	Destination: &flags.Notification.NewImage,
@@ -73,7 +73,7 @@ var newImgWithTagFlag = cli.StringFlag{
 
 var registryUriFlag = cli.StringFlag{
 	Name:        "registry-uri",
-	EnvVars:     []string{"NOTIFICATION_REGISTRY_URI"},
+	Sources:     cli.EnvVars("NOTIFICATION_REGISTRY_URI"),
 	DefaultText: "",
 	Usage:       "docker registry URI",
 	Destination: &flags.Notification.RegistryUri,
@@ -82,7 +82,7 @@ var registryUriFlag = cli.StringFlag{
 
 var authenticationTokenFlag = cli.StringFlag{
 	Name:        "auth-token",
-	EnvVars:     []string{"NOTIFICATION_AUTH_TOKEN"},
+	Sources:     cli.EnvVars("NOTIFICATION_AUTH_TOKEN"),
 	DefaultText: "",
 	Usage:       "authentication token as key and value pair ('key=value')",
 	Destination: &flags.Notification.AuthToken,

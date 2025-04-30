@@ -1,29 +1,29 @@
 package cli
 
 import (
+	"context"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"os"
 	"strings"
 )
 
 var flags *common.Flags = new(common.Flags)
 
-func Run() {
-	app := &cli.App{Commands: cliCommands()}
+func Run(ctx context.Context) {
+	app := &cli.Command{Commands: cliCommands()}
 	addAppInfo(app)
 	loggingLvl := getLoggingLvl()
 	common.ChooseLogger(loggingLvl)
-	err := app.Run(os.Args)
+	err := app.Run(ctx, os.Args)
 	if err != nil {
 		common.Logger.Fatal(&common.PrefixedError{Reason: err})
 	}
 }
 
-func addAppInfo(app *cli.App) {
+func addAppInfo(app *cli.Command) {
 	const gitOps = "gitops"
 	app.Name = gitOps
-	app.HelpName = gitOps
 	app.Usage = "helper utility"
 }
 

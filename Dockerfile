@@ -1,7 +1,10 @@
-FROM golang:1.16 as build
+FROM --platform=$BUILDPLATFORM golang:1.24-alpine AS build
 COPY . /go/gitops
 ARG PACKAGE="github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 WORKDIR /go/gitops
+RUN go get -d ./...
+ARG TARGETARCH
+ARG TARGETOS
 RUN set -xe && \
     VERSION=DOCKER && \
     BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') && \
@@ -11,7 +14,7 @@ RUN set -xe && \
   -X ${PACKAGE}.buildDate=${BUILD_DATE} \
   -X ${PACKAGE}.gitCommit=${GIT_COMMIT} \
   -X ${PACKAGE}.gitTreeState=${GIT_TREE_STATE}" && \
-    go build \
+    GOOS="$TARGETOS" GOARCH="$TARGETARCH" go build \
     -o bin/gitops \
     -ldflags "${LDFLAGS} -linkmode external -extldflags -static " \
     cmd/gitops/main.go

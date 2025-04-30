@@ -48,7 +48,7 @@ func deleteArgoApp(flags *common.Flags) {
 		if err := os.RemoveAll(argoAppConfPath); err != nil {
 			common.Logger.Println(&common.PrefixedError{Reason: err})
 		} else {
-			common.Logger.Println(fmt.Sprintf("deleted %s", argoAppConfPath))
+			common.Logger.Printf("deleted %s\n", argoAppConfPath)
 		}
 	}
 }
@@ -62,7 +62,7 @@ func deleteAppBranch(flags *common.Flags) {
 		if err := os.RemoveAll(appBranchPath); err != nil {
 			common.Logger.Println(&common.PrefixedError{Reason: err})
 		} else {
-			common.Logger.Println(fmt.Sprintf("deleted %s", appBranchPath))
+			common.Logger.Printf("deleted %s\n", appBranchPath)
 
 		}
 	}
@@ -71,6 +71,6 @@ func deleteAppBranch(flags *common.Flags) {
 func logEndMessage(workingRepo *git.Repository) {
 	if workingRepo.GitFlags.Push {
 		url := common.GetRemoteRepoWebUrl(workingRepo.Repo)
-		common.Logger.Println(fmt.Sprintf("repository url: %s", url))
+		common.Logger.Printf("repository url: %s\n", url)
 	}
 }

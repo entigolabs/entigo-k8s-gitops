@@ -22,6 +22,8 @@ type GitFlags struct {
 	Repo                  string
 	Branch                string
 	KeyFile               string
+	Username              string
+	Password              string
 	AuthorName            string
 	AuthorEmail           string
 	StrictHostKeyChecking bool

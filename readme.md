@@ -30,12 +30,16 @@ This GitOps utility supports 8 commands:
 
 ## Examples
 
+Git commands require either the key file or username and password.
+
 #### Copy Command
 ```
 copy
   --git-repo=<git-repo-ssh-url>
   --git-branch=<git-repo-branch-name>
   --git-key-file=<ssh-private-key-location>
+  --git-username=<git-username>
+  --git-password=<git-password>
   --app-prefix=<path-prefix-to-apply>
   --app-prefix-argo=<path-to-argoapp-configuration>
   --app-prefix-yaml=<path-to-yaml-configuration>
@@ -51,6 +55,8 @@ copy
     --git-repo=<repository-ssh-url> \
     --git-branch=<repository-branch> \
     --git-key-file=<key-file-location> \
+    --git-username=<git-username> \
+    --git-password=<git-password> \
     --images=<image:tag,image2:tag> \ 
     --app-path=<app-path>
 ```
@@ -66,6 +72,8 @@ Tokenized path flags:
     --git-repo=<repository-ssh-url> \
     --git-branch=<repository-branch> \
     --git-key-file=<key-file-location> \
+    --git-username=<git-username> \
+    --git-password=<git-password> \
     --images=<image:tag,image2:tag> \ 
     --app-prefix=<app-prefix> \
     --app-namespace=<app-namespace> \
@@ -79,6 +87,8 @@ Tokenized path flags:
     --git-repo=<repository-ssh-url> \
     --git-branch=<repository-branch> \
     --git-key-file=<key-file-location> \
+    --git-username=<git-username> \
+    --git-password=<git-password> \
     --images=<image:tag,image2:tag> \ 
     --app-path=<app-path>
     --notify-api-url=<api-endpoint>
@@ -146,13 +156,15 @@ Full example
 
 ### argocd-update
 
-Updates an ArgoCD application. Combines argocd-get, git update and argocd-sync commands.
+Updates an ArgoCD application. Combines argocd-get, git update and argocd-sync commands. Either Git Key or Git Username and Password must be provided.
 
 OPTIONS:
 * app-name - **Required**, name of the ArgoCD application [$APP_NAME]
 * server - **Required**, server tcp address with port [$ARGO_CD_SERVER]
 * auth-token - **Required**, authentication token [$ARGO_CD_TOKEN]
-* git-key-file - **Required**,SSH private key location [$GIT_KEY_FILE]
+* git-key-file - SSH private key location [$GIT_KEY_FILE]
+* git-username - git username [$GIT_USERNAME]
+* git-password - git password [$GIT_PASSWORD]
 * images [-i] - **Required**, images with tags, comma separated list [$IMAGES]
 * insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
 * timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]

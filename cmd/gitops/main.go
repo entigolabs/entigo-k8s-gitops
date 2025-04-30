@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/cli"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
@@ -13,8 +14,10 @@ func main() {
 	terminated := make(chan os.Signal, 1)
 	signal.Notify(terminated, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	go func() {
-		cli.Run()
+		cli.Run(ctx)
 		close(terminated)
 	}()
 

@@ -75,6 +75,6 @@ func installViaFile(flags *common.Flags) {
 func logRepoUrl(workingRepo *git.Repository) {
 	if workingRepo.GitFlags.Push {
 		url := common.GetRemoteRepoWebUrl(workingRepo.Repo)
-		common.Logger.Println(fmt.Sprintf("repository url: %s", url))
+		common.Logger.Printf("repository url: %s\n", url)
 	}
 }

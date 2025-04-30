@@ -2,7 +2,7 @@ package cli
 
 import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func cliCommands() []*cli.Command {

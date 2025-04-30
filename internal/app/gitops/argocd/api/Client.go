@@ -37,7 +37,7 @@ type client struct {
 }
 
 func NewClientOrDie(flags *common.Flags) Client {
-	common.Logger.Println(fmt.Sprintf("ArgoCD server: %s", flags.ArgoCD.ServerAddr))
+	common.Logger.Printf("ArgoCD server: %s\n", flags.ArgoCD.ServerAddr)
 	options := apiclient.ClientOptions{
 		ServerAddr: flags.ArgoCD.ServerAddr,
 		Insecure:   flags.ArgoCD.Insecure,
@@ -56,7 +56,7 @@ func NewClientOrDie(flags *common.Flags) Client {
 }
 
 func (c *client) GetRequest(applicationName string, timeout int, refresh bool) *v1alpha1.Application {
-	common.Logger.Println(fmt.Sprintf("Getting ArgoCD app: %s, timeout: %d seconds", applicationName, timeout))
+	common.Logger.Printf("Getting ArgoCD app: %s, timeout: %d seconds\n", applicationName, timeout)
 	ctx, cancel := context.WithCancel(context.Background())
 	if timer := addFatalTimeout(timeout, cancel, "Getting application timed out"); timer != nil {
 		defer timer.Stop()
@@ -94,15 +94,16 @@ func (c *client) GetRequest(applicationName string, timeout int, refresh bool) *
 }
 
 func (c *client) SyncRequest(applicationName string, timeout int) *v1alpha1.Application {
-	common.Logger.Println(fmt.Sprintf("Syncing ArgoCD app: %s, timeout: %d seconds", applicationName, timeout))
+	common.Logger.Printf("Syncing ArgoCD app: %s, timeout: %d seconds\n", applicationName, timeout)
 	ctx, cancel := context.WithCancel(context.Background())
 	if timer := addFatalTimeout(timeout, cancel, "Syncing application timed out"); timer != nil {
 		defer timer.Stop()
 	}
 	defer cancel()
+	prune := true
 	syncReq := applicationpkg.ApplicationSyncRequest{
 		Name:  &applicationName,
-		Prune: true,
+		Prune: &prune,
 	}
 	syncReq.Strategy = &argoappv1.SyncStrategy{Hook: &argoappv1.SyncStrategyHook{}}
 	syncReq.Strategy.Hook.Force = true
@@ -137,7 +138,7 @@ func (c *client) sendSyncReq(ctx context.Context, syncReq applicationpkg.Applica
 }
 
 func (c *client) DeleteRequest(applicationName string, cascade bool, timeout int) {
-	common.Logger.Println(fmt.Sprintf("Deleting ArgoCD app: %s, timeout: %d seconds", applicationName, timeout))
+	common.Logger.Printf("Deleting ArgoCD app: %s, timeout: %d seconds\n", applicationName, timeout)
 	ctx, cancel := context.WithCancel(context.Background())
 	if timer := addFatalTimeout(timeout, cancel, "Deleting application timed out"); timer != nil {
 		defer timer.Stop()
@@ -233,7 +234,7 @@ func closeConnection(conn io.Closer) {
 }
 
 func sleep(retryDelay *int) {
-	common.Logger.Println(fmt.Sprintf("Retrying in %d seconds", *retryDelay))
+	common.Logger.Printf("Retrying in %d seconds\n", *retryDelay)
 	time.Sleep(time.Duration(*retryDelay) * time.Second)
 	if *retryDelay < maxRetryDelay {
 		*retryDelay = common.MinInt(maxRetryDelay, *retryDelay*2)
@@ -279,8 +280,8 @@ func syncFailure(operationState *argoappv1.OperationState) {
 		for i := range result.Resources {
 			resource := result.Resources[i]
 			if resource.Status == argocdtypes.ResultCodeSyncFailed {
-				common.Logger.Println(fmt.Sprintf("%s (%s) - %s, %s", resource.Name,
-					resource.Kind, resource.Status, resource.Message))
+				common.Logger.Printf("%s (%s) - %s, %s", resource.Name,
+					resource.Kind, resource.Status, resource.Message)
 			}
 		}
 	}
@@ -307,7 +308,7 @@ func getStatus(application argoappv1.Application, operationInProgress bool) stri
 }
 
 func getResourceStatuses(resources []v1alpha1.ResourceStatus) string {
-	if resources == nil || len(resources) == 0 {
+	if len(resources) == 0 {
 		return "no resources found"
 	} else {
 		var statuses []string

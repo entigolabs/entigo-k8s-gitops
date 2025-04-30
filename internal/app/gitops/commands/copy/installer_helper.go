@@ -1,7 +1,6 @@
 package copy
 
 import (
-	"errors"
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
@@ -33,7 +32,7 @@ func convInstallLineToInstallInput(installLine string) (installer.InstallInput, 
 	case installer.DropCmd:
 		return convInstallLineToDropInput(lineSplits), nil
 	}
-	return installer.InstallInput{}, errors.New(fmt.Sprintf("unsupported installer command: %s", lineSplits[0]))
+	return installer.InstallInput{}, fmt.Errorf("unsupported installer command: %s", lineSplits[0])
 }
 
 func convInstallLineToEditInput(lineSplits []string) installer.InstallInput {
@@ -70,7 +69,7 @@ func isLineValid(cmdLine string) bool {
 	if isValidForSkip(firstSplit) {
 		return false
 	}
-	msg := errors.New(fmt.Sprintf("skiping invalid install line - %s", cmdLine))
+	msg := fmt.Errorf("skiping invalid install line - %s", cmdLine)
 	common.Logger.Println(&common.Warning{Reason: msg})
 	return false
 }

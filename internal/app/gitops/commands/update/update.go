@@ -1,7 +1,6 @@
 package update
 
 import (
-	"fmt"
 	notifyCmd "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/notify"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/git"
@@ -53,7 +52,7 @@ func resetAndUpdate(workingRepo *git.Repository) {
 func logRepoUrl(workingRepo *git.Repository) {
 	if workingRepo.GitFlags.Push {
 		url := common.GetRemoteRepoWebUrl(workingRepo.Repo)
-		common.Logger.Println(fmt.Sprintf("repository url: %s", url))
+		common.Logger.Printf("repository url: %s\n", url)
 	}
 }
 

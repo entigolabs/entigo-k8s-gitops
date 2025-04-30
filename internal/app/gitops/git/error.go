@@ -16,7 +16,7 @@ func handlePullErr(err error) error {
 	if err == git.NoErrAlreadyUpToDate {
 		logAlreadyUpToDate(pullOp, err)
 	} else if isConflictErr(err) {
-		common.Logger.Println(fmt.Sprintf("couldn't git %s, %s", pullOp, err))
+		common.Logger.Printf("couldn't git %s, %s", pullOp, err)
 		return err
 	} else {
 		logDefaultGitOpErr(pullOp, err)
@@ -30,7 +30,7 @@ func handlePushErr(err error) error {
 	if err == git.NoErrAlreadyUpToDate {
 		logAlreadyUpToDate(pushOp, err)
 	} else if isConflictErr(err) {
-		common.Logger.Println(fmt.Sprintf("couldn't git %s, %s", pushOp, err))
+		common.Logger.Printf("couldn't git %s, %s\n", pushOp, err)
 		return err
 	} else {
 		logDefaultGitOpErr(pushOp, err)
@@ -40,7 +40,7 @@ func handlePushErr(err error) error {
 }
 
 func logAlreadyUpToDate(gitOpName string, err error) {
-	common.Logger.Println(fmt.Sprintf("skiping git %s, %s", gitOpName, err))
+	common.Logger.Printf("skiping git %s, %s\n", gitOpName, err)
 }
 
 func isConflictErr(err error) bool {
