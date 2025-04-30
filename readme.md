@@ -31,11 +31,12 @@ This GitOps utility supports 8 commands:
 ## Examples
 
 Git commands require either the key file or username and password.
+Repo url needs to be either ssh or https.
 
 #### Copy Command
 ```
 copy
-  --git-repo=<git-repo-ssh-url>
+  --git-repo=<git-repo-url>
   --git-branch=<git-repo-branch-name>
   --git-key-file=<ssh-private-key-location>
   --git-username=<git-username>
@@ -52,7 +53,7 @@ copy
 ##### Example: Update With Application Path Flag
 ```
 ./gitops update \
-    --git-repo=<repository-ssh-url> \
+    --git-repo=<repository-url> \
     --git-branch=<repository-branch> \
     --git-key-file=<key-file-location> \
     --git-username=<git-username> \
@@ -69,7 +70,7 @@ Tokenized path flags:
 
 ```
 ./gitops update \
-    --git-repo=<repository-ssh-url> \
+    --git-repo=<repository-url> \
     --git-branch=<repository-branch> \
     --git-key-file=<key-file-location> \
     --git-username=<git-username> \
@@ -84,7 +85,7 @@ Tokenized path flags:
 ##### Example: Update With Notification
 ```
 ./gitops update
-    --git-repo=<repository-ssh-url> \
+    --git-repo=<repository-url> \
     --git-branch=<repository-branch> \
     --git-key-file=<key-file-location> \
     --git-username=<git-username> \

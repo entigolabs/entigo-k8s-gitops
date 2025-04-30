@@ -67,11 +67,11 @@ func (i *Installer) getEditedBuffer(yamlFileName string, input InstallInput) *by
 
 func (i *Installer) skipOrEdit(yamlNode yaml.Node, input InstallInput) {
 	if kind, _ := i.getObjectKind(&yamlNode); kind == "ConfigMap" {
-		msg := fmt.Errorf("skiping update in %s in document nr %v, object is ConfigMap", editInfo.workingFile, editInfo.documentIndex)
+		msg := fmt.Errorf("skipping update in %s in document nr %v, object is ConfigMap", editInfo.workingFile, editInfo.documentIndex)
 		common.Logger.Println(&common.Warning{Reason: msg})
 		return
 	} else if i.isObjectProtected(&yamlNode) {
-		msg := fmt.Errorf("skiping update in %s in document nr %v, object is protected", editInfo.workingFile, editInfo.documentIndex)
+		msg := fmt.Errorf("skipping update in %s in document nr %v, object is protected", editInfo.workingFile, editInfo.documentIndex)
 		common.Logger.Println(&common.Warning{Reason: msg})
 		return
 	}

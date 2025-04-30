@@ -117,7 +117,7 @@ var gitPasswordFlag = cli.StringFlag{
 	Sources:     cli.EnvVars("GIT_PASSWORD"),
 	DefaultText: "",
 	Usage:       "git password",
-	Destination: &flags.Git.KeyFile,
+	Destination: &flags.Git.Password,
 	Required:    false,
 }
 

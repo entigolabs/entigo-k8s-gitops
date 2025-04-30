@@ -16,6 +16,9 @@ func GetRepositoryName(repoSshUrl string) string {
 }
 
 func GetRemoteRepoWebUrl(repoSshUrl string) string {
+	if strings.HasPrefix(repoSshUrl, "http") {
+		return repoSshUrl
+	}
 	webUrl := repoSshUrl
 	webUrl = strings.TrimPrefix(webUrl, "git@")
 	webUrl = strings.TrimSuffix(webUrl, ".git")
