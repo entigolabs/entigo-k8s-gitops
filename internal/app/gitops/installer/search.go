@@ -15,7 +15,7 @@ func (i *Installer) search(node *yaml.Node, keys []string) (string, error) {
 	}
 	if seqPos, err := strconv.Atoi(identifier); err == nil {
 		if len(node.Content)-1 < seqPos {
-			return "", fmt.Errorf("skiping '%s' copy in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile) // todo check this error
+			return "", fmt.Errorf("skipping '%s' copy in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile) // todo check this error
 		}
 		seqPosNode := node.Content[seqPos]
 		if seqPosNode.Kind == yaml.ScalarNode {

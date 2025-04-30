@@ -30,21 +30,24 @@ func (i *Installer) edit(input InstallInput) {
 		if editInfo.objectKind == "ConfigMap" {
 			continue
 		}
+		if editedBuffer.Len() == 0 {
+			continue
+		}
 		common.OverwriteFile(yamlFileName, editedBuffer.Bytes())
 	}
 }
 
 func (i *Installer) getEditedBuffer(yamlFileName string, input InstallInput) *bytes.Buffer {
 	inputYaml := common.GetFileInput(yamlFileName)
+	buffer := *new(bytes.Buffer)
+	if isFileEmpty(yamlFileName, inputYaml) {
+		return &buffer
+	}
 	reader := bytes.NewReader(inputYaml)
 	yamlNode := yaml.Node{}
 	decoder := yaml.NewDecoder(reader)
-	buffer := *new(bytes.Buffer)
 	encoder := yaml.NewEncoder(&buffer)
 	encoder.SetIndent(2)
-	if isFileEmpty(reader.Len(), yamlFileName) {
-		return &buffer
-	}
 	for {
 		err := decoder.Decode(&yamlNode)
 		if errors.Is(err, io.EOF) {
@@ -145,7 +148,7 @@ func (i *Installer) replace(node *yaml.Node, keys []string, newValue string) {
 	}
 	if seqPos, err := strconv.Atoi(identifier); err == nil {
 		if len(node.Content)-1 < seqPos {
-			msg := fmt.Errorf("skiping '%s' copy in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile)
+			msg := fmt.Errorf("skipping '%s' copy in %s - key doesn't exist", editInfo.workingKey, editInfo.workingFile)
 			common.Logger.Println(&common.Warning{Reason: msg})
 			return
 		}
@@ -250,17 +253,26 @@ func getStrategyChangeSpecificNewValue(oldValue string, newValue string) string 
 	return newValue
 }
 
-func isFileEmpty(readerLen int, yamlFileName string) bool {
-	if readerLen == 0 {
+func isFileEmpty(yamlFileName string, content []byte) bool {
+	if len(content) == 0 {
 		msg := fmt.Sprintf("%s is empty, nothing is changed", yamlFileName)
 		common.Logger.Println(&common.Warning{Reason: errors.New(msg)})
 		return true
 	}
-	return false
+	lines := strings.Split(string(content), "\n")
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed != "" && !strings.HasPrefix(trimmed, "#") {
+			return false
+		}
+	}
+	msg := fmt.Sprintf("%s contains only comments or whitespace, nothing is changed", yamlFileName)
+	common.Logger.Println(&common.Warning{Reason: errors.New(msg)})
+	return true
 }
 
 func logImageCouldNotBeFound(image string) {
-	msg := fmt.Errorf("skiping '%s' update in %s - '%s' couldn't be found", editInfo.workingKey, editInfo.workingFile, image)
+	msg := fmt.Errorf("skipping '%s' update in %s - '%s' couldn't be found", editInfo.workingKey, editInfo.workingFile, image)
 	common.Logger.Println(&common.Warning{Reason: msg})
 }
 

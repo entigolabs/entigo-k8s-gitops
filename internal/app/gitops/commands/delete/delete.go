@@ -42,7 +42,7 @@ func resetAndUpdate(flags *common.Flags, workingRepo *git.Repository) {
 func deleteArgoApp(flags *common.Flags) {
 	argoAppConfPath := fmt.Sprintf("%s/%s.yaml", flags.ComposeArgoPath(), flags.App.DestBranch)
 	if _, err := os.Stat(argoAppConfPath); os.IsNotExist(err) {
-		msg := fmt.Sprintf("skiping delation of %s.yaml - %s", flags.App.DestBranch, err)
+		msg := fmt.Sprintf("skipping delation of %s.yaml - %s", flags.App.DestBranch, err)
 		common.Logger.Println(&common.Warning{Reason: errors.New(msg)})
 	} else {
 		if err := os.RemoveAll(argoAppConfPath); err != nil {
@@ -56,7 +56,7 @@ func deleteArgoApp(flags *common.Flags) {
 func deleteAppBranch(flags *common.Flags) {
 	appBranchPath := fmt.Sprintf("%s/%s", flags.ComposeYamlPath(), flags.App.DestBranch)
 	if _, err := os.Stat(appBranchPath); os.IsNotExist(err) {
-		msg := fmt.Sprintf("skiping delation of %s - %s", flags.App.DestBranch, err)
+		msg := fmt.Sprintf("skipping delation of %s - %s", flags.App.DestBranch, err)
 		common.Logger.Println(&common.Warning{Reason: errors.New(msg)})
 	} else {
 		if err := os.RemoveAll(appBranchPath); err != nil {

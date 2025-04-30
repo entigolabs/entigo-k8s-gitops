@@ -69,7 +69,7 @@ func isLineValid(cmdLine string) bool {
 	if isValidForSkip(firstSplit) {
 		return false
 	}
-	msg := fmt.Errorf("skiping invalid install line - %s", cmdLine)
+	msg := fmt.Errorf("skipping invalid install line - %s", cmdLine)
 	common.Logger.Println(&common.Warning{Reason: msg})
 	return false
 }
