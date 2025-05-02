@@ -3,9 +3,9 @@ name: Pull
 on:
   pull_request:
     branches:
-      - master
-jobs:
+      - main
 
+jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
