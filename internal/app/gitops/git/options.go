@@ -9,12 +9,13 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"io"
 	"os"
+	"strings"
 )
 
 func (r *Repository) getCloneOptions() *git.CloneOptions {
 	return &git.CloneOptions{
 		Auth:          r.getAuth(),
-		URL:           r.Repo,
+		URL:           r.getRepo(),
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", r.GitFlags.Branch)),
 		Progress:      r.getProgressWriter(),
 	}
@@ -39,6 +40,16 @@ func (r *Repository) getAuth() transport.AuthMethod {
 		return r.getBasicAuth()
 	}
 	return nil
+}
+
+func (r *Repository) getRepo() string {
+	if r.KeyFile != "" && strings.HasPrefix(r.Repo, "http") {
+		common.Logger.Println(&common.Warning{Reason: errors.New("SSH key file is defined, but repo URL is HTTP")})
+	}
+	if r.Username != "" && strings.HasPrefix(r.Repo, "git@") {
+		common.Logger.Println(&common.Warning{Reason: errors.New("username is defined, but repo URL is SSH")})
+	}
+	return r.Repo
 }
 
 func (r *Repository) getProgressWriter() io.Writer {
