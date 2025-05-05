@@ -30,8 +30,13 @@ This GitOps utility supports 8 commands:
 
 ## Examples
 
-Git commands require either the key file or username and password.
+Git commands require the key file and/or username and password.
 Repo url needs to be either ssh or https.
+
+If key file is used, but the repo url is https, then url will be converted to ssh. Opposite conversion happens for basic auth.
+If both auth values are provided, then auth method will be selected based on the repo url.
+
+If switching from one auth to another and getting `invalid auth` error then remove the local git repo copy from `gitops-workdir` subfolder.
 
 #### Copy Command
 ```
@@ -157,7 +162,7 @@ Full example
 
 ### argocd-update
 
-Updates an ArgoCD application. Combines argocd-get, git update and argocd-sync commands. Either Git Key or Git Username and Password must be provided.
+Updates an ArgoCD application. Combines argocd-get, git update and argocd-sync commands. Git Key File and/or Git Username and Password must be provided.
 
 OPTIONS:
 * app-name - **Required**, name of the ArgoCD application [$APP_NAME]

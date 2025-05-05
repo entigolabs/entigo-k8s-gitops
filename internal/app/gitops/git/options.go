@@ -34,7 +34,13 @@ func (r *Repository) getPushOptions() *git.PushOptions {
 }
 
 func (r *Repository) getAuth() transport.AuthMethod {
-	if r.isRemoteKeyDefined(r.KeyFile) {
+	if r.KeyFile != "" && r.Username != "" {
+		if strings.HasPrefix(r.Repo, "git@") {
+			return r.getPublicKeys()
+		} else if strings.HasPrefix(r.Repo, "http") {
+			return r.getBasicAuth()
+		}
+	} else if r.KeyFile != "" {
 		return r.getPublicKeys()
 	} else if r.Username != "" {
 		return r.getBasicAuth()
@@ -43,13 +49,32 @@ func (r *Repository) getAuth() transport.AuthMethod {
 }
 
 func (r *Repository) getRepo() string {
-	if r.KeyFile != "" && strings.HasPrefix(r.Repo, "http") {
-		common.Logger.Println(&common.Warning{Reason: errors.New("SSH key file is defined, but repo URL is HTTP")})
-	}
-	if r.Username != "" && strings.HasPrefix(r.Repo, "git@") {
-		common.Logger.Println(&common.Warning{Reason: errors.New("username is defined, but repo URL is SSH")})
+	if r.KeyFile != "" && r.Username != "" {
+		return r.Repo
+	} else if r.KeyFile != "" && strings.HasPrefix(r.Repo, "http") {
+		common.Logger.Println(&common.Warning{Reason: errors.New("SSH key file is defined, but repo URL is HTTP, converting URL to SSH")})
+		return convertToSSH(r.Repo)
+	} else if r.Username != "" && strings.HasPrefix(r.Repo, "git@") {
+		common.Logger.Println(&common.Warning{Reason: errors.New("username is defined, but repo URL is SSH, converting URL to HTTP")})
+		return convertToHTTP(r.Repo)
 	}
 	return r.Repo
+}
+
+func convertToSSH(repo string) string {
+	repo = strings.Replace(repo, "https://", "", 1)
+	repo = strings.Replace(repo, "http://", "", 1)
+	parts := strings.Split(repo, "/")
+	if len(parts) >= 2 {
+		return fmt.Sprintf("git@%s:%s/%s", parts[0], parts[1], strings.Join(parts[2:], "/"))
+	}
+	return repo
+}
+
+func convertToHTTP(repo string) string {
+	repo = strings.Replace(repo, "git@", "", 1)
+	repo = strings.Replace(repo, ":", "/", 1)
+	return fmt.Sprintf("https://%s", repo)
 }
 
 func (r *Repository) getProgressWriter() io.Writer {

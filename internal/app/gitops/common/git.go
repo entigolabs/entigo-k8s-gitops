@@ -12,7 +12,7 @@ func GetRepositoryRootPath(repoSshUrl string) string {
 func GetRepositoryName(repoSshUrl string) string {
 	tokens := strings.Split(repoSshUrl, "/")
 	lastToken := tokens[len(tokens)-1]
-	return lastToken[:len(lastToken)-4]
+	return strings.TrimSuffix(lastToken, ".git")
 }
 
 func GetRemoteRepoWebUrl(repoSshUrl string) string {

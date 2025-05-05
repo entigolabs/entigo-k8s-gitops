@@ -1,13 +1,19 @@
 #!/bin/bash
 set -x
 
+GIT_AUTH_ARGS=""
+
 if [ -n "$INPUT_GIT_KEY" ]; then
   touch /dev/shm/key-file && chmod 600 /dev/shm/key-file && echo "$INPUT_GIT_KEY" > /dev/shm/key-file
-  GIT_AUTH_ARGS="--git-key-file=/dev/shm/key-file"
-elif [ -n "$INPUT_GIT_USERNAME" ] && [ -n "$INPUT_GIT_PASSWORD" ]; then
-  GIT_AUTH_ARGS="--git-username=$INPUT_GIT_USERNAME --git-password=$INPUT_GIT_PASSWORD"
-else
-  echo "Error: Either INPUT_GIT_KEY or both INPUT_GIT_USERNAME and INPUT_GIT_PASSWORD must be provided."
+  GIT_AUTH_ARGS+="--git-key-file=/dev/shm/key-file "
+fi
+
+if [ -n "$INPUT_GIT_USERNAME" ] && [ -n "$INPUT_GIT_PASSWORD" ]; then
+  GIT_AUTH_ARGS+="--git-username=$INPUT_GIT_USERNAME --git-password=$INPUT_GIT_PASSWORD "
+fi
+
+if [ -z "$GIT_AUTH_ARGS" ]; then
+  echo "Error: At least one authentication method must be provided with INPUT_GIT_KEY and/or INPUT_GIT_USERNAME."
   exit 1
 fi
 
