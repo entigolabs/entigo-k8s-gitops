@@ -34,7 +34,7 @@ jobs:
                            -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.buildDate=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
                            -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.gitCommit=${GITHUB_SHA} \
                            -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.gitTreeState=clean \
-                           -linkmode external -extldflags -static -s -w" \
+                           -extldflags -static -s -w" \
                  cmd/gitops/main.go
     - name: Artifact
       uses: actions/upload-artifact@v4
