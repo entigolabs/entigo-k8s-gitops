@@ -13,10 +13,14 @@ import (
 )
 
 func (r *Repository) getCloneOptions() *git.CloneOptions {
+	reference := plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", r.GitFlags.Branch))
+	if r.GitFlags.Branch == string(plumbing.HEAD) {
+		reference = plumbing.HEAD
+	}
 	return &git.CloneOptions{
 		Auth:          r.getAuth(),
 		URL:           r.getRepo(),
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", r.GitFlags.Branch)),
+		ReferenceName: reference,
 		Progress:      r.getProgressWriter(),
 	}
 }
