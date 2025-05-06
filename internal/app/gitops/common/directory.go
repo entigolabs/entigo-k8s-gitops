@@ -32,7 +32,7 @@ func ChangeDir(path string) error {
 	if err := os.Chdir(path); err != nil {
 		return err
 	}
-	Logger.Println(fmt.Sprintf("changed directory to: %s", path))
+	Logger.Printf("changed directory to: %s\n", path)
 	return nil
 }
 

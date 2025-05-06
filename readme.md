@@ -30,12 +30,22 @@ This GitOps utility supports 8 commands:
 
 ## Examples
 
+Git commands require the key file and/or username and password.
+Repo url needs to be either ssh or https.
+
+If key file is used, but the repo url is https, then url will be converted to ssh. Opposite conversion happens for basic auth.
+If both auth values are provided, then auth method will be selected based on the repo url.
+
+If switching from one auth to another and getting `invalid auth` error then remove the local git repo copy from `gitops-workdir` subfolder.
+
 #### Copy Command
 ```
 copy
-  --git-repo=<git-repo-ssh-url>
+  --git-repo=<git-repo-url>
   --git-branch=<git-repo-branch-name>
   --git-key-file=<ssh-private-key-location>
+  --git-username=<git-username>
+  --git-password=<git-password>
   --app-prefix=<path-prefix-to-apply>
   --app-prefix-argo=<path-to-argoapp-configuration>
   --app-prefix-yaml=<path-to-yaml-configuration>
@@ -48,9 +58,11 @@ copy
 ##### Example: Update With Application Path Flag
 ```
 ./gitops update \
-    --git-repo=<repository-ssh-url> \
+    --git-repo=<repository-url> \
     --git-branch=<repository-branch> \
     --git-key-file=<key-file-location> \
+    --git-username=<git-username> \
+    --git-password=<git-password> \
     --images=<image:tag,image2:tag> \ 
     --app-path=<app-path>
 ```
@@ -63,9 +75,11 @@ Tokenized path flags:
 
 ```
 ./gitops update \
-    --git-repo=<repository-ssh-url> \
+    --git-repo=<repository-url> \
     --git-branch=<repository-branch> \
     --git-key-file=<key-file-location> \
+    --git-username=<git-username> \
+    --git-password=<git-password> \
     --images=<image:tag,image2:tag> \ 
     --app-prefix=<app-prefix> \
     --app-namespace=<app-namespace> \
@@ -76,9 +90,11 @@ Tokenized path flags:
 ##### Example: Update With Notification
 ```
 ./gitops update
-    --git-repo=<repository-ssh-url> \
+    --git-repo=<repository-url> \
     --git-branch=<repository-branch> \
     --git-key-file=<key-file-location> \
+    --git-username=<git-username> \
+    --git-password=<git-password> \
     --images=<image:tag,image2:tag> \ 
     --app-path=<app-path>
     --notify-api-url=<api-endpoint>
@@ -146,13 +162,15 @@ Full example
 
 ### argocd-update
 
-Updates an ArgoCD application. Combines argocd-get, git update and argocd-sync commands.
+Updates an ArgoCD application. Combines argocd-get, git update and argocd-sync commands. Git Key File and/or Git Username and Password must be provided.
 
 OPTIONS:
 * app-name - **Required**, name of the ArgoCD application [$APP_NAME]
 * server - **Required**, server tcp address with port [$ARGO_CD_SERVER]
 * auth-token - **Required**, authentication token [$ARGO_CD_TOKEN]
-* git-key-file - **Required**,SSH private key location [$GIT_KEY_FILE]
+* git-key-file - SSH private key location [$GIT_KEY_FILE]
+* git-username - git username [$GIT_USERNAME]
+* git-password - git password [$GIT_PASSWORD]
 * images [-i] - **Required**, images with tags, comma separated list [$IMAGES]
 * insecure - insecure connection (default: **false**) [$ARGO_CD_INSECURE]
 * timeout - timeout for single ArgoCD operation (default: **300**) [$ARGO_CD_TIMEOUT]

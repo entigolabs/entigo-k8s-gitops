@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/installer"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -85,13 +84,13 @@ func getTypeSpecificContainerLocations(ct containersType) []string {
 }
 
 func readDirFiltered(path string, suffix string) ([]string, error) {
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return nil, err
 	}
 	var result []string
 	for _, file := range files {
-		if file.IsDir() == false && strings.HasSuffix(file.Name(), suffix) {
+		if !file.IsDir() && strings.HasSuffix(file.Name(), suffix) {
 			result = append(result, file.Name())
 		}
 	}

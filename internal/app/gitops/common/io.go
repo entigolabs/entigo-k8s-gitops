@@ -1,9 +1,11 @@
 package common
 
-import "io/ioutil"
+import (
+	"os"
+)
 
 func GetFileInput(fileName string) []byte {
-	input, err := ioutil.ReadFile(fileName)
+	input, err := os.ReadFile(fileName)
 	if err != nil {
 		Logger.Fatal(&PrefixedError{Reason: err})
 	}
@@ -11,7 +13,7 @@ func GetFileInput(fileName string) []byte {
 }
 
 func OverwriteFile(fileName string, data []byte) {
-	if err := ioutil.WriteFile(fileName, data, 0644); err != nil {
+	if err := os.WriteFile(fileName, data, 0644); err != nil {
 		Logger.Fatal(&PrefixedError{Reason: err})
 	}
 }

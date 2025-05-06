@@ -3,43 +3,28 @@ name: Pull
 on:
   pull_request:
     branches:
-      - master
-jobs:
+      - main
 
+jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: Setup Go
-      uses: actions/setup-go@v1
-      with:
-        go-version: '1.15'
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: Build the go application
-      run: |
-        go build -o bin/gitops \
-                 -ldflags "-X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.version=${{ github.run_number }} \
-                           -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.buildDate=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
-                           -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.gitCommit=${GITHUB_SHA} \
-                           -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.gitTreeState=clean \
-                           -linkmode external -extldflags -static" \
-                 cmd/gitops/main.go
     - name: Analyze with SonarCloud
-      uses: sonarsource/sonarcloud-github-action@master
+      uses: sonarsource/sonarqube-scan-action@v5
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
     - name: Build Docker image
-      uses: docker/build-push-action@v2 
+      uses: docker/build-push-action@v6
       with:
-        context: .
+        platforms: linux/amd64,linux/arm64
         push: false
-        file: Dockerfile.github
         tags: test
-    - name: Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: gitops-${{ github.run_number }}
-        path: bin/gitops

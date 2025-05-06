@@ -2,7 +2,7 @@ package cli
 
 import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func ArgoCDFlags(cmd common.Command) []cli.Flag {
@@ -43,6 +43,8 @@ func appendArgoCDCmdFlags(baseFlags []cli.Flag, cmd common.Command) []cli.Flag {
 func argoCDUpdateSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 	return append(baseFlags,
 		&gitKeyFileFlag,
+		&gitUsernameFlag,
+		&gitPasswordFlag,
 		&imagesFlag,
 		&gitStrictHostKeyCheckingFlag,
 		&gitPushFlag,
@@ -59,7 +61,7 @@ func argoCDUpdateSpecificFlags(baseFlags []cli.Flag) []cli.Flag {
 
 var argoCDServerAddrFlag = cli.StringFlag{
 	Name:        "server",
-	EnvVars:     []string{"ARGO_CD_SERVER"},
+	Sources:     cli.EnvVars("ARGO_CD_SERVER"),
 	DefaultText: "",
 	Usage:       "Server tcp address with port",
 	Destination: &flags.ArgoCD.ServerAddr,
@@ -68,7 +70,7 @@ var argoCDServerAddrFlag = cli.StringFlag{
 
 var argoCDInsecureFlag = cli.BoolFlag{
 	Name:        "insecure",
-	EnvVars:     []string{"ARGO_CD_INSECURE"},
+	Sources:     cli.EnvVars("ARGO_CD_INSECURE"),
 	Value:       false,
 	DefaultText: "false",
 	Usage:       "Insecure connection",
@@ -79,7 +81,7 @@ var argoCDInsecureFlag = cli.BoolFlag{
 var argoCDTokenFlag = cli.StringFlag{
 	Name:        "auth-token",
 	Aliases:     []string{"token"},
-	EnvVars:     []string{"ARGO_CD_TOKEN"},
+	Sources:     cli.EnvVars("ARGO_CD_TOKEN"),
 	DefaultText: "",
 	Usage:       "Authentication token",
 	Destination: &flags.ArgoCD.AuthToken,
@@ -88,7 +90,7 @@ var argoCDTokenFlag = cli.StringFlag{
 
 var argoCDTimeoutFlag = cli.IntFlag{
 	Name:        "timeout",
-	EnvVars:     []string{"ARGO_CD_TIMEOUT"},
+	Sources:     cli.EnvVars("ARGO_CD_TIMEOUT"),
 	Value:       300,
 	DefaultText: "300",
 	Usage:       "Timeout for single ArgoCD operation",
@@ -98,7 +100,7 @@ var argoCDTimeoutFlag = cli.IntFlag{
 
 var argoCDGRPCWebFlag = cli.BoolFlag{
 	Name:        "grpc-web",
-	EnvVars:     []string{"ARGO_CD_GRPC_WEB"},
+	Sources:     cli.EnvVars("ARGO_CD_GRPC_WEB"),
 	Value:       false,
 	DefaultText: "false",
 	Usage:       "Enables gRPC-web protocol. Useful if Argo CD server is behind proxy which does not support HTTP2",
@@ -108,7 +110,7 @@ var argoCDGRPCWebFlag = cli.BoolFlag{
 
 var argoCDSyncFlag = cli.BoolFlag{
 	Name:        "sync",
-	EnvVars:     []string{"ARGO_CD_SYNC"},
+	Sources:     cli.EnvVars("ARGO_CD_SYNC"),
 	Value:       true,
 	DefaultText: "true",
 	Usage:       "Sync the application after update",
@@ -118,7 +120,7 @@ var argoCDSyncFlag = cli.BoolFlag{
 
 var argoCDAsyncFlag = cli.BoolFlag{
 	Name:        "async",
-	EnvVars:     []string{"ARGO_CD_ASYNC"},
+	Sources:     cli.EnvVars("ARGO_CD_ASYNC"),
 	Value:       false,
 	DefaultText: "false",
 	Usage:       "Don't wait for sync to complete",
@@ -128,7 +130,7 @@ var argoCDAsyncFlag = cli.BoolFlag{
 
 var argoCDWaitFailureFlag = cli.BoolFlag{
 	Name:        "wait-failure",
-	EnvVars:     []string{"ARGO_CD_WAIT_FAILURE"},
+	Sources:     cli.EnvVars("ARGO_CD_WAIT_FAILURE"),
 	Value:       true,
 	DefaultText: "true",
 	Usage:       "Fail the command when waiting for the sync to complete exceeds the timeout",
@@ -138,7 +140,7 @@ var argoCDWaitFailureFlag = cli.BoolFlag{
 
 var argoCDCascadeFlag = cli.BoolFlag{
 	Name:        "cascade",
-	EnvVars:     []string{"ARGO_CD_CASCADE"},
+	Sources:     cli.EnvVars("ARGO_CD_CASCADE"),
 	Value:       true,
 	DefaultText: "true",
 	Usage:       "Perform a cascaded deletion of all application resources",
@@ -148,7 +150,7 @@ var argoCDCascadeFlag = cli.BoolFlag{
 
 var argoCDGetRefreshFlag = cli.BoolFlag{
 	Name:        "refresh",
-	EnvVars:     []string{"ARGO_CD_REFRESH"},
+	Sources:     cli.EnvVars("ARGO_CD_REFRESH"),
 	Value:       true,
 	DefaultText: "true",
 	Usage:       "Refresh application data when retrieving",

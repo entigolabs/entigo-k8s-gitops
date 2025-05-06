@@ -15,7 +15,13 @@ inputs:
     default: "main"
   git_key:
     description: 'Git repo private key with write access'
-    required: true
+    required: false
+  git_username:
+    description: 'Git repo username'
+    required: false
+  git_password:
+    description: 'Git repo password'
+    required: false
   images:
     description: 'Image tags to update to'
     required: true

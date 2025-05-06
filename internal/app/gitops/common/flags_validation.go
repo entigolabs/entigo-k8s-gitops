@@ -6,6 +6,17 @@ import (
 )
 
 func (f *Flags) validate(cmd Command) error {
+	if cmd == RunCmd || cmd == CopyCmd || cmd == UpdateCmd || cmd == DeleteCmd || cmd == ArgoCDUpdateCmd {
+		if f.Git.KeyFile == "" && f.Git.Username == "" {
+			return errors.New("git key file and/or username is needed for authentication")
+		}
+		if f.Git.Username != "" && f.Git.Password == "" {
+			return errors.New("git password is needed for authentication")
+		}
+		if f.Git.Password != "" && f.Git.Username == "" {
+			return errors.New("git username is needed for authentication")
+		}
+	}
 	if cmd == UpdateCmd {
 		return f.validatePaths()
 	}

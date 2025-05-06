@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"errors"
 	argoCDDelete "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/argocd/commands/delete"
 	argoCDGet "github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/argocd/commands/get"
@@ -11,11 +12,11 @@ import (
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/notify"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/commands/update"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
-func action(cmd common.Command) func(c *cli.Context) error {
-	return func(c *cli.Context) error {
+func action(cmd common.Command) cli.ActionFunc {
+	return func(c context.Context, _ *cli.Command) error {
 		if err := flags.Setup(cmd); err != nil {
 			common.Logger.Fatal(&common.PrefixedError{Reason: err})
 		}

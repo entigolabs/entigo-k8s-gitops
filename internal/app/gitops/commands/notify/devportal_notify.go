@@ -3,10 +3,8 @@ package notify
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -43,10 +41,10 @@ func RunNotificationRequest(notificationFlags common.DeploymentNotificationFlags
 }
 
 func logResponseInfo(resp *http.Response) {
-	common.Logger.Println(fmt.Sprintf("response Status: %s", resp.Status))
-	common.Logger.Println(fmt.Sprintf("response Headers: %s", resp.Header))
-	body, _ := ioutil.ReadAll(resp.Body)
-	common.Logger.Println(fmt.Sprintf("response Body: %s", string(body)))
+	common.Logger.Printf("response Status: %s\n", resp.Status)
+	common.Logger.Printf("response Headers: %s\n", resp.Header)
+	body, _ := io.ReadAll(resp.Body)
+	common.Logger.Printf("response Body: %s\n", string(body))
 }
 
 func createNotificationRequest(notificationFlags common.DeploymentNotificationFlags) *http.Request {
