@@ -2,5 +2,4 @@ FROM alpine:3
 RUN apk --no-cache add bash
 ENTRYPOINT ["bash", "-c"]
 COPY github-entrypoint.sh /github-entrypoint.sh
-ARG TARGETARCH
-COPY bin/$TARGETARCH/gitops /usr/bin/gitops
+COPY bin/gitops /usr/bin/gitops

@@ -10,9 +10,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [ amd64, arm64 ]
     steps:
     - uses: actions/checkout@v4
       with:
@@ -28,19 +25,18 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Build the go application
       run: |
-        mkdir -p bin/${{ matrix.arch }}
-        GOARCH=${{ matrix.arch }} GOOS=linux go build -o bin/${{ matrix.arch }}/gitops \
+        go build -o bin/gitops \
                  -ldflags "-X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.version=${{ github.run_number }} \
                            -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.buildDate=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
                            -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.gitCommit=${GITHUB_SHA} \
                            -X github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common.gitTreeState=clean \
-                           -extldflags -static -s -w" \
+                           -linkmode external -extldflags -static" \
                  cmd/gitops/main.go
     - name: Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: gitops-${{ matrix.arch }}-${{ github.run_number }}
-        path: bin/${{ matrix.arch }}/gitops
+        name: gitops-${{ github.run_number }}
+        path: bin/gitops
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
@@ -61,7 +57,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
       with:
-        platforms: linux/amd64,linux/arm64
+        platforms: linux/amd64
         context: .
         push: true
         file: Dockerfile.github
@@ -83,6 +79,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release upload v${{ github.run_number }} bin/${{ matrix.arch }}/gitops \
-          --name "entigo-k8s-gitops-${{ matrix.arch }}-${{ github.run_number }}" \
+        gh release upload v${{ github.run_number }} bin/gitops \
+          --name "entigo-k8s-gitops-${{ github.run_number }}" \
           --clobber
