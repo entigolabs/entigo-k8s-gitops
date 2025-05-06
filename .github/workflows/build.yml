@@ -79,6 +79,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release upload v${{ github.run_number }} bin/gitops \
-          --name "entigo-k8s-gitops-${{ github.run_number }}" \
-          --clobber
+        mv bin/gitops bin/entigo-k8s-gitops-${{ github.run_number }}
+        gh release upload v${{ github.run_number }} bin/entigo-k8s-gitops-${{ github.run_number }} \
+        --clobber
