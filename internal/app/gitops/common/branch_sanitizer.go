@@ -21,13 +21,6 @@ func sanitizeBranch(branch string) string {
 }
 
 func cleanIllegalCharacters(str string) string {
-	cleanedStr := ""
 	regex := regexp.MustCompile("[^A-Za-z0-9-]")
-	for i := range str {
-		char := string(str[i])
-		if regex.MatchString(char) {
-			cleanedStr += char
-		}
-	}
-	return cleanedStr
+	return regex.ReplaceAllString(str, "")
 }
