@@ -12,6 +12,7 @@ const installFile = "install.txt"
 
 func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
+	repo.Init()
 	cloneOrPull(flags, repo)
 	copyIntoNewBranch(flags)
 	installViaFile(flags)
@@ -19,6 +20,7 @@ func Run(flags *common.Flags) {
 	applyChanges(repo)
 	pushOnDemand(flags, repo)
 	logRepoUrl(repo)
+	repo.Close()
 }
 
 func initWorkingRepo(flags *common.Flags) *git.Repository {

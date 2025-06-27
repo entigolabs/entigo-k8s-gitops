@@ -7,8 +7,16 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/plumbing/protocol/packp/capability"
+	"github.com/go-git/go-git/v5/plumbing/transport"
+	"regexp"
 	"strings"
 	"time"
+)
+
+var (
+	azureHTTPSPattern = regexp.MustCompile(`^https://(?:[^@]+@)?dev\.azure\.com/[^/]+/[^/]+/_git/[^/]+`)
+	azureSSHPattern   = regexp.MustCompile(`^git@ssh\.dev\.azure\.com:v3/[^/]+/[^/]+/[^/]+`)
 )
 
 // TODO refactor Repository
@@ -168,4 +176,33 @@ func (r *Repository) getAppName() string {
 		return pathTokens[len(pathTokens)-1]
 	}
 	return r.AppFlags.Name
+}
+
+func (r *Repository) Init() {
+	if !isAzureDevOps(r.Repo) {
+		return
+	}
+	// Azure DevOps requires capabilities multi_ack / multi_ack_detailed which go-git does not support by default.
+	// We need to set UnsupportedCapabilities to avoid errors when dealing with Azure DevOps.
+	// See: https://github.com/go-git/go-git/blob/master/_examples/azure_devops/main.go
+	common.Logger.Println("Detected Azure DevOps repository, disabling unsupported capabilities")
+	transport.UnsupportedCapabilities = []capability.Capability{
+		capability.ThinPack,
+	}
+}
+
+func (r *Repository) Close() {
+	if !isAzureDevOps(r.Repo) {
+		return
+	}
+	// To support processes with multiple repositories, re-enable the default capabilities
+	transport.UnsupportedCapabilities = []capability.Capability{
+		capability.MultiACK,
+		capability.MultiACKDetailed,
+		capability.ThinPack,
+	}
+}
+
+func isAzureDevOps(url string) bool {
+	return azureHTTPSPattern.MatchString(url) || azureSSHPattern.MatchString(url)
 }

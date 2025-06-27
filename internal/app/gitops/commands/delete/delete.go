@@ -10,6 +10,7 @@ import (
 
 func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
+	repo.Init()
 	cloneOrPull(flags, repo)
 	common.CdToRepoRoot(flags.Git.Repo)
 	deleteAppBranch(flags)
@@ -17,6 +18,7 @@ func Run(flags *common.Flags) {
 	applyChanges(repo)
 	pushOnDemand(flags, repo)
 	logEndMessage(repo)
+	repo.Close()
 }
 
 func initWorkingRepo(flags *common.Flags) *git.Repository {

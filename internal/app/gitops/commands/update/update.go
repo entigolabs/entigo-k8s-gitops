@@ -10,12 +10,14 @@ import (
 
 func Run(flags *common.Flags) {
 	repo := initWorkingRepo(flags)
+	repo.Init()
 	cloneOrPull(repo)
 	updateImages(repo)
 	applyChanges(repo)
 	pushOnDemand(repo)
 	logRepoUrl(repo)
 	notifyOnDemand(repo)
+	repo.Close()
 }
 
 func initWorkingRepo(flags *common.Flags) *git.Repository {
