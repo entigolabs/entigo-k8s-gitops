@@ -3,17 +3,18 @@ package git
 import (
 	"errors"
 	"fmt"
-	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
-	"github.com/go-git/go-git/v5"
 	"os"
 	"strings"
+
+	"github.com/entigolabs/entigo-k8s-gitops/internal/app/gitops/common"
+	"github.com/go-git/go-git/v5"
 )
 
 var errUpdateReference = errors.New("failed to update ref")
 
 func handlePullErr(err error) error {
 	pullOp := "pull"
-	if err == git.NoErrAlreadyUpToDate {
+	if errors.Is(err, git.NoErrAlreadyUpToDate) {
 		logAlreadyUpToDate(pullOp, err)
 	} else if isConflictErr(err) {
 		common.Logger.Printf("couldn't git %s, %s", pullOp, err)
@@ -27,7 +28,7 @@ func handlePullErr(err error) error {
 
 func handlePushErr(err error) error {
 	pushOp := "push"
-	if err == git.NoErrAlreadyUpToDate {
+	if errors.Is(err, git.NoErrAlreadyUpToDate) {
 		logAlreadyUpToDate(pushOp, err)
 	} else if isConflictErr(err) {
 		common.Logger.Printf("couldn't git %s, %s\n", pushOp, err)
@@ -45,9 +46,10 @@ func logAlreadyUpToDate(gitOpName string, err error) {
 
 func isConflictErr(err error) bool {
 	isErrNonFastForwardUpdate := strings.Contains(err.Error(), git.ErrNonFastForwardUpdate.Error()) ||
-		err == git.ErrNonFastForwardUpdate
+		errors.Is(err, git.ErrNonFastForwardUpdate)
 	isErrUpdateReference := strings.Contains(err.Error(), errUpdateReference.Error())
-	return isErrNonFastForwardUpdate || isErrUpdateReference
+	isErrAzureAnotherClient := strings.Contains(err.Error(), "has already been updated by another client")
+	return isErrNonFastForwardUpdate || isErrUpdateReference || isErrAzureAnotherClient
 }
 
 func logDefaultGitOpErr(gitOpName string, err error) {
